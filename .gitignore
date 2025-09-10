@@ -19,6 +19,8 @@ target/
 *.iws
 *.iml
 *.ipr
+.idea/
+out/
 
 ### NetBeans ###
 /nbproject/private/
@@ -61,10 +63,7 @@ replay_pid*
 /target/
 !.mvn/wrapper/maven-wrapper.jar
 
-# IntelliJ IDEA
-*.iml
-.idea/
-out/
+
 
 # Sistema operativo
 .DS_Store
