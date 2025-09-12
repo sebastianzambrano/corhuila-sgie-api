@@ -1,10 +1,17 @@
 package com.corhuila.sgie.User.Entity;
 
+import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
+import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.common.Auditoria;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Data
 @Entity
@@ -26,4 +33,21 @@ public class Persona extends Auditoria {
     @OneToOne(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Usuario usuario;
 
+    @OneToMany(mappedBy = "persona",fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<Reserva> reservas = new HashSet<>();
+
+    // equals/hashCode SOLO por id
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Persona)) return false;
+        Persona that = (Persona) o;
+        return this.getId() != null && this.getId().equals(that.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
+    }
 }

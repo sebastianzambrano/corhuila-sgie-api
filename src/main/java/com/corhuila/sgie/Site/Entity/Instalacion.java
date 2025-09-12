@@ -1,11 +1,15 @@
 package com.corhuila.sgie.Site.Entity;
 
+import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
+import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -27,6 +31,10 @@ public class Instalacion extends Auditoria {
     @JoinColumn(name = "categoria_instalacion_id")
     @JsonBackReference
     private CategoriaInstalacion categoriaInstalacion;
+
+    @OneToMany(mappedBy = "instalacion",fetch = FetchType.LAZY)
+    @JsonBackReference
+    private Set<DetalleReservaInstalacion> detalleReservaInstalaciones = new HashSet<>();
 
     // equals/hashCode SOLO por id
     @Override
