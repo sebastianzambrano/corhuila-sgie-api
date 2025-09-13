@@ -1,21 +1,18 @@
 package com.corhuila.sgie.Equipment.Entity;
 
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
-import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
-import com.corhuila.sgie.User.Entity.Permiso;
-import com.corhuila.sgie.User.Entity.Rol;
+import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -33,6 +30,10 @@ public class Equipo extends Auditoria {
     @OneToMany(mappedBy = "equipo",fetch = FetchType.LAZY)
     @JsonBackReference
     private Set<DetalleReservaEquipo> detalleReservaEquipos = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_mantenimiento_equipo")
+    private MantenimientoEquipo mantenimientoEquipo;
 
     // equals/hashCode SOLO por id
     @Override

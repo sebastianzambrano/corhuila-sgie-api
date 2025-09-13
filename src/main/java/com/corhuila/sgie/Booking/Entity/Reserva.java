@@ -1,6 +1,7 @@
 package com.corhuila.sgie.Booking.Entity;
 
-import com.corhuila.sgie.Site.Entity.Instalacion;
+import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
+import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.User.Entity.Persona;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -40,6 +41,16 @@ public class Reserva extends Auditoria {
     @JoinColumn(name = "id_persona")
     @JsonBackReference
     private Persona persona;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_mantenimiento_instalacion")
+    @JsonBackReference
+    private MantenimientoInstalacion mantenimientoInstalacion;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_mantenimiento_equipo")
+    @JsonBackReference
+    private MantenimientoEquipo mantenimientoEquipo;
 
 
     // equals/hashCode SOLO por id

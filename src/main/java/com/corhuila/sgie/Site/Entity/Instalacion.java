@@ -1,6 +1,5 @@
 package com.corhuila.sgie.Site.Entity;
 
-import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonBackReference;

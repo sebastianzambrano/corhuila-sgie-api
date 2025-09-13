@@ -1,4 +1,4 @@
-package com.corhuila.sgie.Equipment.Entity;
+package com.corhuila.sgie.Maintenance.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
 import jakarta.persistence.Entity;
@@ -16,21 +16,20 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "categoria_equipo")
-public class CategoriaEquipo extends Auditoria {
-
+@Table(name = "categoria_mantenimiento_equipo")
+public class CategoriaMantenimientoEquipo extends Auditoria {
     private String nombre;
     private String descripcion;
 
-    @OneToMany(mappedBy = "categoriaEquipo", fetch = FetchType.EAGER)
-    private Set<Equipo> equipos = new HashSet<>();
+    @OneToMany(mappedBy = "categoriaMantenimientoEquipo", fetch = FetchType.EAGER)
+    private Set<MantenimientoEquipo> mantenimientoEquipos = new HashSet<>();
 
     // equals/hashCode SOLO por id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CategoriaEquipo)) return false;
-        CategoriaEquipo that = (CategoriaEquipo) o;
+        if (!(o instanceof CategoriaMantenimientoEquipo)) return false;
+        CategoriaMantenimientoEquipo that = (CategoriaMantenimientoEquipo) o;
         return this.getId() != null && this.getId().equals(that.getId());
     }
 
