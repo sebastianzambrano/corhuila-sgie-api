@@ -1,4 +1,4 @@
-package com.corhuila.sgie.Site.Entity;
+package com.corhuila.sgie.Booking.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,31 +9,33 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "campus")
-public class Campus extends Auditoria {
-
+@Table(name = "tipo_reserva")
+public class TipoReserva extends Auditoria {
+    @Column(nullable = false, length = 100)
     private String nombre;
+
+    @Column(columnDefinition = "TEXT")
     private String descripcion;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_municipio")
-    private Municipio municipio;
+    @Column(name = "requiere_aprobacion")
+    private Boolean requiereAprobacion = false;
 
-    @OneToMany(mappedBy = "campus",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "tipoReserva", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Instalacion> instalaciones = new HashSet<>();
+    private Set<Reserva> reservas = new HashSet<>();
 
     // equals/hashCode SOLO por id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Campus)) return false;
-        Campus that = (Campus) o;
+        if (!(o instanceof TipoReserva)) return false;
+        TipoReserva that = (TipoReserva) o;
         return this.getId() != null && this.getId().equals(that.getId());
     }
 

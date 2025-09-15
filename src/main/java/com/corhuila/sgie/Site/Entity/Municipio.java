@@ -1,7 +1,7 @@
 package com.corhuila.sgie.Site.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,13 +20,12 @@ public class Municipio extends Auditoria {
     private String nombre;
     private String descripcion;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_departamento")
-    @JsonBackReference
     private Departamento departamento;
 
     @OneToMany(mappedBy = "municipio",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Set<Campus> campus = new HashSet<>();
 
     // equals/hashCode SOLO por id

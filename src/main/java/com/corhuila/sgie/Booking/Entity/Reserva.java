@@ -4,11 +4,12 @@ import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.User.Entity.Persona;
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -22,36 +23,40 @@ import java.util.Set;
 @Table(name = "reserva")
 public class Reserva extends Auditoria {
 
-    private LocalDateTime fechaInicio;
-    private LocalDateTime fechaFin;
+    private LocalDate fechaReserva;
+    //private LocalDate fechaFin;
+
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime horaInicio;
+
+    @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime horaFin;
     private String nombre;
     private String descripcion;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_reserva", nullable = false)
+    private TipoReserva tipoReserva;
+
     @OneToMany(mappedBy = "reserva",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Set<DetalleReservaInstalacion> detalleReservaInstalaciones = new HashSet<>();
 
     @OneToMany(mappedBy = "reserva",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Set<DetalleReservaEquipo> detalleReservaEquipos = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_persona")
-    @JsonBackReference
     private Persona persona;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_mantenimiento_instalacion")
-    @JsonBackReference
-    private MantenimientoInstalacion mantenimientoInstalacion;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_mantenimiento_equipo")
-    @JsonBackReference
+    @OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY)
+    @JsonIgnore
     private MantenimientoEquipo mantenimientoEquipo;
 
+    @OneToOne(mappedBy = "reserva", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private MantenimientoInstalacion mantenimientoInstalacion;
 
     // equals/hashCode SOLO por id
     @Override

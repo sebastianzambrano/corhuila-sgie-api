@@ -37,7 +37,11 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         List<String> auth = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+
+        String idUsuario = userDetails.getUsername();
+
         claims.put("auth", auth);
+        claims.put("idUsuario", idUsuario);
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
@@ -72,5 +76,10 @@ public class JwtUtil {
 
     public Claims getClaims(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public Long extractUserId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("idUsuario", Long.class);
     }
 }

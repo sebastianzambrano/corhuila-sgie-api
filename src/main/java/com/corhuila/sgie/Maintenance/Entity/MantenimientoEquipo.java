@@ -7,9 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -22,14 +20,16 @@ public class MantenimientoEquipo extends Auditoria {
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;
 
-    @OneToMany(mappedBy = "mantenimientoEquipo", fetch = FetchType.EAGER)
-    private Set<Reserva> reservas = new HashSet<>();
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reserva", unique = true, nullable = false)
+    private Reserva reserva;
 
-    @OneToMany(mappedBy = "mantenimientoEquipo", fetch = FetchType.EAGER)
-    private Set<Equipo> equipos = new HashSet<>();
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_equipo", nullable = false)
+    private Equipo equipo;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_categoria_mantenimiento_equipo")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoria_mantenimiento_equipo", nullable = false)
     private CategoriaMantenimientoEquipo categoriaMantenimientoEquipo;
 
     // equals/hashCode SOLO por id

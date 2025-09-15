@@ -2,7 +2,7 @@ package com.corhuila.sgie.Booking.Entity;
 
 import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,19 +16,18 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "detalle_servicio_instalacion")
+@Table(name = "detalle_reserva_instalacion")
 public class DetalleReservaInstalacion extends Auditoria {
     private String programaAcademico;
     private Short numeroEstudiantes;
+    private String EntregaInstalacion;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instalacion")
-    @JsonBackReference
     private Instalacion instalacion;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_reserva")
-    @JsonBackReference
     private Reserva reserva;
 
     // equals/hashCode SOLO por id

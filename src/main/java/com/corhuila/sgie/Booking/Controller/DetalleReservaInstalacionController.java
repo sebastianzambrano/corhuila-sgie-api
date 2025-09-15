@@ -1,17 +1,35 @@
 package com.corhuila.sgie.Booking.Controller;
 
+import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaInstalacionService;
+import com.corhuila.sgie.Booking.Service.DetalleReservaInstalacionService;
 import com.corhuila.sgie.common.BaseController;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/detalle-reserva-instalacion")
 public class DetalleReservaInstalacionController extends BaseController<DetalleReservaInstalacion,IDetalleReservaInstalacionService> {
-    public DetalleReservaInstalacionController(IDetalleReservaInstalacionService service) {
+
+    private final DetalleReservaInstalacionService detalleReservaInstalacionService;
+
+
+    public DetalleReservaInstalacionController(IDetalleReservaInstalacionService service, DetalleReservaInstalacionService detalleReservaInstalacionService) {
         super(service, "DetalleReservaInstalacion");
+        this.detalleReservaInstalacionService = detalleReservaInstalacionService;
+    }
+
+
+    @PutMapping("/{idDetalle}/cerrar-detalle-reserva-instalacion")
+    public ResponseEntity<DetalleReservaInstalacion> cerrarDetalle(
+            @PathVariable Long idDetalle,
+            @RequestBody CerrarDetalleReservaInstalacionDTO request) {
+
+        DetalleReservaInstalacion actualizado =
+                detalleReservaInstalacionService.cerrarDetalleReservaInstalacion(idDetalle, request.getEntregaInstalacion());
+
+        return ResponseEntity.ok(actualizado);
     }
 }

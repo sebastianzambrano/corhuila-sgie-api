@@ -1,7 +1,7 @@
 package com.corhuila.sgie.Site.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class CategoriaInstalacion extends Auditoria {
 
 
     @OneToMany(mappedBy = "categoriaInstalacion",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Set<Instalacion> instalaciones = new HashSet<>();
 
     @Override

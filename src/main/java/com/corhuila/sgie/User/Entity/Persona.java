@@ -2,7 +2,7 @@ package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +24,7 @@ public class Persona extends Auditoria {
     private String numeroIdentificacion;
     private String telefonoMovil;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol")
     private Rol rol;
 
@@ -32,7 +32,7 @@ public class Persona extends Auditoria {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "persona",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Set<Reserva> reservas = new HashSet<>();
 
     // equals/hashCode SOLO por id

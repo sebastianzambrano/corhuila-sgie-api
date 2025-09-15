@@ -15,13 +15,7 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     public List<T> all() {
         return getRepository().findAll();
     }
-
-    /*
-    @Override
-    public List<T> findByStateTrue() {
-        return getRepository().findAll();
-    }
-    */
+    
 
     @Override
     public List<T> findByStateTrue() {

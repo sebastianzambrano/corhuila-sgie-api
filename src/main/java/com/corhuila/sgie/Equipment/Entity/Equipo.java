@@ -2,8 +2,9 @@ package com.corhuila.sgie.Equipment.Entity;
 
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
+import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,17 +24,17 @@ public class Equipo extends Auditoria {
     private String nombre;
     private String descripcion;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_instalacion", nullable = false)
+    private Instalacion instalacion;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoriaEquipo")
     private CategoriaEquipo categoriaEquipo;
 
     @OneToMany(mappedBy = "equipo",fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     private Set<DetalleReservaEquipo> detalleReservaEquipos = new HashSet<>();
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_mantenimiento_equipo")
-    private MantenimientoEquipo mantenimientoEquipo;
 
     // equals/hashCode SOLO por id
     @Override

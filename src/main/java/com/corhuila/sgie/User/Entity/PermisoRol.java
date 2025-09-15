@@ -14,11 +14,11 @@ import java.util.Objects;
 @Table(name = "permiso_rol")
 public class PermisoRol extends Auditoria {
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_permiso")
     private Permiso permiso;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_rol")
     private Rol rol;
 

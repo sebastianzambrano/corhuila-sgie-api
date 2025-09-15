@@ -1,14 +1,13 @@
 package com.corhuila.sgie.Maintenance.Entity;
 
 import com.corhuila.sgie.Booking.Entity.Reserva;
+import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.Auditoria;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -21,11 +20,16 @@ public class MantenimientoInstalacion extends Auditoria {
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;
 
-    @OneToMany(mappedBy = "mantenimientoInstalacion", fetch = FetchType.EAGER)
-    private Set<Reserva> reservas = new HashSet<>();
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reserva", unique = true, nullable = false)
+    private Reserva reserva; // Una reserva = Un mantenimiento
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_categoria_mantenimiento_instalacion")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_instalacion", nullable = false)
+    private Instalacion instalacion; // QUÉ instalación se mantiene
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_categoria_mantenimiento_instalacion", nullable = false)
     private CategoriaMantenimientoInstalacion categoriaMantenimientoInstalacion;
 
     // equals/hashCode SOLO por id
