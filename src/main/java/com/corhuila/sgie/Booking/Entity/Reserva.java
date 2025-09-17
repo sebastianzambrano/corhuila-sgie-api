@@ -24,7 +24,6 @@ import java.util.Set;
 public class Reserva extends Auditoria {
 
     private LocalDate fechaReserva;
-    //private LocalDate fechaFin;
 
     @JsonFormat(pattern = "HH:mm:ss")
     private LocalTime horaInicio;

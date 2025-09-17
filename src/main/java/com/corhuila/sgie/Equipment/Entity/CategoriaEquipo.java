@@ -1,6 +1,7 @@
 package com.corhuila.sgie.Equipment.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -23,6 +24,7 @@ public class CategoriaEquipo extends Auditoria {
     private String descripcion;
 
     @OneToMany(mappedBy = "categoriaEquipo", fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Equipo> equipos = new HashSet<>();
 
     // equals/hashCode SOLO por id

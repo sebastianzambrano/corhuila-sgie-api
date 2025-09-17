@@ -10,8 +10,10 @@ import com.corhuila.sgie.common.BaseController;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -30,13 +32,12 @@ public class UsuarioController extends BaseController<Usuario, IUsuarioService> 
     private final IUsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
 
-    // Constructor único con las dependencias necesarias
     public UsuarioController(IUsuarioService service,
                              AuthenticationManager authManager,
                              UserDetailsService userDetailsService,
                              JwtUtil jwtUtil,
                              IUsuarioRepository usuarioRepository, UsuarioService usuarioService) {
-        super(service, "Usuario");
+        super(service, "USUARIO");
         this.authManager = authManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
@@ -46,30 +47,40 @@ public class UsuarioController extends BaseController<Usuario, IUsuarioService> 
 
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody LoginRequest req) {
+
+        // Autenticación
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
+
+        // Obtener UserDetails
         UserDetails ud = userDetailsService.loadUserByUsername(req.getEmail());
-        String token = jwtUtil.generateToken(ud);
 
-        Usuario usuario = usuarioRepository.findByEmail(req.getEmail()).orElseThrow();
+        // Obtener usuario desde DB para capturar idUsuario
+        Usuario usuario = usuarioRepository.findByEmail(req.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
+        // Generar token pasando idUsuario explícitamente
+        String token = jwtUtil.generateToken(usuario.getId(), ud.getUsername(), ud.getAuthorities());
+
+        // Extraer roles y permisos como antes
         List<String> roles = ud.getAuthorities().stream()
-                .map(a -> a.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .filter(a -> a.startsWith("ROLE_"))
                 .map(a -> a.substring(5))
                 .collect(Collectors.toList());
 
         List<String> permisos = ud.getAuthorities().stream()
-                .map(a -> a.getAuthority())
+                .map(GrantedAuthority::getAuthority)
                 .filter(a -> !a.startsWith("ROLE_"))
                 .collect(Collectors.toList());
 
+        // Construir respuesta
         Map<String, Object> resp = new HashMap<>();
         resp.put("token", token);
         resp.put("email", usuario.getEmail());
+        resp.put("idUsuario", usuario.getId()); // opcional, útil para frontend
         resp.put("roles", roles);
         resp.put("permisos", permisos);
         return resp;
     }
-
 }

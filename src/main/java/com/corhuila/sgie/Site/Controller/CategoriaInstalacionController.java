@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/categoria-instalacion")
 public class CategoriaInstalacionController extends BaseController<CategoriaInstalacion, ICategoriaInstalacionService> {
     public CategoriaInstalacionController(ICategoriaInstalacionService service) {
-        super(service, "CategoriaInstalacion");
+        super(service, "CATEGORIA_INSTALACION");
     }
 }

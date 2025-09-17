@@ -6,6 +6,7 @@ import com.corhuila.sgie.Booking.IService.IDetalleReservaEquipoService;
 import com.corhuila.sgie.Booking.Service.DetalleReservaEquipoService;
 import com.corhuila.sgie.common.BaseController;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*")
@@ -16,11 +17,12 @@ public class DetalleReservaEquipoController extends BaseController<DetalleReserv
     private final DetalleReservaEquipoService detalleReservaEquipoService;
 
     public DetalleReservaEquipoController(IDetalleReservaEquipoService service, DetalleReservaEquipoService detalleReservaEquipoService) {
-        super(service, "DetalleReservaEquipo");
+        super(service, "DETALLE_RESERVA_EQUIPO");
         this.detalleReservaEquipoService = detalleReservaEquipoService;
     }
 
     @PutMapping("/{idDetalle}/cerrar-detalle-reserva-equipo")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<DetalleReservaEquipo> cerrarDetalle(
             @PathVariable Long idDetalle,
             @RequestBody CerrarDetalleReservaEquipoDTO request) {

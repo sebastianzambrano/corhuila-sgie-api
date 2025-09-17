@@ -1,6 +1,7 @@
 package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import jakarta.persistence.*;
 
@@ -17,6 +18,7 @@ public class Usuario extends Auditoria {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_persona", unique = true)
+    @JsonIgnore
     private Persona persona;
 
 }

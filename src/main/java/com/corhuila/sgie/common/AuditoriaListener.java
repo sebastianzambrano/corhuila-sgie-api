@@ -1,6 +1,5 @@
 package com.corhuila.sgie.common;
 
-import com.corhuila.sgie.Security.JwtUtil;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreRemove;
 import jakarta.persistence.PreUpdate;
@@ -11,16 +10,11 @@ import java.time.LocalDateTime;
 
 public class AuditoriaListener  {
 
-    private final JwtUtil jwtUtil;
-
-    public AuditoriaListener(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
-
     @PrePersist
     public void setCreatedUser(Auditoria entidad) {
         Long usuarioId = getUsuarioActual();
         entidad.setCreatedUser(usuarioId);
+
     }
 
     @PreUpdate
@@ -37,25 +31,13 @@ public class AuditoriaListener  {
     }
 
     private Long getUsuarioActual() {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated()) {
-                String token = null;
-
-                // Dependiendo de cómo lo seteaste en tu JwtAuthenticationFilter
-                if (auth.getCredentials() instanceof String) {
-                    token = (String) auth.getCredentials();
-                } else if (auth.getDetails() instanceof String) {
-                    token = (String) auth.getDetails();
-                }
-
-                if (token != null) {
-                    return jwtUtil.extractUserId(token);
-                }
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            Object details = auth.getDetails();
+            if (details instanceof Long) {
+                return (Long) details;
             }
-        } catch (Exception e) {
-            // log.warn("No se pudo obtener el usuario autenticado", e);
         }
-        return 0L; // fallback
+        return 0L;
     }
 }

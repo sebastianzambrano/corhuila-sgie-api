@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/persona")
 public class PersonaController extends BaseController<Persona, IPersonaService> {
     public PersonaController(IPersonaService service) {
-        super(service, "Persona");
+        super(service, "PERSONA");
     }
 }

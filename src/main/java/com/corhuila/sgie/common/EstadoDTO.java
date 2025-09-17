@@ -1,14 +1,14 @@
-package com.corhuila.sgie.Booking.DTO;
+package com.corhuila.sgie.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CerrarDetalleReservaEquipoDTO {
-    private String entregaEquipo;
+@Getter
+@Setter
+public class EstadoDTO {
+    private Boolean estado;
 }

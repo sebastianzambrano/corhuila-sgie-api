@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/municipio")
 public class MunicipioController extends BaseController <Municipio, IMunicipioService>{
     public MunicipioController(IMunicipioService service) {
-        super(service, "Municipio");
+        super(service, "MUNICIPIO");
     }
 }

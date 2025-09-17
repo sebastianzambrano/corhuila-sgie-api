@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/rol")
 public class RolController extends BaseController<Rol, IRolService> {
     public RolController(IRolService service) {
-        super(service, "Rol");
+        super(service, "ROL");
     }
 }

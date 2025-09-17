@@ -1,5 +1,6 @@
 package com.corhuila.sgie.Security;
 
+import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -12,10 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,25 +26,32 @@ public class JwtUtil {
 
     private Key key;
 
+    private final IUsuarioRepository repository;
+
+    public JwtUtil(IUsuarioRepository repository) {
+        this.repository = repository;
+    }
+
     @PostConstruct
     public void init() {
         key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(Long idUsuario, String email, Collection<? extends GrantedAuthority> authorities) {
         Map<String, Object> claims = new HashMap<>();
-        List<String> auth = userDetails.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-
-        String idUsuario = userDetails.getUsername();
+        List<String> auth = authorities.stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
 
         claims.put("auth", auth);
         claims.put("idUsuario", idUsuario);
+        claims.put("email", email);
+
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(email)
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -81,5 +86,6 @@ public class JwtUtil {
     public Long extractUserId(String token) {
         Claims claims = getClaims(token);
         return claims.get("idUsuario", Long.class);
+
     }
 }

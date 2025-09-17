@@ -1,6 +1,7 @@
 package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class Rol extends Auditoria {
     private String descripcion;
 
     @OneToMany(mappedBy = "rol", fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<PermisoRol> permisosRol = new HashSet<>();
 
     // equals/hashCode SOLO por id

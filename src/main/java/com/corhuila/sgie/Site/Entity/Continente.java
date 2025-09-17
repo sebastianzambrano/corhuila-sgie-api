@@ -1,6 +1,7 @@
 package com.corhuila.sgie.Site.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
@@ -24,6 +25,7 @@ public class Continente extends Auditoria {
     private String descripcion;
 
     @OneToMany(mappedBy = "continente", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Pais> Paises = new HashSet<>();
 
     // equals/hashCode SOLO por id

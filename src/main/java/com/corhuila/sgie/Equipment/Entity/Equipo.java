@@ -1,7 +1,6 @@
 package com.corhuila.sgie.Equipment.Entity;
 
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
-import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;

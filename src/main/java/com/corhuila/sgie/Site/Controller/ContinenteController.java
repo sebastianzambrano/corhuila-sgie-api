@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/continente")
 public class ContinenteController extends BaseController<Continente, IContinenteService> {
     public ContinenteController(IContinenteService service) {
-        super(service, "Continente");
+        super(service, "CONTINENTE");
     }
 }

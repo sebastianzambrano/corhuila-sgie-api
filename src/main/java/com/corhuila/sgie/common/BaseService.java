@@ -1,6 +1,7 @@
 package com.corhuila.sgie.common;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -80,5 +81,17 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
         entityUpdate.setState(Boolean.FALSE);
 
         getRepository().save(entityUpdate);
+    }
+    @Override
+    @Transactional
+    public void cambiarEstado(Long id, Boolean estado) throws Exception {
+        Optional<T> optional = getRepository().findById(id);
+        if (optional.isEmpty()) {
+            throw new Exception("Registro no encontrado para actualizar estado");
+        }
+
+        T entity = optional.get();
+        entity.setState(estado);
+        getRepository().save(entity); // Aquí se activa @PreUpdate + AuditoriaListener
     }
 }

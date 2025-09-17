@@ -1,7 +1,6 @@
 package com.corhuila.sgie.Config;
 
 import com.corhuila.sgie.Security.CustomUserDetailsService;
-import com.corhuila.sgie.Security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,36 +30,34 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        /*return http
+
+/*
+        return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll() // 🚨 todo abierto
+                )
+                .build();
+
+*/
+
+        return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                        // rutas públicas
                         .requestMatchers(
-                                "/auth/**",
                                 "/v1/api/usuario/login",
                                 "/v3/api-docs/**",
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v1/api/rol",
-                                "/v1/api/persona",
-                                "/v1/api/usuario",
-                                "/v1/api/permiso",
-                                "/v1/api/permiso-rol"
+                                "/swagger-ui/**"
                         ).permitAll()
+                        // todas las demás requieren token
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();*/
-        return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Permitir todo
-                )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider()) // Puedes dejarlo o comentarlo
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // Puedes comentarlo también
                 .build();
+
     }
 
     @Bean

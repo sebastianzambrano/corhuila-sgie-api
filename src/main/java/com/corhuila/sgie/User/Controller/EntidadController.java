@@ -1,7 +1,7 @@
 package com.corhuila.sgie.User.Controller;
 
-import com.corhuila.sgie.User.Entity.Permiso;
-import com.corhuila.sgie.User.IService.IPermisoService;
+import com.corhuila.sgie.User.Entity.Entidad;
+import com.corhuila.sgie.User.IService.IEntidadService;
 import com.corhuila.sgie.common.BaseController;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("v1/api/permiso")
-public class PermisoController extends BaseController<Permiso, IPermisoService> {
-    public PermisoController(IPermisoService service) {
-        super(service, "PERMISO");
+@RequestMapping("v1/api/entidad")
+public class EntidadController extends BaseController<Entidad, IEntidadService> {
+    public EntidadController(IEntidadService service) {
+        super(service, "ENTIDAD");
     }
 }

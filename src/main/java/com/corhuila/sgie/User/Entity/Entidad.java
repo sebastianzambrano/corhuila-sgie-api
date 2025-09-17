@@ -1,4 +1,4 @@
-package com.corhuila.sgie.Maintenance.Entity;
+package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,7 +6,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -17,21 +20,20 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "categoria_mantenimiento_instalacion")
-public class CategoriaMantenimientoInstalacion extends Auditoria {
-    private String nombre;
-    private String descripcion;
+@Table(name = "entidad")
+public class Entidad extends Auditoria {
+    private String nombre; // ej: PERSONA, RESERVA, EQUIPO
 
-    @OneToMany(mappedBy = "categoriaMantenimientoInstalacion", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "entidad", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<MantenimientoInstalacion> mantenimientoInstalaciones = new HashSet<>();
+    private Set<PermisoRolEntidad> permisosRolEntidad = new HashSet<>();
 
     // equals/hashCode SOLO por id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CategoriaMantenimientoInstalacion)) return false;
-        CategoriaMantenimientoInstalacion that = (CategoriaMantenimientoInstalacion) o;
+        if (!(o instanceof Entidad)) return false;
+        Entidad that = (Entidad) o;
         return this.getId() != null && this.getId().equals(that.getId());
     }
 

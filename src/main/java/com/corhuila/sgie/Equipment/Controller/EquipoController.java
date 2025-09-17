@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/equipo")
 public class EquipoController extends BaseController <Equipo, IEquipoService>{
     public EquipoController(IEquipoService service) {
-        super(service, "Equipo");
+        super(service, "EQUIPO");
     }
 }

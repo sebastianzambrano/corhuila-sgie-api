@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/permiso-rol")
 public class PermisoRolController extends BaseController<PermisoRol, IPermisoRolService> {
     public PermisoRolController(IPermisoRolService service) {
-        super(service, "PermisoRol");
+        super(service, "PERMISO_ROL");
     }
-
 }

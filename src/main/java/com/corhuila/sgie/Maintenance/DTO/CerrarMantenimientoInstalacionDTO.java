@@ -14,5 +14,4 @@ import java.time.LocalDate;
 public class CerrarMantenimientoInstalacionDTO {
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;
-
 }

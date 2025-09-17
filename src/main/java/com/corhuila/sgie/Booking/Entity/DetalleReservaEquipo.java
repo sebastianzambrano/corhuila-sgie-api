@@ -30,7 +30,6 @@ public class DetalleReservaEquipo extends Auditoria {
     @Column(name = "observaciones_devolucion", columnDefinition = "TEXT")
     private String observacionesDevolucion;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_equipo", nullable = false)
     private Equipo equipo;
@@ -41,7 +40,7 @@ public class DetalleReservaEquipo extends Auditoria {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instalacion_destino")
-    private Instalacion instalacionDestino; // AGREGAR - Donde se llevará temporalmente
+    private Instalacion instalacionDestino;
 
 
     // equals/hashCode SOLO por id

@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/campus")
 public class CampusController extends BaseController <Campus, CampusService> {
     public CampusController(CampusService service) {
-        super(service, "Campus");
+        super(service, "CAMPUS");
     }
 }

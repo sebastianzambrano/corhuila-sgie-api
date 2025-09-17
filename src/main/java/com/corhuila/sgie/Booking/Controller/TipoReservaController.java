@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/tipo-reserva")
 public class TipoReservaController extends BaseController<TipoReserva, ITipoReservaService> {
     public TipoReservaController(ITipoReservaService service) {
-        super(service, "TipoReserva");
+        super(service, "TIPO_RESERVA");
     }
 }
 

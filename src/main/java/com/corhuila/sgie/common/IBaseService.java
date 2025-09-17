@@ -9,4 +9,5 @@ public interface IBaseService <T extends Auditoria> {
     T save(T entity) throws Exception;
     void update(Long id, T entity) throws Exception;
     void delete(Long id) throws Exception;
+    void cambiarEstado(Long id, Boolean estado) throws Exception;
 }

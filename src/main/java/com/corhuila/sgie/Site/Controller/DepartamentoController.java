@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/departamento")
 public class DepartamentoController extends BaseController<Departamento, IDepartamentoService> {
     public DepartamentoController(IDepartamentoService service) {
-        super(service, "Departamento");
+        super(service, "DEPARTAMENTO");
     }
 }

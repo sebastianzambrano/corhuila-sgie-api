@@ -1,19 +1,25 @@
 package com.corhuila.sgie.common;
 
-import com.corhuila.sgie.User.DTO.ApiResponseDto;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
     protected S service;
     protected String entityName;
+
     protected BaseController(S service, String entityName) {
         this.service = service;
         this.entityName = entityName;
     }
 
+    public String getEntityName() {
+        return entityName;
+    }
+
     @GetMapping
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<ApiResponseDto<List<T>>> findByStateTrue() {
         try {
             return ResponseEntity.ok(new ApiResponseDto<List<T>>("Datos obtenidos", service.findByStateTrue(), true));
@@ -23,6 +29,7 @@ public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<ApiResponseDto<T>> show(@PathVariable Long id) {
         try {
             T entity = service.findById(id);
@@ -32,7 +39,10 @@ public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
         }
     }
 
+
+    //@PreAuthorize("hasAuthority('PERM_PERSONA:CREAR')")
     @PostMapping
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CREAR')")
     public ResponseEntity<ApiResponseDto<T>> save(@RequestBody T entity) {
         try {
             return ResponseEntity.ok(new ApiResponseDto<T>("Datos guardados", service.save(entity), true));
@@ -42,6 +52,7 @@ public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<ApiResponseDto<T>> update(@PathVariable Long id, @RequestBody T entity) {
         try {
             service.update(id, entity);
@@ -51,13 +62,26 @@ public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
         }
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<ApiResponseDto<T>> delete(@PathVariable Long id) {
+    @PutMapping("{id}/cambiar-estado")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    public ResponseEntity<ApiResponseDto<T>> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDto) {
         try {
-            service.delete(id);
-            return ResponseEntity.ok(new ApiResponseDto<T>("Registro eliminado", null, true));
+            service.cambiarEstado(id, estadoDto.getEstado());
+            return ResponseEntity.ok(new ApiResponseDto<T>("Estado actualizado", null, true));
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(new ApiResponseDto<T>(e.getMessage(), null, false));
+            return ResponseEntity.internalServerError()
+                    .body(new ApiResponseDto<T>(e.getMessage(), null, false));
         }
     }
-}
+
+        @DeleteMapping("{id}")
+        @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ELIMINAR')")
+        public ResponseEntity<ApiResponseDto<T>> delete (@PathVariable Long id){
+            try {
+                service.delete(id);
+                return ResponseEntity.ok(new ApiResponseDto<T>("Registro eliminado", null, true));
+            } catch (Exception e) {
+                return ResponseEntity.internalServerError().body(new ApiResponseDto<T>(e.getMessage(), null, false));
+            }
+        }
+    }

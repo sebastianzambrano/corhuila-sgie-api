@@ -12,6 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("v1/api/pais")
 public class PaisController extends BaseController<Pais, IPaisService> {
     public PaisController(IPaisService service) {
-        super(service, "Pais");
+        super(service, "PAIS");
     }
 }

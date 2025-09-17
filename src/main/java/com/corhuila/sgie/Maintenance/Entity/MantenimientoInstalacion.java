@@ -22,11 +22,11 @@ public class MantenimientoInstalacion extends Auditoria {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_reserva", unique = true, nullable = false)
-    private Reserva reserva; // Una reserva = Un mantenimiento
+    private Reserva reserva;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instalacion", nullable = false)
-    private Instalacion instalacion; // QUÉ instalación se mantiene
+    private Instalacion instalacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoria_mantenimiento_instalacion", nullable = false)
