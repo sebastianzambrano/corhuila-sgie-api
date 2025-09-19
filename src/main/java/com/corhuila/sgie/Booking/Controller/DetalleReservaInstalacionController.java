@@ -24,7 +24,7 @@ public class DetalleReservaInstalacionController extends BaseController<DetalleR
 
 
     @PutMapping("/{idDetalle}/cerrar-detalle-reserva-instalacion")
-    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<DetalleReservaInstalacion> cerrarDetalle(
             @PathVariable Long idDetalle,
             @RequestBody CerrarDetalleReservaInstalacionDTO request) {

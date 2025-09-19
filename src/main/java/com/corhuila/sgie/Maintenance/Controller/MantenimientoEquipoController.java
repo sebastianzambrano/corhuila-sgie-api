@@ -22,7 +22,7 @@ public class MantenimientoEquipoController extends BaseController<MantenimientoE
 
 
     @PutMapping("/{idDetalle}/cerrar-mantenimiento-equipo")
-    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<MantenimientoEquipo> cerrarDetalle(
             @PathVariable Long idDetalle,
             @RequestBody CerrarMantenimientoEquipoDTO request) {

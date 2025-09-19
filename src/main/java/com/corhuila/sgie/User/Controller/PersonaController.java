@@ -1,11 +1,14 @@
 package com.corhuila.sgie.User.Controller;
 
+import com.corhuila.sgie.User.DTO.IPermisoPorPersonaDTO;
+import com.corhuila.sgie.User.DTO.IPersonaUsuarioDTO;
 import com.corhuila.sgie.User.Entity.Persona;
 import com.corhuila.sgie.User.IService.IPersonaService;
 import com.corhuila.sgie.common.BaseController;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -13,5 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class PersonaController extends BaseController<Persona, IPersonaService> {
     public PersonaController(IPersonaService service) {
         super(service, "PERSONA");
+    }
+
+    @GetMapping("/persona-usuario")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    public ResponseEntity<List<IPersonaUsuarioDTO>> findUsuariosPersonaPorIdentificacion(@RequestParam String numeroIdentificacionPersona) {
+        List<IPersonaUsuarioDTO> personaUsuarios = service.findUsuariosPersonaPorIdentificacion(numeroIdentificacionPersona);
+        return ResponseEntity.ok(personaUsuarios);
     }
 }

@@ -26,7 +26,7 @@ public interface IPermisoRolEntidadRepository extends IBaseRepository<PermisoRol
         INNER JOIN permiso_rol_entidad pre ON r.id = pre.id_rol
         INNER JOIN entidad e ON pre.id_entidad = e.id
         INNER JOIN permiso pm ON pre.id_permiso = pm.id
-        WHERE pe.numero_identificacion = :numeroIdentificacion
+        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
         """, nativeQuery = true)
     List<IPermisoPorPersonaDTO> findPermisosPorNumeroIdentificacion(@Param("numeroIdentificacion") String numeroIdentificacion);
 

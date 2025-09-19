@@ -21,7 +21,7 @@ public class ReservaController extends BaseController<Reserva,IReservaService> {
     }
 
     @GetMapping("/horas-disponibles-instalacion")
-    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(
             @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam("idInstalacion") Integer idInstalacion) {
@@ -30,7 +30,7 @@ public class ReservaController extends BaseController<Reserva,IReservaService> {
     }
 
     @GetMapping("/horas-disponibles-equipo")
-    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(
             @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam("idEquipo") Integer idEquipo) {
