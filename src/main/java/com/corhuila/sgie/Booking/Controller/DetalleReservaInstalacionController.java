@@ -1,13 +1,15 @@
 package com.corhuila.sgie.Booking.Controller;
 
 import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaInstalacionService;
 import com.corhuila.sgie.Booking.Service.DetalleReservaInstalacionService;
 import com.corhuila.sgie.common.BaseController;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -33,5 +35,12 @@ public class DetalleReservaInstalacionController extends BaseController<DetalleR
                 detalleReservaInstalacionService.cerrarDetalleReservaInstalacion(idDetalle, request.getEntregaInstalacion());
 
         return ResponseEntity.ok(actualizado);
+    }
+
+    @GetMapping("/reservas-instalaciones")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    public ResponseEntity<List<IReservaInstalacionDTO>> findReservaInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
+        List<IReservaInstalacionDTO> reservasInstalaciones = service.findReservaInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
+        return ResponseEntity.ok(reservasInstalaciones);
     }
 }

@@ -1,5 +1,6 @@
 package com.corhuila.sgie.Booking.Service;
 
+import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IDetalleReservaEquipoRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquipo> implements IDetalleReservaEquipoService {
@@ -50,5 +52,10 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
         }
 
         return repository.save(detalle);
+    }
+
+    @Override
+    public List<IReservaEquipoDTO> findReservasEquipoByNumeroIdentificacion(String numeroIdentificacionPersona) {
+        return repository.findReservasEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
     }
 }

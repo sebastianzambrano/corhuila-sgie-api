@@ -2,6 +2,7 @@ package com.corhuila.sgie.Maintenance.Service;
 
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
+import com.corhuila.sgie.Maintenance.DTO.IMantenimientoEquipoDTO;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoEquipoRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoEquipoService;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo> implements IMantenimientoEquipoService {
@@ -50,5 +52,10 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
         reservaRepository.save(reserva);
 
         return repository.save(mantenimiento);
+    }
+
+    @Override
+    public List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(String numeroIdentificacionPersona) {
+        return repository.findMantenimientosEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
     }
 }

@@ -1,6 +1,8 @@
 package com.corhuila.sgie.Maintenance.Controller;
 
+import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionDTO;
+import com.corhuila.sgie.Maintenance.DTO.IMantenimientoInstalacionDTO;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
 import com.corhuila.sgie.Maintenance.Service.MantenimientoInstalacionService;
@@ -8,6 +10,8 @@ import com.corhuila.sgie.common.BaseController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -31,5 +35,12 @@ public class MantenimientoInstalacionController extends BaseController<Mantenimi
                 mantenimientoInstalacionService.cerrarMantenimientoInstalacion(idDetalle,request.getFechaProximaMantenimiento(), request.getResultadoMantenimiento());
 
         return ResponseEntity.ok(actualizado);
+    }
+
+    @GetMapping("/mantenimientos-instalaciones")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    public ResponseEntity<List<IMantenimientoInstalacionDTO>> findMantenimientosInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
+        List<IMantenimientoInstalacionDTO> mantenimientosInstalaciones = service.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
+        return ResponseEntity.ok(mantenimientosInstalaciones);
     }
 }

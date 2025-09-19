@@ -28,7 +28,7 @@ public class Persona extends Auditoria {
     @JoinColumn(name = "id_rol")
     private Rol rol;
 
-    @OneToOne(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Usuario usuario;
 
     @OneToMany(mappedBy = "persona",fetch = FetchType.LAZY)

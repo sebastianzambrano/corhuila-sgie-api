@@ -1,6 +1,8 @@
 package com.corhuila.sgie.Booking.Controller;
 
 import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaEquipoDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaEquipoService;
 import com.corhuila.sgie.Booking.Service.DetalleReservaEquipoService;
@@ -8,6 +10,8 @@ import com.corhuila.sgie.common.BaseController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -32,4 +36,12 @@ public class DetalleReservaEquipoController extends BaseController<DetalleReserv
 
         return ResponseEntity.ok(actualizado);
     }
+
+    @GetMapping("/reservas-equipos")
+    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    public ResponseEntity<List<IReservaEquipoDTO>> findReservasEquipoByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
+        List<IReservaEquipoDTO> reservasEquipos = service.findReservasEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
+        return ResponseEntity.ok(reservasEquipos);
+    }
+
 }
