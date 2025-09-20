@@ -1,6 +1,8 @@
 package com.corhuila.sgie.Booking.Controller;
 
-import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionDTO;
+import com.corhuila.sgie.Booking.DTO.ActualizarReservaDetalleInstalacionRequestDTO;
+import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionRequestDTO;
+import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionResponseDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaInstalacionService;
@@ -25,17 +27,17 @@ public class DetalleReservaInstalacionController extends BaseController<DetalleR
     }
 
 
-    @PutMapping("/{idDetalle}/cerrar-detalle-reserva-instalacion")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
-    public ResponseEntity<DetalleReservaInstalacion> cerrarDetalle(
-            @PathVariable Long idDetalle,
-            @RequestBody CerrarDetalleReservaInstalacionDTO request) {
+        @PutMapping("/{idDetalle}/cerrar-detalle-reserva-instalacion")
+        //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+        public ResponseEntity<CerrarDetalleReservaInstalacionResponseDTO> cerrarDetalle(
+                @PathVariable Long idDetalle,
+                @RequestBody CerrarDetalleReservaInstalacionRequestDTO request) {
 
-        DetalleReservaInstalacion actualizado =
-                detalleReservaInstalacionService.cerrarDetalleReservaInstalacion(idDetalle, request.getEntregaInstalacion());
+            CerrarDetalleReservaInstalacionResponseDTO actualizado =
+                    detalleReservaInstalacionService.cerrarDetalleReservaInstalacion(idDetalle, request.getEntregaInstalacion());
 
-        return ResponseEntity.ok(actualizado);
-    }
+            return ResponseEntity.ok(actualizado);
+        }
 
     @GetMapping("/reservas-instalaciones")
     //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
@@ -43,4 +45,16 @@ public class DetalleReservaInstalacionController extends BaseController<DetalleR
         List<IReservaInstalacionDTO> reservasInstalaciones = service.findReservaInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
         return ResponseEntity.ok(reservasInstalaciones);
     }
+
+    @PutMapping("/{idDetalle}/actualizar-detalle-reserva")
+    public ResponseEntity<DetalleReservaInstalacion> actualizarDetalleInstalacion(
+            @PathVariable Long idDetalle,
+            @RequestBody ActualizarReservaDetalleInstalacionRequestDTO request) {
+
+        DetalleReservaInstalacion actualizado =
+                detalleReservaInstalacionService.actualizarDetalleReserva(idDetalle, request);
+
+        return ResponseEntity.ok(actualizado);
+    }
+
 }

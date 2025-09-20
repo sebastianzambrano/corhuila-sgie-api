@@ -1,8 +1,6 @@
 package com.corhuila.sgie.Booking.Controller;
 
-import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaEquipoDTO;
-import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
-import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
+import com.corhuila.sgie.Booking.DTO.*;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaEquipoService;
 import com.corhuila.sgie.Booking.Service.DetalleReservaEquipoService;
@@ -27,12 +25,24 @@ public class DetalleReservaEquipoController extends BaseController<DetalleReserv
 
     @PutMapping("/{idDetalle}/cerrar-detalle-reserva-equipo")
     //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
-    public ResponseEntity<DetalleReservaEquipo> cerrarDetalle(
+    public ResponseEntity<CerrarDetalleReservaEquipoResponseDTO> cerrarDetalle(
             @PathVariable Long idDetalle,
             @RequestBody CerrarDetalleReservaEquipoDTO request) {
 
-        DetalleReservaEquipo actualizado =
+        CerrarDetalleReservaEquipoResponseDTO actualizado =
                 detalleReservaEquipoService.cerrarDetalleReservaEquipo(idDetalle, request.getEntregaEquipo());
+
+        return ResponseEntity.ok(actualizado);
+    }
+
+
+    @PutMapping("/{idDetalle}/actualizar-detalle-reserva-equipo")
+    public ResponseEntity<DetalleReservaEquipo> actualizarDetalleEquipo(
+            @PathVariable Long idDetalle,
+            @RequestBody ActualizarReservaDetalleEquipoRequestDTO request) {
+
+        DetalleReservaEquipo actualizado =
+                detalleReservaEquipoService.actualizarDetalleReservaEquipo(idDetalle, request);
 
         return ResponseEntity.ok(actualizado);
     }
