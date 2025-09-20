@@ -2,6 +2,8 @@ package com.corhuila.sgie.Maintenance.Service;
 
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
+import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoEquipoRequestDTO;
+import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoEquipoResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoEquipoDTO;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoEquipoRepository;
@@ -30,7 +32,7 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
     }
 
     @Transactional
-    public MantenimientoEquipo cerrarMantenimientoEquipo(
+    public CerrarMantenimientoEquipoResponseDTO cerrarMantenimientoEquipo(
             Long idMantenimiento,
             LocalDate fechaProximaMantenimiento,
             String resultadoMantenimiento) {
@@ -40,22 +42,52 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
 
         Reserva reserva = mantenimiento.getReserva();
 
-        // actualizar mantenimiento
         mantenimiento.setFechaProximaMantenimiento(fechaProximaMantenimiento);
         mantenimiento.setResultadoMantenimiento(resultadoMantenimiento);
         mantenimiento.setState(false);
         mantenimiento.setUpdatedAt(LocalDateTime.now());
 
-        // cerrar reserva directamente porque es 1:1
         reserva.setState(false);
         reserva.setUpdatedAt(LocalDateTime.now());
         reservaRepository.save(reserva);
 
-        return repository.save(mantenimiento);
-    }
+        MantenimientoEquipo saved = repository.save(mantenimiento);
 
+        return new CerrarMantenimientoEquipoResponseDTO(
+                saved.getId(),
+                saved.getState(),
+                saved.getFechaProximaMantenimiento(),
+                saved.getResultadoMantenimiento(),
+                saved.getUpdatedAt(),
+                reserva.getId()
+        );
+    }
     @Override
     public List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(String numeroIdentificacionPersona) {
         return repository.findMantenimientosEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
+    }
+
+    @Transactional
+    public MantenimientoEquipo actualizarMantenimientoEquipo(Long idMantenimiento, ActualizarMantenimientoEquipoRequestDTO request) {
+        MantenimientoEquipo mantenimiento = repository.findById(idMantenimiento)
+                .orElseThrow(() -> new RuntimeException("Mantenimiento no encontrado"));
+
+        Reserva reserva = mantenimiento.getReserva();
+
+        if (request.getDescripcion() != null) mantenimiento.setDescripcion(request.getDescripcion());
+        if (request.getFechaProximaMantenimiento() != null) mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());
+        if (request.getResultadoMantenimiento() != null) mantenimiento.setResultadoMantenimiento(request.getResultadoMantenimiento());
+
+        if (request.getNombreReserva() != null) reserva.setNombre(request.getNombreReserva());
+        if (request.getDescripcionReserva() != null) reserva.setDescripcion(request.getDescripcionReserva());
+        if (request.getFechaReserva() != null) reserva.setFechaReserva(request.getFechaReserva());
+        if (request.getHoraInicio() != null) reserva.setHoraInicio(request.getHoraInicio());
+        if (request.getHoraFin() != null) reserva.setHoraFin(request.getHoraFin());
+
+        reserva.setUpdatedAt(LocalDateTime.now());
+        mantenimiento.setUpdatedAt(LocalDateTime.now());
+
+        reservaRepository.save(reserva);
+        return repository.save(mantenimiento);
     }
 }

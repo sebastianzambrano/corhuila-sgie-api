@@ -1,7 +1,9 @@
 package com.corhuila.sgie.Maintenance.Controller;
 
 import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
+import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoInstalacionRequestDTO;
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionDTO;
+import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoInstalacionDTO;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
@@ -27,13 +29,22 @@ public class MantenimientoInstalacionController extends BaseController<Mantenimi
 
     @PutMapping("/{idDetalle}/cerrar-mantenimiento-instalacion")
     //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
-    public ResponseEntity<MantenimientoInstalacion> cerrarDetalle(
+    public ResponseEntity<CerrarMantenimientoInstalacionResponseDTO> cerrarMantenimientoInstalacion(
             @PathVariable Long idDetalle,
             @RequestBody CerrarMantenimientoInstalacionDTO request) {
 
-        MantenimientoInstalacion actualizado =
+        CerrarMantenimientoInstalacionResponseDTO actualizado =
                 mantenimientoInstalacionService.cerrarMantenimientoInstalacion(idDetalle,request.getFechaProximaMantenimiento(), request.getResultadoMantenimiento());
 
+        return ResponseEntity.ok(actualizado);
+    }
+
+    @PutMapping("/{idDetalle}/actualizar-mantenimiento-equipo")
+    public ResponseEntity<MantenimientoInstalacion> actualizarMantenimientoInstalacion(
+            @PathVariable Long idDetalle,
+            @RequestBody ActualizarMantenimientoInstalacionRequestDTO request) {
+
+        MantenimientoInstalacion actualizado = mantenimientoInstalacionService.actualizarMantenimientoInstalacion(idDetalle, request);
         return ResponseEntity.ok(actualizado);
     }
 

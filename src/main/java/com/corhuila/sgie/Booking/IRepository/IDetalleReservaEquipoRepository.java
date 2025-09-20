@@ -33,4 +33,20 @@ public interface IDetalleReservaEquipoRepository extends IBaseRepository<Detalle
     List<IReservaEquipoDTO> findReservasEquipoByNumeroIdentificacion(
             @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
     );
+
+    @Query(value = """
+    SELECT 
+        re.fecha_reserva AS fechaReserva,
+        re.hora_inicio AS horaInicio,
+        re.hora_fin AS horaFin,
+        re.nombre AS nombreReserva,
+        pe.nombres AS persona,
+        dre.programa_academico AS programaAcademico
+    FROM detalle_reserva_equipo dre
+    INNER JOIN reserva re ON dre.id_reserva = re.id
+    INNER JOIN persona pe ON re.id_persona = pe.id
+    WHERE dre.id_equipo = :idEquipo
+    ORDER BY re.fecha_reserva DESC
+    """, nativeQuery = true)
+    List<Object[]> findHistorialReservasByEquipo(@Param("idEquipo") Long idEquipo);
 }

@@ -33,4 +33,17 @@ public interface IMantenimientoEquipoRepository extends IBaseRepository <Manteni
     List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(
             @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
     );
+
+    @Query(value = """
+    SELECT 
+        me.fecha_proxima_mantenimiento,
+        me.descripcion,
+        me.resultado_mantenimiento,
+        cme.nombre AS categoriaMantenimiento
+    FROM mantenimiento_equipo me
+    INNER JOIN categoria_mantenimiento_equipo cme ON me.id_categoria_mantenimiento_equipo = cme.id
+    WHERE me.id_equipo = :idEquipo
+    ORDER BY me.fecha_modificacion DESC
+    """, nativeQuery = true)
+    List<Object[]> findHistorialMantenimientosByEquipo(@Param("idEquipo") Long idEquipo);
 }
