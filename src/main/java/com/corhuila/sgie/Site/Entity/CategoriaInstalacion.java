@@ -19,6 +19,9 @@ import java.util.Set;
 @Entity
 @Table(name = "categoria_instalacion")
 public class CategoriaInstalacion extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String nombre;
     private String descripcion;

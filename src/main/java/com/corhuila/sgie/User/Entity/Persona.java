@@ -17,6 +17,9 @@ import java.util.Set;
 @NoArgsConstructor
 @Table(name = "persona")
 public class Persona extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String nombres;
     private String apellidos;

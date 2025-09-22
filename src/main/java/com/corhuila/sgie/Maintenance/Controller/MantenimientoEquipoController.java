@@ -24,7 +24,7 @@ public class MantenimientoEquipoController extends BaseController<MantenimientoE
 
 
     @PutMapping("/{idDetalle}/cerrar-mantenimiento-equipo")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<CerrarMantenimientoEquipoResponseDTO> cerrarMantenimientoEquipo(
             @PathVariable Long idDetalle,
             @RequestBody CerrarMantenimientoEquipoDTO request) {
@@ -35,18 +35,18 @@ public class MantenimientoEquipoController extends BaseController<MantenimientoE
         return ResponseEntity.ok(actualizado);
     }
 
-    @PutMapping("/{idDetalle}/actualizar-mantenimiento-equipo")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
-    public ResponseEntity<MantenimientoEquipo> actualizarMantenimientoEquipo(
-            @PathVariable Long idDetalle,
+    @PutMapping("/{idMantenimiento}/actualizar-mantenimiento-equipo")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    public ResponseEntity<MantenimientoEquipoResponseDTO> actualizarMantenimientoEquipo(
+            @PathVariable Long idMantenimiento,
             @RequestBody ActualizarMantenimientoEquipoRequestDTO request) {
 
-        MantenimientoEquipo actualizado = mantenimientoEquipoService.actualizarMantenimientoEquipo(idDetalle, request);
+        MantenimientoEquipoResponseDTO actualizado = mantenimientoEquipoService.actualizarMantenimientoEquipo(idMantenimiento, request);
         return ResponseEntity.ok(actualizado);
     }
 
     @GetMapping("/mantenimientos-equipos")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IMantenimientoEquipoDTO>> findMantenimientosEquipoByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
         List<IMantenimientoEquipoDTO> mantenimientosEquipos = service.findMantenimientosEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
         return ResponseEntity.ok(mantenimientosEquipos);

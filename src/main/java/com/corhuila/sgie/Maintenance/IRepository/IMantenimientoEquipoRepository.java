@@ -21,7 +21,9 @@ public interface IMantenimientoEquipoRepository extends IBaseRepository <Manteni
             re.hora_inicio AS horaInicioReserva,
             re.hora_fin AS horaFinReserva, 
             eq.nombre AS nombreEquipo, 
-            cme.nombre AS tipoMantenimiento
+            cme.nombre AS tipoMantenimiento,
+            me.state AS estadoMantenimiento,
+            re.state AS estadoReserva
         FROM mantenimiento_equipo me
         INNER JOIN reserva re ON me.id_reserva = re.id
         INNER JOIN equipo eq ON me.id_equipo = eq.id

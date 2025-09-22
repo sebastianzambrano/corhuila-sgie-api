@@ -6,6 +6,7 @@ import com.corhuila.sgie.Site.IService.IInstalacionService;
 import com.corhuila.sgie.User.DTO.IPermisoPorPersonaDTO;
 import com.corhuila.sgie.common.BaseController;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class InstalacionController extends BaseController <Instalacion, IInstala
     }
 
     @GetMapping("/instalacion-campus")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IInstalacionCampusDTO>> findInstalacionesCampus(@RequestParam String nombreInstalacion, @RequestParam String nombreCampus) {
         List<IInstalacionCampusDTO> instalacionesCampus = service.findInstalacionesCampus(nombreInstalacion,nombreCampus);
         return ResponseEntity.ok(instalacionesCampus);

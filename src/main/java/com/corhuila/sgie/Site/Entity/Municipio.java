@@ -16,6 +16,9 @@ import java.util.Set;
 @Entity
 @Table(name = "municipio")
 public class Municipio extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String nombre;
     private String descripcion;

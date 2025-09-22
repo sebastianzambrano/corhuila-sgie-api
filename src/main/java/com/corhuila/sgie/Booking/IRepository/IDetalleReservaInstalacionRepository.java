@@ -20,7 +20,9 @@ public interface IDetalleReservaInstalacionRepository extends IBaseRepository<De
             ins.nombre AS nombreInstalacion, 
             re.fecha_reserva AS fechaReserva,
             re.hora_inicio AS horaInicioReserva,
-            re.hora_fin AS horaFinReserva
+            re.hora_fin AS horaFinReserva,
+            re.state AS estadoReserva,
+            dri.state AS estadoDetalleReservaInstalacion
         FROM detalle_reserva_instalacion dri
         INNER JOIN reserva re ON dri.id_reserva = re.id
         INNER JOIN instalacion ins ON dri.id_instalacion = ins.id

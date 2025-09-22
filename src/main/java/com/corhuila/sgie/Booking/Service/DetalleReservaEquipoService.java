@@ -2,6 +2,7 @@ package com.corhuila.sgie.Booking.Service;
 
 import com.corhuila.sgie.Booking.DTO.ActualizarReservaDetalleEquipoRequestDTO;
 import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaEquipoResponseDTO;
+import com.corhuila.sgie.Booking.DTO.DetalleReservaEquipoResponseDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.Entity.Reserva;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -74,45 +76,55 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
     }
 
     @Transactional
-    public DetalleReservaEquipo actualizarDetalleReservaEquipo(Long idDetalle, ActualizarReservaDetalleEquipoRequestDTO request) {
+    public DetalleReservaEquipoResponseDTO actualizarDetalleReservaEquipo(
+            Long idDetalle,
+            ActualizarReservaDetalleEquipoRequestDTO request) {
+
         DetalleReservaEquipo detalle = repository.findById(idDetalle)
                 .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
 
         Reserva reserva = detalle.getReserva();
 
-        // Si cambia fecha/hora o equipo/instalacion, validar horas disponibles
-        boolean cambiaFechaHora = request.getFechaReserva() != null || request.getHoraInicio() != null || request.getHoraFin() != null;
-        boolean cambiaEquipoOInstalacion = request.getIdEquipo() != null || request.getIdInstalacionDestino() != null;
+        // Determinar si se cambia fecha/hora o equipo/instalación
+        boolean cambiaFechaHora = request.getFechaReserva() != null
+                || request.getHoraInicio() != null
+                || request.getHoraFin() != null;
+        boolean cambiaEquipoOInstalacion = request.getIdEquipo() != null
+                || request.getIdInstalacionDestino() != null;
 
         if (cambiaFechaHora || cambiaEquipoOInstalacion) {
-            // determinamos los valores efectivos que quedarán (si no vienen, se usan los actuales)
             LocalDate fecha = request.getFechaReserva() != null ? request.getFechaReserva() : reserva.getFechaReserva();
             LocalTime horaInicio = request.getHoraInicio() != null ? request.getHoraInicio() : reserva.getHoraInicio();
             LocalTime horaFin = request.getHoraFin() != null ? request.getHoraFin() : reserva.getHoraFin();
             Integer idEquipo = request.getIdEquipo() != null ? request.getIdEquipo().intValue() : detalle.getEquipo().getId().intValue();
 
-            // consultar horas disponibles para ese equipo en la fecha
-            List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo);
+            // Consultar horas disponibles para el equipo
+            List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
+            List<LocalTime> disponibles = horasDisponibles.stream()
+                    .map(h -> LocalTime.parse(h[0].toString()))
+                    .toList();
 
-            // Validación simple: comprobar que la horaInicio solicitada esté en la lista de disponibles
-            boolean inicioDisponible = horasDisponibles.stream()
-                    .anyMatch(h -> h[0].toString().equals(horaInicio.toString()));
-
-            if (!inicioDisponible) {
-                throw new RuntimeException("La hora de inicio no está disponible para el equipo y fecha seleccionados.");
+            // Generar todas las horas del rango solicitado
+            List<LocalTime> rangoSolicitado = new ArrayList<>();
+            for (LocalTime h = horaInicio; h.isBefore(horaFin); h = h.plusHours(1)) {
+                rangoSolicitado.add(h);
             }
 
-            // Si deseas validar todo el rango (inicio-fin) deberíamos comprobar que
-            // no exista una reserva con intervalo que se solape. Puedo implementarlo si quieres.
+            // Validar que todas las horas estén libres
+            boolean disponible = disponibles.containsAll(rangoSolicitado);
+            if (!disponible) {
+                throw new RuntimeException("El rango de horas seleccionado no está disponible para el equipo y fecha seleccionados.");
+            }
         }
 
-        // actualizar solo si vienen datos en el request
+        // Actualizar campos de reserva
         if (request.getNombreReserva() != null) reserva.setNombre(request.getNombreReserva());
         if (request.getDescripcionReserva() != null) reserva.setDescripcion(request.getDescripcionReserva());
         if (request.getFechaReserva() != null) reserva.setFechaReserva(request.getFechaReserva());
         if (request.getHoraInicio() != null) reserva.setHoraInicio(request.getHoraInicio());
         if (request.getHoraFin() != null) reserva.setHoraFin(request.getHoraFin());
 
+        // Actualizar campos del detalle
         if (request.getProgramaAcademico() != null) detalle.setProgramaAcademico(request.getProgramaAcademico());
         if (request.getNumeroEstudiantes() != null) detalle.setNumeroEstudiantes(request.getNumeroEstudiantes());
         if (request.getIdEquipo() != null) {
@@ -130,6 +142,24 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
         detalle.setUpdatedAt(LocalDateTime.now());
 
         reservaRepository.save(reserva);
-        return repository.save(detalle);
+        DetalleReservaEquipo guardado = repository.save(detalle);
+
+        // Mapear a DTO ligero
+        return new DetalleReservaEquipoResponseDTO(
+                guardado.getId(),
+                reserva.getNombre(),
+                reserva.getDescripcion(),
+                reserva.getFechaReserva(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin(),
+                guardado.getProgramaAcademico(),
+                guardado.getNumeroEstudiantes(),
+                guardado.getEquipo() != null ? guardado.getEquipo().getId() : null,
+                guardado.getEquipo() != null ? guardado.getEquipo().getNombre() : null,
+                guardado.getInstalacionDestino() != null ? guardado.getInstalacionDestino().getId() : null,
+                guardado.getInstalacionDestino() != null ? guardado.getInstalacionDestino().getNombre() : null,
+                reserva.getPersona() != null ? reserva.getPersona().getNombres() : null,
+                reserva.getTipoReserva() != null ? reserva.getTipoReserva().getNombre() : null
+        );
     }
 }

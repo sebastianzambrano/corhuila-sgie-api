@@ -17,6 +17,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "detalle_reserva_instalacion")
 public class DetalleReservaInstalacion extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String programaAcademico;
     private Short numeroEstudiantes;
     private String EntregaInstalacion;

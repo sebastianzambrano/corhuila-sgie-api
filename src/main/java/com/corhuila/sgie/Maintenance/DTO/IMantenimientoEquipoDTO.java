@@ -13,4 +13,6 @@ public interface IMantenimientoEquipoDTO {
     LocalTime getHoraFinReserva();    // idem
     String getNombreEquipo();
     String getTipoMantenimiento();
+    String getEstadoMantenimiento();
+    String getEstadoReserva();
 }

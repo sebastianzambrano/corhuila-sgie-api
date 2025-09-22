@@ -1,13 +1,10 @@
 package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -16,13 +13,11 @@ import java.util.Set;
 @Entity
 @Table(name = "rol")
 public class Rol extends Auditoria {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String nombre;
     private String descripcion;
-
-    @OneToMany(mappedBy = "rol", fetch = FetchType.EAGER)
-    @JsonIgnore
-    private Set<PermisoRol> permisosRol = new HashSet<>();
 
     // equals/hashCode SOLO por id
     @Override

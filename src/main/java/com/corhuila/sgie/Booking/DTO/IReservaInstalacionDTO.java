@@ -12,4 +12,6 @@ public interface IReservaInstalacionDTO {
     LocalDate getFechaReserva();
     LocalTime getHoraInicioReserva();
     LocalTime getHoraFinReserva();
+    String getEstadoReserva();
+    String getEstadoDetalleReservaInstalacion();
 }

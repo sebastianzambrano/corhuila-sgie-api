@@ -18,6 +18,9 @@ import java.util.Set;
 @Entity
 @Table(name = "equipo")
 public class Equipo extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String codigo;
     private String nombre;

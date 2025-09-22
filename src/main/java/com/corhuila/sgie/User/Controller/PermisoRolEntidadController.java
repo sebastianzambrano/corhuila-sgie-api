@@ -19,7 +19,7 @@ public class PermisoRolEntidadController extends BaseController<PermisoRolEntida
     }
 
     @GetMapping("/persona-permisos-rol-entidad")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IPermisoPorPersonaDTO>> obtenerPermisos(@RequestParam String numeroIdentificacion) {
         List<IPermisoPorPersonaDTO> permisos = service.obtenerPermisos(numeroIdentificacion);
         return ResponseEntity.ok(permisos);

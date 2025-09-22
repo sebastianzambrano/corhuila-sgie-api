@@ -22,6 +22,9 @@ import java.util.Set;
 @Entity
 @Table(name = "reserva")
 public class Reserva extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private LocalDate fechaReserva;
 

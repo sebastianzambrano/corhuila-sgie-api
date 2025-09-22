@@ -1,10 +1,12 @@
 package com.corhuila.sgie.Maintenance.Service;
 
+import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoEquipoRequestDTO;
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoEquipoResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoEquipoDTO;
+import com.corhuila.sgie.Maintenance.DTO.MantenimientoEquipoResponseDTO;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoEquipoRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoEquipoService;
@@ -17,6 +19,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,16 +72,51 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
     }
 
     @Transactional
-    public MantenimientoEquipo actualizarMantenimientoEquipo(Long idMantenimiento, ActualizarMantenimientoEquipoRequestDTO request) {
+    public MantenimientoEquipoResponseDTO actualizarMantenimientoEquipo(
+            Long idMantenimiento,
+            ActualizarMantenimientoEquipoRequestDTO request) {
+
         MantenimientoEquipo mantenimiento = repository.findById(idMantenimiento)
                 .orElseThrow(() -> new RuntimeException("Mantenimiento no encontrado"));
 
         Reserva reserva = mantenimiento.getReserva();
 
+        // Determinar si se cambia fecha/hora o equipo
+        boolean cambiaFechaHora = request.getFechaReserva() != null
+                || request.getHoraInicio() != null
+                || request.getHoraFin() != null;
+
+        if (cambiaFechaHora) {
+            LocalDate fecha = request.getFechaReserva() != null ? request.getFechaReserva() : reserva.getFechaReserva();
+            LocalTime horaInicio = request.getHoraInicio() != null ? request.getHoraInicio() : reserva.getHoraInicio();
+            LocalTime horaFin = request.getHoraFin() != null ? request.getHoraFin() : reserva.getHoraFin();
+            Integer idEquipo = mantenimiento.getEquipo().getId().intValue();
+
+            // Consultar horas disponibles excluyendo este mantenimiento
+            List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo, idMantenimiento);
+            List<LocalTime> disponibles = horasDisponibles.stream()
+                    .map(h -> LocalTime.parse(h[0].toString()))
+                    .toList();
+
+            // Generar todas las horas del rango solicitado
+            List<LocalTime> rangoSolicitado = new ArrayList<>();
+            for (LocalTime h = horaInicio; h.isBefore(horaFin); h = h.plusHours(1)) {
+                rangoSolicitado.add(h);
+            }
+
+            // Validar que todas las horas estén libres
+            boolean disponible = disponibles.containsAll(rangoSolicitado);
+            if (!disponible) {
+                throw new RuntimeException("El rango de horas seleccionado no está disponible para el equipo y fecha seleccionados.");
+            }
+        }
+
+        // Actualizar campos del mantenimiento
         if (request.getDescripcion() != null) mantenimiento.setDescripcion(request.getDescripcion());
         if (request.getFechaProximaMantenimiento() != null) mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());
         if (request.getResultadoMantenimiento() != null) mantenimiento.setResultadoMantenimiento(request.getResultadoMantenimiento());
 
+        // Actualizar campos de la reserva
         if (request.getNombreReserva() != null) reserva.setNombre(request.getNombreReserva());
         if (request.getDescripcionReserva() != null) reserva.setDescripcion(request.getDescripcionReserva());
         if (request.getFechaReserva() != null) reserva.setFechaReserva(request.getFechaReserva());
@@ -88,6 +127,18 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
         mantenimiento.setUpdatedAt(LocalDateTime.now());
 
         reservaRepository.save(reserva);
-        return repository.save(mantenimiento);
+        MantenimientoEquipo guardado = repository.save(mantenimiento);
+
+        return new MantenimientoEquipoResponseDTO(
+                guardado.getId(),
+                guardado.getDescripcion(),
+                guardado.getFechaProximaMantenimiento(),
+                guardado.getResultadoMantenimiento(),
+                reserva.getNombre(),
+                reserva.getDescripcion(),
+                reserva.getFechaReserva(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin()
+        );
     }
 }

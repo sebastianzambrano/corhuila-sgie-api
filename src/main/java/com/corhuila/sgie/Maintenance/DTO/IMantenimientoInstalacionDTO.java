@@ -13,4 +13,6 @@ public interface IMantenimientoInstalacionDTO {
     LocalTime getHoraInicioReserva(); // si en BD es TIME => LocalTime
     LocalTime getHoraFinReserva();    // idem
     String getTipoMantenimiento();
+    Boolean getEstadoMantenimiento();
+    Boolean getEstadoReserva();
 }

@@ -6,6 +6,7 @@ import com.corhuila.sgie.User.Entity.Persona;
 import com.corhuila.sgie.User.IService.IPersonaService;
 import com.corhuila.sgie.common.BaseController;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class PersonaController extends BaseController<Persona, IPersonaService> 
     }
 
     @GetMapping("/persona-usuario")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IPersonaUsuarioDTO>> findUsuariosPersonaPorIdentificacion(@RequestParam String numeroIdentificacionPersona) {
         List<IPersonaUsuarioDTO> personaUsuarios = service.findUsuariosPersonaPorIdentificacion(numeroIdentificacionPersona);
         return ResponseEntity.ok(personaUsuarios);

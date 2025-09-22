@@ -16,6 +16,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "permiso_rol_entidad")
 public class PermisoRolEntidad extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_permiso")

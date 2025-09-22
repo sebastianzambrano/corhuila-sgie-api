@@ -21,7 +21,9 @@ public interface IMantenimientoInstalacionRepository extends IBaseRepository<Man
             re.fecha_reserva AS fechaReserva,
             re.hora_inicio AS horaInicioReserva,
             re.hora_fin AS horaFinReserva,
-            cmi.nombre AS tipoMantenimiento
+            cmi.nombre AS tipoMantenimiento,
+            mi.state AS estadoMantenimiento,
+            re.state AS estadoReserva
         FROM mantenimiento_instalacion mi
         INNER JOIN reserva re ON mi.id_reserva = re.id
         INNER JOIN instalacion ins ON mi.id_instalacion = ins.id

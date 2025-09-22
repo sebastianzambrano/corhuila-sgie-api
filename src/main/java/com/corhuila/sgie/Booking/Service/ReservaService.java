@@ -25,8 +25,8 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
     }
 
     @Override
-    public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion) {
-        List<Object[]> results =repository.findHorasDisponiblesInstalacion(fecha, idInstalacion);
+    public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle) {
+        List<Object[]> results =repository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
@@ -34,11 +34,28 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
     }
 
     @Override
-    public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo) {
-        List<Object[]> results =repository.findHorasDisponiblesEquipo(fecha, idEquipo);
+    public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle) {
+        List<Object[]> results =repository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Reserva save(Reserva reserva) throws Exception {
+        List<Reserva> solapadas = repository.findReservasSolapadas(
+                reserva.getFechaReserva(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin(),
+                reserva.getTipoReserva().getId()
+        );
+
+        if (!solapadas.isEmpty()) {
+            throw new Exception("La reserva se solapa con otra existente entre "
+                    + solapadas.get(0).getHoraInicio() + " y " + solapadas.get(0).getHoraFin());
+        }
+
+        return super.save(reserva);
     }
 }

@@ -1,7 +1,6 @@
 package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import jakarta.persistence.*;
@@ -13,6 +12,9 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @Table(name = "usuario")
 public class Usuario extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String email;
     private String password;

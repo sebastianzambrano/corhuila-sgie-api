@@ -16,6 +16,9 @@ import java.util.Objects;
 @Entity
 @Table(name = "mantenimiento_equipo")
 public class MantenimientoEquipo extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String descripcion;
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;

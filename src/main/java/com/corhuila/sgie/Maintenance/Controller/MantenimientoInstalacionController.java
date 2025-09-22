@@ -1,10 +1,7 @@
 package com.corhuila.sgie.Maintenance.Controller;
 
 import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
-import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoInstalacionRequestDTO;
-import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionDTO;
-import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionResponseDTO;
-import com.corhuila.sgie.Maintenance.DTO.IMantenimientoInstalacionDTO;
+import com.corhuila.sgie.Maintenance.DTO.*;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
 import com.corhuila.sgie.Maintenance.Service.MantenimientoInstalacionService;
@@ -28,7 +25,7 @@ public class MantenimientoInstalacionController extends BaseController<Mantenimi
     }
 
     @PutMapping("/{idDetalle}/cerrar-mantenimiento-instalacion")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<CerrarMantenimientoInstalacionResponseDTO> cerrarMantenimientoInstalacion(
             @PathVariable Long idDetalle,
             @RequestBody CerrarMantenimientoInstalacionDTO request) {
@@ -39,17 +36,18 @@ public class MantenimientoInstalacionController extends BaseController<Mantenimi
         return ResponseEntity.ok(actualizado);
     }
 
-    @PutMapping("/{idDetalle}/actualizar-mantenimiento-equipo")
-    public ResponseEntity<MantenimientoInstalacion> actualizarMantenimientoInstalacion(
-            @PathVariable Long idDetalle,
+    @PutMapping("/{idMantenimiento}/actualizar-mantenimiento-instalacion")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    public ResponseEntity<MantenimientoInstalacionResponseDTO> actualizarMantenimientoInstalacion(
+            @PathVariable Long idMantenimiento,
             @RequestBody ActualizarMantenimientoInstalacionRequestDTO request) {
 
-        MantenimientoInstalacion actualizado = mantenimientoInstalacionService.actualizarMantenimientoInstalacion(idDetalle, request);
+        MantenimientoInstalacionResponseDTO actualizado = mantenimientoInstalacionService.actualizarMantenimientoInstalacion(idMantenimiento, request);
         return ResponseEntity.ok(actualizado);
     }
 
     @GetMapping("/mantenimientos-instalaciones")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IMantenimientoInstalacionDTO>> findMantenimientosInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
         List<IMantenimientoInstalacionDTO> mantenimientosInstalaciones = service.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
         return ResponseEntity.ok(mantenimientosInstalaciones);

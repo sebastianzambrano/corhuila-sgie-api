@@ -16,6 +16,9 @@ import java.util.Set;
 @Entity
 @Table(name = "tipo_reserva")
 public class TipoReserva extends Auditoria {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @Column(nullable = false, length = 100)
     private String nombre;
 

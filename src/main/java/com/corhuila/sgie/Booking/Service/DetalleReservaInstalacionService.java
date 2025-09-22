@@ -2,6 +2,7 @@ package com.corhuila.sgie.Booking.Service;
 
 import com.corhuila.sgie.Booking.DTO.ActualizarReservaDetalleInstalacionRequestDTO;
 import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionResponseDTO;
+import com.corhuila.sgie.Booking.DTO.DetalleReservaInstalacionResponseDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.Booking.Entity.Reserva;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -69,7 +71,7 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
     }
 
     @Transactional
-    public DetalleReservaInstalacion actualizarDetalleReserva(
+    public DetalleReservaInstalacionResponseDTO actualizarDetalleReservaInstalacion(
             Long idDetalle, ActualizarReservaDetalleInstalacionRequestDTO request) {
 
         DetalleReservaInstalacion detalle = repository.findById(idDetalle)
@@ -85,13 +87,23 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
             LocalTime horaFin = request.getHoraFin() != null ? request.getHoraFin() : reserva.getHoraFin();
             Integer idInstalacion = detalle.getInstalacion().getId().intValue();
 
-            List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesInstalacion(fecha, idInstalacion);
+            // Consultar horas disponibles
+            List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
+            List<LocalTime> disponibles = horasDisponibles.stream()
+                    .map(h -> LocalTime.parse(h[0].toString()))
+                    .toList();
 
-            boolean disponible = horasDisponibles.stream()
-                    .anyMatch(h -> h[0].toString().equals(horaInicio.toString()));
+            // Generar todas las horas intermedias del rango solicitado
+            List<LocalTime> rangoSolicitado = new ArrayList<>();
+            for (LocalTime h = horaInicio; h.isBefore(horaFin); h = h.plusHours(1)) {
+                rangoSolicitado.add(h);
+            }
+
+            // Validar que todas las horas estén libres
+            boolean disponible = disponibles.containsAll(rangoSolicitado);
 
             if (!disponible) {
-                throw new RuntimeException("La hora seleccionada no está disponible para la instalación.");
+                throw new RuntimeException("El rango de horas seleccionado no está disponible para la instalación.");
             }
         }
 
@@ -114,7 +126,23 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
         detalle.setUpdatedAt(LocalDateTime.now());
 
         reservaRepository.save(reserva);
-        return repository.save(detalle);
+        DetalleReservaInstalacion guardado = repository.save(detalle);
+
+        // ✅ mapear al DTO
+        return new DetalleReservaInstalacionResponseDTO(
+                guardado.getId(),
+                reserva.getNombre(),
+                reserva.getDescripcion(),
+                reserva.getFechaReserva(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin(),
+                guardado.getProgramaAcademico(),
+                guardado.getNumeroEstudiantes(),
+                guardado.getInstalacion().getId(),
+                guardado.getInstalacion().getNombre(),
+                reserva.getPersona() != null ? reserva.getPersona().getNombres() : null,
+                reserva.getTipoReserva() != null ? reserva.getTipoReserva().getNombre() : null
+        );
     }
 
 }

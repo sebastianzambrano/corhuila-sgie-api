@@ -24,8 +24,8 @@ public class DetalleReservaEquipoController extends BaseController<DetalleReserv
     }
 
     @PutMapping("/{idDetalle}/cerrar-detalle-reserva-equipo")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
-    public ResponseEntity<CerrarDetalleReservaEquipoResponseDTO> cerrarDetalle(
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    public ResponseEntity<CerrarDetalleReservaEquipoResponseDTO> cerrarDetalleReservaEquipo(
             @PathVariable Long idDetalle,
             @RequestBody CerrarDetalleReservaEquipoDTO request) {
 
@@ -35,20 +35,20 @@ public class DetalleReservaEquipoController extends BaseController<DetalleReserv
         return ResponseEntity.ok(actualizado);
     }
 
-
     @PutMapping("/{idDetalle}/actualizar-detalle-reserva-equipo")
-    public ResponseEntity<DetalleReservaEquipo> actualizarDetalleEquipo(
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    public ResponseEntity<DetalleReservaEquipoResponseDTO> actualizarDetalleReservaEquipo(
             @PathVariable Long idDetalle,
             @RequestBody ActualizarReservaDetalleEquipoRequestDTO request) {
 
-        DetalleReservaEquipo actualizado =
+        DetalleReservaEquipoResponseDTO actualizado =
                 detalleReservaEquipoService.actualizarDetalleReservaEquipo(idDetalle, request);
 
         return ResponseEntity.ok(actualizado);
     }
 
     @GetMapping("/reservas-equipos")
-    //@PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IReservaEquipoDTO>> findReservasEquipoByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
         List<IReservaEquipoDTO> reservasEquipos = service.findReservasEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
         return ResponseEntity.ok(reservasEquipos);
