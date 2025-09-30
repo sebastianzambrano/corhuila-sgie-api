@@ -35,12 +35,22 @@ public class HojaDeVidaEquipoService {
 
         // Equipo DTO
         EquipoDTO equipoDTO = new EquipoDTO(
+                /*
                 equipo.getId(),
                 equipo.getCodigo(),
                 equipo.getNombre(),
                 equipo.getDescripcion(),
                 equipo.getInstalacion() != null ? equipo.getInstalacion().getNombre() : null,
                 equipo.getCategoriaEquipo() != null ? equipo.getCategoriaEquipo().getNombre() : null
+                */
+                equipo.getId(),
+                equipo.getCodigo(),
+                equipo.getTipoEquipo() != null ? equipo.getTipoEquipo().getNombre() : null,
+                equipo.getTipoEquipo() != null ? equipo.getTipoEquipo().getDescripcion() : null,
+                equipo.getInstalacion() != null ? equipo.getInstalacion().getNombre() : null,
+                equipo.getTipoEquipo() != null && equipo.getTipoEquipo().getCategoriaEquipo() != null
+                        ? equipo.getTipoEquipo().getCategoriaEquipo().getNombre()
+                        : null
         );
 
         // Reservas

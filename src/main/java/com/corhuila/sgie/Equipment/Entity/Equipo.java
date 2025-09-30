@@ -22,17 +22,26 @@ public class Equipo extends Auditoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
     private String codigo;
-    private String nombre;
+
+    /*private String nombre;
     private String descripcion;
+    */
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instalacion", nullable = false)
     private Instalacion instalacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_tipo_equipo", nullable = false)
+    private TipoEquipo tipoEquipo;
+
+    /*
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoriaEquipo")
     private CategoriaEquipo categoriaEquipo;
+    */
 
     @OneToMany(mappedBy = "equipo",fetch = FetchType.LAZY)
     @JsonIgnore

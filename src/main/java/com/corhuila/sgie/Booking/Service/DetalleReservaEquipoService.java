@@ -11,6 +11,7 @@ import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaEquipoService;
 
 import com.corhuila.sgie.Equipment.Entity.Equipo;
+import com.corhuila.sgie.Notification.NotificacionService;
 import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
@@ -30,6 +31,8 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
     private IDetalleReservaEquipoRepository repository;
     @Autowired
     private IReservaRepository reservaRepository;
+    @Autowired
+    private NotificacionService notificacionService;
     @Override
     protected IBaseRepository<DetalleReservaEquipo, Long> getRepository() {
         return repository;
@@ -155,11 +158,39 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
                 guardado.getProgramaAcademico(),
                 guardado.getNumeroEstudiantes(),
                 guardado.getEquipo() != null ? guardado.getEquipo().getId() : null,
-                guardado.getEquipo() != null ? guardado.getEquipo().getNombre() : null,
+                //guardado.getEquipo() != null ? guardado.getEquipo().getNombre() : null,
+                guardado.getEquipo() != null && guardado.getEquipo().getTipoEquipo() != null
+                        ? guardado.getEquipo().getTipoEquipo().getNombre()
+                        : null,
                 guardado.getInstalacionDestino() != null ? guardado.getInstalacionDestino().getId() : null,
                 guardado.getInstalacionDestino() != null ? guardado.getInstalacionDestino().getNombre() : null,
                 reserva.getPersona() != null ? reserva.getPersona().getNombres() : null,
                 reserva.getTipoReserva() != null ? reserva.getTipoReserva().getNombre() : null
         );
+    }
+
+    @Override
+    protected void afterSave(DetalleReservaEquipo detalle) {
+        if (detalle.getReserva() != null && detalle.getReserva().getId() != null) {
+            reservaRepository.findWithPersonaAndUsuarioById(detalle.getReserva().getId())
+                    .ifPresent(reserva -> {
+                        if (reserva.getPersona() != null && reserva.getPersona().getUsuario() != null) {
+                            String destinatario = reserva.getPersona().getUsuario().getEmail();
+                            String asunto = "Confirmación de reserva de equipo";
+                            String cuerpo = String.format("""
+                                                Hola %s, tu reserva del equipo fue registrada:
+                                                - Fecha: %s
+                                                - Hora inicio: %s
+                                                - Hora fin: %s
+                                            """,
+                                    reserva.getPersona().getNombres(),
+                                    reserva.getFechaReserva(),
+                                    reserva.getHoraInicio(),
+                                    reserva.getHoraFin());
+
+                            notificacionService.enviarCorreoReserva(destinatario, asunto, cuerpo);
+                        }
+                    });
+        }
     }
 }

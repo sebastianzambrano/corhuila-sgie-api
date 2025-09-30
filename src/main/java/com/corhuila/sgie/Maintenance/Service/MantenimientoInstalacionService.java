@@ -6,9 +6,11 @@ import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoInstalacionReque
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoInstalacionDTO;
 import com.corhuila.sgie.Maintenance.DTO.MantenimientoInstalacionResponseDTO;
+import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoInstalacionRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
+import com.corhuila.sgie.Notification.NotificacionService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
 import jakarta.transaction.Transactional;
@@ -27,6 +29,8 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
     private IMantenimientoInstalacionRepository repository;
     @Autowired
     private IReservaRepository reservaRepository;
+    @Autowired
+    private NotificacionService notificacionService;
     @Override
     protected IBaseRepository<MantenimientoInstalacion, Long> getRepository() {
         return repository;
@@ -141,5 +145,29 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
                 reserva.getHoraInicio(),
                 reserva.getHoraFin()
         );
+    }
+    @Override
+    protected void afterSave(MantenimientoInstalacion detalle) {
+        if (detalle.getReserva() != null && detalle.getReserva().getId() != null) {
+            reservaRepository.findWithPersonaAndUsuarioById(detalle.getReserva().getId())
+                    .ifPresent(reserva -> {
+                        if (reserva.getPersona() != null && reserva.getPersona().getUsuario() != null) {
+                            String destinatario = reserva.getPersona().getUsuario().getEmail();
+                            String asunto = "Confirmación Mantenimiento de instalación";
+                            String cuerpo = String.format("""
+                                                Hola %s, tu reserva de mantenimiento de instalacion fue registrada:
+                                                - Fecha: %s
+                                                - Hora inicio: %s
+                                                - Hora fin: %s
+                                            """,
+                                    reserva.getPersona().getNombres(),
+                                    reserva.getFechaReserva(),
+                                    reserva.getHoraInicio(),
+                                    reserva.getHoraFin());
+
+                            notificacionService.enviarCorreoReserva(destinatario, asunto, cuerpo);
+                        }
+                    });
+        }
     }
 }

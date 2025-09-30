@@ -1,7 +1,4 @@
-package com.corhuila.sgie.Config;
-
-import com.corhuila.sgie.Security.CustomUserDetailsService;
-import com.corhuila.sgie.Security.JwtUtil;
+package com.corhuila.sgie.Security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

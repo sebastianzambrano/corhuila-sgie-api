@@ -2,6 +2,7 @@ package com.corhuila.sgie.User.DTO;
 
 
 public interface IPermisoPorPersonaDTO {
+
     public Long getId();
     public String getNombres();
     public String getApellidos();

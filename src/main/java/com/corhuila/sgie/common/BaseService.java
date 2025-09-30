@@ -16,6 +16,10 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     public List<T> all() {
         return getRepository().findAll();
     }
+
+    protected void afterSave(T entity) {
+        // vacío por defecto
+    }
     
 
     @Override
@@ -42,7 +46,10 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     public T save(T entity) throws Exception{
         try {
             //entity.setCreatedAt(LocalDateTime.now());
-            return getRepository().save(entity);
+            //return getRepository().save(entity);
+            T saved = getRepository().save(entity);
+            afterSave(saved); // aquí se dispara el hook
+            return saved;
         } catch (Exception e) {
             // Captura la excepción
             throw new Exception("Error al guardar la entidad: " + e.getMessage());

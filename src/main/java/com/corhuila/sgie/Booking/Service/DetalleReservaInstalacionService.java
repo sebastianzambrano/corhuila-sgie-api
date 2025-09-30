@@ -4,11 +4,13 @@ import com.corhuila.sgie.Booking.DTO.ActualizarReservaDetalleInstalacionRequestD
 import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionResponseDTO;
 import com.corhuila.sgie.Booking.DTO.DetalleReservaInstalacionResponseDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
+import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IDetalleReservaInstalacionRepository;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaInstalacionService;
+import com.corhuila.sgie.Notification.NotificacionService;
 import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
@@ -28,6 +30,8 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
     private IDetalleReservaInstalacionRepository repository;
     @Autowired
     private IReservaRepository reservaRepository;
+    @Autowired
+    private NotificacionService notificacionService;
     @Override
     protected IBaseRepository<DetalleReservaInstalacion, Long> getRepository() {
         return repository;
@@ -143,6 +147,31 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
                 reserva.getPersona() != null ? reserva.getPersona().getNombres() : null,
                 reserva.getTipoReserva() != null ? reserva.getTipoReserva().getNombre() : null
         );
+    }
+
+    @Override
+    protected void afterSave(DetalleReservaInstalacion detalle) {
+        if (detalle.getReserva() != null && detalle.getReserva().getId() != null) {
+            reservaRepository.findWithPersonaAndUsuarioById(detalle.getReserva().getId())
+                    .ifPresent(reserva -> {
+                        if (reserva.getPersona() != null && reserva.getPersona().getUsuario() != null) {
+                            String destinatario = reserva.getPersona().getUsuario().getEmail();
+                            String asunto = "Confirmación de reserva de instalación";
+                            String cuerpo = String.format("""
+                                                Hola %s, tu reserva de la instalacion fue registrada:
+                                                - Fecha: %s
+                                                - Hora inicio: %s
+                                                - Hora fin: %s
+                                            """,
+                                    reserva.getPersona().getNombres(),
+                                    reserva.getFechaReserva(),
+                                    reserva.getHoraInicio(),
+                                    reserva.getHoraFin());
+
+                            notificacionService.enviarCorreoReserva(destinatario, asunto, cuerpo);
+                        }
+                    });
+        }
     }
 
 }

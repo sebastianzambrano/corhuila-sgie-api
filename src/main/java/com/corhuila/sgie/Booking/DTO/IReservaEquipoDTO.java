@@ -13,4 +13,6 @@ public interface IReservaEquipoDTO {
     LocalTime getHoraInicioReserva();
     LocalTime getHoraFinReserva();
     String getNombreEquipo();
+    String getEstadoReserva();
+    String getEstadoDetalleReservaInstalacion();
 }

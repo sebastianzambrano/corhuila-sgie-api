@@ -19,8 +19,8 @@ public interface IMantenimientoEquipoRepository extends IBaseRepository <Manteni
             pe.numero_identificacion AS numeroIdentificacionPersona,
             re.fecha_reserva AS fechaReserva,
             re.hora_inicio AS horaInicioReserva,
-            re.hora_fin AS horaFinReserva, 
-            eq.nombre AS nombreEquipo, 
+            re.hora_fin AS horaFinReserva,
+            te.nombre AS nombreEquipo,
             cme.nombre AS tipoMantenimiento,
             me.state AS estadoMantenimiento,
             re.state AS estadoReserva
@@ -30,6 +30,7 @@ public interface IMantenimientoEquipoRepository extends IBaseRepository <Manteni
         INNER JOIN categoria_mantenimiento_equipo cme ON me.id_categoria_mantenimiento_equipo = cme.id
         INNER JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
         INNER JOIN persona pe ON re.id_persona = pe.id
+        INNER JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
         WHERE (:numeroIdentificacionPersona IS NULL OR :numeroIdentificacionPersona = '' OR pe.numero_identificacion = :numeroIdentificacionPersona)
         """, nativeQuery = true)
     List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(
