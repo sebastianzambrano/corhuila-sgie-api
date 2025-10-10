@@ -29,7 +29,7 @@ public class Instalacion extends Auditoria {
     private Campus campus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "categoria_instalacion_id")
+    @JoinColumn(name = "id_categoria_instalacion")
     private CategoriaInstalacion categoriaInstalacion;
 
     @OneToMany(mappedBy = "instalacion",fetch = FetchType.LAZY)

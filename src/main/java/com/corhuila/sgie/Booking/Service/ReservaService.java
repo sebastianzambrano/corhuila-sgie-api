@@ -1,12 +1,15 @@
 package com.corhuila.sgie.Booking.Service;
 
 import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaGeneralDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IReservaService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -57,5 +60,10 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
         }
 
         return super.save(reserva);
+    }
+
+
+    public List<IReservaGeneralDTO> findReservasYMantenimientosByNumeroIdentificacion(String numeroIdentificacion) {
+        return repository.findReservasYMantenimientosByNumeroIdentificacion(numeroIdentificacion);
     }
 }

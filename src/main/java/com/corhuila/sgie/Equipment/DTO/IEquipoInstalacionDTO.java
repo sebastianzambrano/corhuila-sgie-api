@@ -1,6 +1,7 @@
 package com.corhuila.sgie.Equipment.DTO;
 
 public interface IEquipoInstalacionDTO {
+    Long getIdEquipo();
     String getCodigoEquipo();
     String getNombreEquipo();
     Boolean getEstadoEquipo();
@@ -8,4 +9,6 @@ public interface IEquipoInstalacionDTO {
     Boolean getEstadoInstalacion();
     String getNombreCampus();
     Boolean getEstadoCampus();
+    Long getIdCategoriaEquipo();
+    String getNombreCategoriaEquipo();
 }

@@ -1,6 +1,7 @@
 package com.corhuila.sgie.Booking.IService;
 
 import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaGeneralDTO;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.common.IBaseService;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +15,5 @@ public interface IReservaService extends IBaseService<Reserva> {
 
     List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle);
 
+    List<IReservaGeneralDTO> findReservasYMantenimientosByNumeroIdentificacion(String numeroIdentificacion);
 }

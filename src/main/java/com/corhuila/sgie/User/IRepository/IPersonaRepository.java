@@ -12,18 +12,24 @@ import java.util.List;
 @Repository
 public interface IPersonaRepository extends IBaseRepository<Persona, Long> {
     @Query(value = """
-        SELECT 
-            pe.tipo_documento AS tipoDocumento, 
-            pe.numero_identificacion AS numeroIdentificacionPersona,
-            pe.nombres AS nombres, 
-            pe.apellidos AS apellidos, 
-            us.email AS email, 
-            us.state AS estado
-        FROM usuario us 
-        INNER JOIN persona pe ON us.id_persona = pe.id
-        WHERE (:numeroIdentificacionPersona IS NULL OR :numeroIdentificacionPersona = '' OR pe.numero_identificacion = :numeroIdentificacionPersona)
+
+        SELECT
+            pe.id AS idPersona,
+            us.id AS idUsuario,
+            pe.tipo_documento AS tipoDocumento,\s
+            pe.numero_identificacion AS numeroIdentificacion,
+            pe.nombres AS nombres,\s
+            pe.apellidos AS apellidos, \s
+            pe.telefono_movil AS telefonoMovil,
+            us.email AS email,\s
+            us.state AS estado,
+            r.nombre AS rol
+        FROM persona pe
+        LEFT JOIN usuario us ON us.id_persona = pe.id
+        LEFT JOIN rol r ON pe.id_rol = r.id
+        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
         """, nativeQuery = true)
     List<IPersonaUsuarioDTO> findUsuariosPersonaPorIdentificacion(
-            @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
+            @Param("numeroIdentificacion") String numeroIdentificacion
     );
 }

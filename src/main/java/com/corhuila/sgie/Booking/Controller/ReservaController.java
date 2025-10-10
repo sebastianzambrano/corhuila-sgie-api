@@ -1,10 +1,13 @@
 package com.corhuila.sgie.Booking.Controller;
 
 import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaGeneralDTO;
+import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IService.IReservaService;
 import com.corhuila.sgie.common.BaseController;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +41,12 @@ public class ReservaController extends BaseController<Reserva,IReservaService> {
             @RequestParam(value = "idDetalle", required = false) Long idDetalle) {
 
         return service.getHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
+    }
+
+    @GetMapping("/reservas-mantenimientos")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    public ResponseEntity<List<IReservaGeneralDTO>> findReservasYMantenimientosByNumeroIdentificacion(@RequestParam(required = false) String numeroIdentificacion) {
+        List<IReservaGeneralDTO> reservas = service.findReservasYMantenimientosByNumeroIdentificacion(numeroIdentificacion);
+        return ResponseEntity.ok(reservas);
     }
 }

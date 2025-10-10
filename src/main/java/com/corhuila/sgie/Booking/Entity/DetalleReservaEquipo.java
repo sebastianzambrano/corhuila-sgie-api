@@ -27,12 +27,6 @@ public class DetalleReservaEquipo extends Auditoria {
     private Short numeroEstudiantes;
     private String EntregaEquipo;
 
-    @Column(name = "fecha_devolucion_real")
-    private LocalDateTime fechaDevolucionReal;
-
-    @Column(name = "observaciones_devolucion", columnDefinition = "TEXT")
-    private String observacionesDevolucion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_equipo", nullable = false)
     private Equipo equipo;

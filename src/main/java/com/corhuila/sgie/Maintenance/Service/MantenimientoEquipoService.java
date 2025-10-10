@@ -70,9 +70,10 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
                 reserva.getId()
         );
     }
+
     @Override
-    public List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(String numeroIdentificacionPersona) {
-        return repository.findMantenimientosEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
+    public List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(String numeroIdentificacion) {
+        return repository.findMantenimientosEquipoByNumeroIdentificacion(numeroIdentificacion);
     }
 
     @Transactional
@@ -146,6 +147,7 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
         );
 
     }
+
     @Override
     protected void afterSave(MantenimientoEquipo detalle) {
         if (detalle.getReserva() != null && detalle.getReserva().getId() != null) {

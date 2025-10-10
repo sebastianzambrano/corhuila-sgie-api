@@ -7,9 +7,14 @@ import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
 import com.corhuila.sgie.User.IService.IUsuarioService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 public class UsuarioService extends BaseService<Usuario> implements IUsuarioService {
@@ -48,15 +53,33 @@ public class UsuarioService extends BaseService<Usuario> implements IUsuarioServ
         return super.save(saved);
     }
 
+
     @Override
     public void update(Long id, Usuario entity) throws Exception {
-        // Si se proporciona password en update, encriptar antes de copiar
-        if (entity.getPassword() != null && !entity.getPassword().isBlank()) {
-            entity.setPassword(passwordEncoder.encode(entity.getPassword()));
-        } else {
-            // evitar sobrescribir password con null en BeanUtils.copyProperties (handled by BaseService ignore)
+        Optional<Usuario> op = repository.findById(id);
+
+        if (op.isEmpty()) {
+            throw new Exception("Usuario no encontrado");
+        } else if (op.get().getDeletedAt() != null) {
+            throw new Exception("Usuario inhabilitado");
         }
-        super.update(id, entity);
+
+        Usuario usuarioUpdate = op.get();
+
+        String[] ignoreProperties = {"id","createdAt","deletedAt","state"};
+
+        // ⚡ Si no viene password, lo ignoramos
+        if (entity.getPassword() == null || entity.getPassword().isBlank()) {
+            ignoreProperties = Arrays.copyOf(ignoreProperties, ignoreProperties.length + 1);
+            ignoreProperties[ignoreProperties.length - 1] = "password";
+        } else {
+            // ⚡ Si viene password, lo encriptamos antes de guardar
+            entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        }
+
+        BeanUtils.copyProperties(entity, usuarioUpdate, ignoreProperties);
+        usuarioUpdate.setUpdatedAt(LocalDateTime.now());
+        repository.save(usuarioUpdate);
     }
 
 }

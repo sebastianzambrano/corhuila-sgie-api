@@ -25,6 +25,7 @@ public class Municipio extends Auditoria {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_departamento")
+    @JsonIgnore
     private Departamento departamento;
 
     @OneToMany(mappedBy = "municipio",fetch = FetchType.LAZY)

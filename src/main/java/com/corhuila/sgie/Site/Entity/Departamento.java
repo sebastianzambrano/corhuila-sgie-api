@@ -24,6 +24,7 @@ public class Departamento extends Auditoria {
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "id_pais")
     private Pais pais;
 

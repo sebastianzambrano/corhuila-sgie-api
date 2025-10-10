@@ -7,7 +7,7 @@ public interface IReservaEquipoDTO {
     String getTipoReserva();
     String getNombreReserva();
     String getNombrePersona();
-    String getNumeroIdentificacionPersona();
+    String getNumeroIdentificacion();
     String getNombreInstalacion();
     LocalDate getFechaReserva();
     LocalTime getHoraInicioReserva();

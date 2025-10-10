@@ -3,7 +3,10 @@ package com.corhuila.sgie.Equipment.Entity;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Site.Entity.Instalacion;
 import com.corhuila.sgie.common.Auditoria;
+import com.corhuila.sgie.common.Views;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,27 +28,32 @@ public class Equipo extends Auditoria {
     @Column(unique = true, nullable = false)
     private String codigo;
 
-    /*private String nombre;
-    private String descripcion;
-    */
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instalacion", nullable = false)
+    @JsonView(Views.Complete.class)
     private Instalacion instalacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_tipo_equipo", nullable = false)
+    @JsonView(Views.Complete.class)
     private TipoEquipo tipoEquipo;
-
-    /*
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_categoriaEquipo")
-    private CategoriaEquipo categoriaEquipo;
-    */
 
     @OneToMany(mappedBy = "equipo",fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetalleReservaEquipo> detalleReservaEquipos = new HashSet<>();
+
+    // Métodos para la vista Simple
+    @JsonView(Views.Simple.class)
+    @JsonProperty("nombre")
+    public String getNombreTipoEquipo() {
+        return tipoEquipo != null ? tipoEquipo.getNombre() : null;
+    }
+
+    @JsonView(Views.Simple.class)
+    @JsonProperty("instalacionNombre")
+    public String getNombreInstalacion() {
+        return instalacion != null ? instalacion.getNombre() : null;
+    }
 
     // equals/hashCode SOLO por id
     @Override

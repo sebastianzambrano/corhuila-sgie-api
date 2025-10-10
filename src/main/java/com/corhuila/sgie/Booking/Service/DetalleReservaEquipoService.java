@@ -74,8 +74,8 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
 
 
     @Override
-    public List<IReservaEquipoDTO> findReservasEquipoByNumeroIdentificacion(String numeroIdentificacionPersona) {
-        return repository.findReservasEquipoByNumeroIdentificacion(numeroIdentificacionPersona);
+    public List<IReservaEquipoDTO> findReservasEquipoByNumeroIdentificacion(String numeroIdentificacion) {
+        return repository.findReservasEquipoByNumeroIdentificacion(numeroIdentificacion);
     }
 
     @Transactional

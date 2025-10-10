@@ -1,6 +1,7 @@
 package com.corhuila.sgie.Maintenance.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class CategoriaMantenimientoEquipo extends Auditoria {
     private String descripcion;
 
     @OneToMany(mappedBy = "categoriaMantenimientoEquipo", fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<MantenimientoEquipo> mantenimientoEquipos = new HashSet<>();
 
     // equals/hashCode SOLO por id

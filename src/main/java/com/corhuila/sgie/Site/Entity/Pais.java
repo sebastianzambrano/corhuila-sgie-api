@@ -29,6 +29,7 @@ public class Pais extends Auditoria {
     private Continente continente;
 
     @OneToMany(mappedBy = "pais",fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Departamento> departamentos = new HashSet<>();
 
     // equals/hashCode SOLO por id

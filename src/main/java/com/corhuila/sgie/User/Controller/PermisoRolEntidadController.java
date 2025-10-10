@@ -1,6 +1,7 @@
 package com.corhuila.sgie.User.Controller;
 
 import com.corhuila.sgie.User.DTO.IPermisoPorPersonaDTO;
+import com.corhuila.sgie.User.DTO.IPermisoRolEntidadDTO;
 import com.corhuila.sgie.User.Entity.PermisoRolEntidad;
 import com.corhuila.sgie.User.IService.IPermisoRolEntidadService;
 import com.corhuila.sgie.common.BaseController;
@@ -25,4 +26,10 @@ public class PermisoRolEntidadController extends BaseController<PermisoRolEntida
         return ResponseEntity.ok(permisos);
     }
 
+    @GetMapping("/todos-permisos-rol-entidad")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
+    public ResponseEntity<List<IPermisoRolEntidadDTO>> findPermisosByRolByEntidad() {
+        List<IPermisoRolEntidadDTO> permisos = service.findPermisosByRolByEntidad();
+        return ResponseEntity.ok(permisos);
+    }
 }

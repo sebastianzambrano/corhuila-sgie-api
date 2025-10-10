@@ -70,8 +70,8 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
     }
 
     @Override
-    public List<IReservaInstalacionDTO> findReservaInstalacionByNumeroIdentificacion(String numeroIdentificacionPersona) {
-        return repository.findReservaInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
+    public List<IReservaInstalacionDTO> findReservaInstalacionByNumeroIdentificacion(String numeroIdentificacion) {
+        return repository.findReservaInstalacionByNumeroIdentificacion(numeroIdentificacion);
     }
 
     @Transactional

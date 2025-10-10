@@ -21,8 +21,8 @@ public class PersonaController extends BaseController<Persona, IPersonaService> 
 
     @GetMapping("/persona-usuario")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
-    public ResponseEntity<List<IPersonaUsuarioDTO>> findUsuariosPersonaPorIdentificacion(@RequestParam String numeroIdentificacionPersona) {
-        List<IPersonaUsuarioDTO> personaUsuarios = service.findUsuariosPersonaPorIdentificacion(numeroIdentificacionPersona);
+    public ResponseEntity<List<IPersonaUsuarioDTO>> findUsuariosPersonaPorIdentificacion(@RequestParam String numeroIdentificacion) {
+        List<IPersonaUsuarioDTO> personaUsuarios = service.findUsuariosPersonaPorIdentificacion(numeroIdentificacion);
         return ResponseEntity.ok(personaUsuarios);
     }
 }

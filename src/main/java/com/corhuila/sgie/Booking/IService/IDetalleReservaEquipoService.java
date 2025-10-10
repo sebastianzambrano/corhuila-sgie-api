@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface IDetalleReservaEquipoService extends IBaseService<DetalleReservaEquipo> {
     List<IReservaEquipoDTO> findReservasEquipoByNumeroIdentificacion(
-            @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
+            @Param("numeroIdentificacion") String numeroIdentificacion
     );
 }

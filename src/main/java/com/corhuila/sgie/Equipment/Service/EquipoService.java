@@ -28,8 +28,4 @@ public class EquipoService extends BaseService<Equipo> implements IEquipoService
     public List<IEquipoInstalacionDTO> findEquiposInstalaciones(String codigoEquipo, String idInstalacion) {
         return repository.findEquiposInstalaciones(codigoEquipo, idInstalacion);
     }
-
-
-
-
 }

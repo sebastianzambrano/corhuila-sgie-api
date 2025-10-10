@@ -27,7 +27,7 @@ public class TipoEquipo extends Auditoria {
     private String descripcion;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_categoriaEquipo", nullable = false)
+    @JoinColumn(name = "id_categoria_equipo", nullable = false)
     private CategoriaEquipo categoriaEquipo;
 
     @OneToMany(mappedBy = "tipoEquipo", fetch = FetchType.LAZY)

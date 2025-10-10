@@ -21,7 +21,7 @@ public class PersonaService extends BaseService<Persona> implements IPersonaServ
     }
 
     @Override
-    public List<IPersonaUsuarioDTO> findUsuariosPersonaPorIdentificacion(String numeroIdentificacionPersona) {
-        return repository.findUsuariosPersonaPorIdentificacion(numeroIdentificacionPersona);
+    public List<IPersonaUsuarioDTO> findUsuariosPersonaPorIdentificacion(String numeroIdentificacion) {
+        return repository.findUsuariosPersonaPorIdentificacion(numeroIdentificacion);
     }
 }

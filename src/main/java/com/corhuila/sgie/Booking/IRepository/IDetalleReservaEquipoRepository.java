@@ -16,7 +16,7 @@ public interface IDetalleReservaEquipoRepository extends IBaseRepository<Detalle
             tr.nombre AS tipoReserva, 
             re.nombre AS nombreReserva, 
             pe.nombres AS nombrePersona,
-            pe.numero_identificacion AS numeroIdentificacionPersona,
+            pe.numero_identificacion AS numeroIdentificacion,
             ins.nombre AS nombreInstalacion, 
             re.fecha_reserva AS fechaReserva,
             re.hora_inicio AS horaInicioReserva,
@@ -31,10 +31,10 @@ public interface IDetalleReservaEquipoRepository extends IBaseRepository<Detalle
         INNER JOIN persona pe ON re.id_persona = pe.id
         INNER JOIN equipo eq ON dre.id_equipo = eq.id
         INNER JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
-        WHERE (:numeroIdentificacionPersona IS NULL OR :numeroIdentificacionPersona = '' OR pe.numero_identificacion = :numeroIdentificacionPersona)
+        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
         """, nativeQuery = true)
     List<IReservaEquipoDTO> findReservasEquipoByNumeroIdentificacion(
-            @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
+            @Param("numeroIdentificacion") String numeroIdentificacion
     );
 
     @Query(value = """

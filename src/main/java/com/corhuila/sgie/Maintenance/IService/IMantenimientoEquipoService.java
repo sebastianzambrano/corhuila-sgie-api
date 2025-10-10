@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface IMantenimientoEquipoService extends IBaseService<MantenimientoEquipo> {
     List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(
-            @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
+            @Param("numeroIdentificacion") String numeroIdentificacion
     );
 }

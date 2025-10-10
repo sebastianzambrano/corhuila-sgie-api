@@ -26,7 +26,7 @@ public class EquipoController extends BaseController <Equipo, IEquipoService>{
 
     @GetMapping("/equipo-instalacion")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
-    public ResponseEntity<List<IEquipoInstalacionDTO>> findEquiposInstalaciones(@RequestParam String codigoEquipo, @RequestParam String nombreInstalacion ) {
+    public ResponseEntity<List<IEquipoInstalacionDTO>> findEquiposInstalaciones(@RequestParam(required = false) String codigoEquipo, @RequestParam(required = false) String nombreInstalacion ) {
         List<IEquipoInstalacionDTO> equiposInstalaciones = service.findEquiposInstalaciones(codigoEquipo, nombreInstalacion);
         return ResponseEntity.ok(equiposInstalaciones);
     }

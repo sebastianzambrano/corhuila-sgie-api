@@ -16,7 +16,7 @@ public interface IMantenimientoEquipoRepository extends IBaseRepository <Manteni
             tr.nombre AS tipoReserva, 
             re.nombre AS nombreReserva, 
             pe.nombres AS nombrePersona,
-            pe.numero_identificacion AS numeroIdentificacionPersona,
+            pe.numero_identificacion AS numeroIdentificacion,
             re.fecha_reserva AS fechaReserva,
             re.hora_inicio AS horaInicioReserva,
             re.hora_fin AS horaFinReserva,
@@ -31,10 +31,10 @@ public interface IMantenimientoEquipoRepository extends IBaseRepository <Manteni
         INNER JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
         INNER JOIN persona pe ON re.id_persona = pe.id
         INNER JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
-        WHERE (:numeroIdentificacionPersona IS NULL OR :numeroIdentificacionPersona = '' OR pe.numero_identificacion = :numeroIdentificacionPersona)
+        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
         """, nativeQuery = true)
     List<IMantenimientoEquipoDTO> findMantenimientosEquipoByNumeroIdentificacion(
-            @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
+            @Param("numeroIdentificacion") String numeroIdentificacion
     );
 
     @Query(value = """

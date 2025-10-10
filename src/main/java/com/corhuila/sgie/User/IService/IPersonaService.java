@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface IPersonaService extends IBaseService<Persona> {
     List<IPersonaUsuarioDTO> findUsuariosPersonaPorIdentificacion(
-            @Param("numeroIdentificacionPersona") String numeroIdentificacionPersona
+            @Param("numeroIdentificacion") String numeroIdentificacion
     );
 }

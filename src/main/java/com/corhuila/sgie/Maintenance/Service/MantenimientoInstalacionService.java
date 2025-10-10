@@ -71,8 +71,8 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
     }
 
     @Override
-    public List<IMantenimientoInstalacionDTO> findMantenimientosInstalacionByNumeroIdentificacion(String numeroIdentificacionPersona) {
-        return repository.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
+    public List<IMantenimientoInstalacionDTO> findMantenimientosInstalacionByNumeroIdentificacion(String numeroIdentificacion) {
+        return repository.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacion);
     }
 
     @Transactional

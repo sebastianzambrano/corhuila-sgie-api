@@ -48,8 +48,8 @@ public class MantenimientoInstalacionController extends BaseController<Mantenimi
 
     @GetMapping("/mantenimientos-instalaciones")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
-    public ResponseEntity<List<IMantenimientoInstalacionDTO>> findMantenimientosInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
-        List<IMantenimientoInstalacionDTO> mantenimientosInstalaciones = service.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
+    public ResponseEntity<List<IMantenimientoInstalacionDTO>> findMantenimientosInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacion) {
+        List<IMantenimientoInstalacionDTO> mantenimientosInstalaciones = service.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacion);
         return ResponseEntity.ok(mantenimientosInstalaciones);
     }
 }

@@ -51,11 +51,8 @@ public class DetalleReservaInstalacionController extends BaseController<DetalleR
 
     @GetMapping("/reservas-instalaciones")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
-    public ResponseEntity<List<IReservaInstalacionDTO>> findReservaInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacionPersona) {
-        List<IReservaInstalacionDTO> reservasInstalaciones = service.findReservaInstalacionByNumeroIdentificacion(numeroIdentificacionPersona);
+    public ResponseEntity<List<IReservaInstalacionDTO>> findReservaInstalacionByNumeroIdentificacion(@RequestParam String numeroIdentificacion) {
+        List<IReservaInstalacionDTO> reservasInstalaciones = service.findReservaInstalacionByNumeroIdentificacion(numeroIdentificacion);
         return ResponseEntity.ok(reservasInstalaciones);
     }
-
-
-
 }

@@ -1,6 +1,7 @@
 package com.corhuila.sgie.User.Service;
 
 import com.corhuila.sgie.User.DTO.IPermisoPorPersonaDTO;
+import com.corhuila.sgie.User.DTO.IPermisoRolEntidadDTO;
 import com.corhuila.sgie.User.Entity.PermisoRolEntidad;
 import com.corhuila.sgie.User.IRepository.IPermisoRolEntidadRepository;
 import com.corhuila.sgie.User.IService.IPermisoRolEntidadService;
@@ -23,6 +24,9 @@ public class PermisoRolEntidadService extends BaseService<PermisoRolEntidad> imp
 
     public List<IPermisoPorPersonaDTO> obtenerPermisos(String numeroIdentificacion) {
         return repository.findPermisosPorNumeroIdentificacion(numeroIdentificacion);
+    }
+    public List<IPermisoRolEntidadDTO> findPermisosByRolByEntidad() {
+        return repository.findPermisosByRolByEntidad();
     }
 
 }
