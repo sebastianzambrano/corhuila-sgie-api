@@ -27,7 +27,7 @@ public class CategoriaInstalacion extends Auditoria {
     private String descripcion;
 
 
-    @OneToMany(mappedBy = "categoriaInstalacion",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "categoriaInstalacion", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Instalacion> instalaciones = new HashSet<>();
 

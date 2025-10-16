@@ -1,7 +1,6 @@
 package com.corhuila.sgie.common.Reporting;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
@@ -12,12 +11,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -25,8 +22,8 @@ import java.util.stream.Stream;
 @Service
 public class ReporteGenericoService {
 
-    private final TransactionTemplate readOnlyTxTemplate;
     private static final Logger log = LoggerFactory.getLogger(ReporteGenericoService.class);
+    private final TransactionTemplate readOnlyTxTemplate;
 
     public ReporteGenericoService(PlatformTransactionManager transactionManager) {
         this.readOnlyTxTemplate = new TransactionTemplate(transactionManager);
@@ -88,10 +85,10 @@ public class ReporteGenericoService {
     }
 
     public <T> ResponseEntity<StreamingResponseBody> generarStreaming(ReportFormat format,
-                                                                       Supplier<Stream<T>> streamSupplier,
-                                                                       Class<T> dtoType,
-                                                                       String fileName,
-                                                                       String title) {
+                                                                      Supplier<Stream<T>> streamSupplier,
+                                                                      Class<T> dtoType,
+                                                                      String fileName,
+                                                                      String title) {
         Objects.requireNonNull(streamSupplier, "El supplier del stream es obligatorio");
         ReportWriter writer = GeneradorReporteUtil.resolveWriter(format);
         String resolvedFileName = GeneradorReporteUtil.sugerirNombreArchivo(fileName, format);

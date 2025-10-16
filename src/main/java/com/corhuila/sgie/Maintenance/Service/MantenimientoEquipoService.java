@@ -1,7 +1,5 @@
 package com.corhuila.sgie.Maintenance.Service;
 
-import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
-import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoEquipoRequestDTO;
@@ -11,7 +9,6 @@ import com.corhuila.sgie.Maintenance.DTO.MantenimientoEquipoResponseDTO;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoEquipoRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoEquipoService;
-
 import com.corhuila.sgie.Notification.NotificacionService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
@@ -34,6 +31,7 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
     private IReservaRepository reservaRepository;
     @Autowired
     private NotificacionService notificacionService;
+
     @Override
     protected IBaseRepository<MantenimientoEquipo, Long> getRepository() {
         return repository;
@@ -118,8 +116,10 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
 
         // Actualizar campos del mantenimiento
         if (request.getDescripcion() != null) mantenimiento.setDescripcion(request.getDescripcion());
-        if (request.getFechaProximaMantenimiento() != null) mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());
-        if (request.getResultadoMantenimiento() != null) mantenimiento.setResultadoMantenimiento(request.getResultadoMantenimiento());
+        if (request.getFechaProximaMantenimiento() != null)
+            mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());
+        if (request.getResultadoMantenimiento() != null)
+            mantenimiento.setResultadoMantenimiento(request.getResultadoMantenimiento());
 
         // Actualizar campos de la reserva
         if (request.getNombreReserva() != null) reserva.setNombre(request.getNombreReserva());

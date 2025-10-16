@@ -1,7 +1,6 @@
 package com.corhuila.sgie.Site.Controller;
 
 import com.corhuila.sgie.Site.Entity.Municipio;
-import com.corhuila.sgie.Site.IRepository.IDepartamentoRepository;
 import com.corhuila.sgie.Site.IRepository.IMunicipioRepository;
 import com.corhuila.sgie.Site.IService.IMunicipioService;
 import com.corhuila.sgie.common.ApiResponseDto;
@@ -16,7 +15,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/municipio")
-public class MunicipioController extends BaseController <Municipio, IMunicipioService>{
+public class MunicipioController extends BaseController<Municipio, IMunicipioService> {
     @Autowired
     private IMunicipioRepository repository;
 

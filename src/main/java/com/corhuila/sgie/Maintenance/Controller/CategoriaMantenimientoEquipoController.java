@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/categoria-mantenimiento-equipo")
-public class CategoriaMantenimientoEquipoController extends BaseController <CategoriaMantenimientoEquipo, CategoriaMantenimientoEquipoService> {
+public class CategoriaMantenimientoEquipoController extends BaseController<CategoriaMantenimientoEquipo, CategoriaMantenimientoEquipoService> {
     public CategoriaMantenimientoEquipoController(CategoriaMantenimientoEquipoService service) {
         super(service, "CATEGORIA_MANTENIMIENTO_EQUIPO");
     }

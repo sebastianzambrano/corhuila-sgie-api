@@ -4,7 +4,10 @@ import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Equipment.Entity.Equipo;
 import com.corhuila.sgie.common.Auditoria;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Objects;

@@ -2,7 +2,10 @@ package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Objects;
 

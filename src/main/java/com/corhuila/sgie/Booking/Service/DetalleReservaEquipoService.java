@@ -9,7 +9,6 @@ import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IDetalleReservaEquipoRepository;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IDetalleReservaEquipoService;
-
 import com.corhuila.sgie.Equipment.Entity.Equipo;
 import com.corhuila.sgie.Notification.NotificacionService;
 import com.corhuila.sgie.Site.Entity.Instalacion;
@@ -33,6 +32,7 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
     private IReservaRepository reservaRepository;
     @Autowired
     private NotificacionService notificacionService;
+
     @Override
     protected IBaseRepository<DetalleReservaEquipo, Long> getRepository() {
         return repository;

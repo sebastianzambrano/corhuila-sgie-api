@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class PermisoService extends BaseService<Permiso> implements IPermisoService {
     @Autowired
     private IPermisoRepository repository;
+
     @Override
     protected IBaseRepository<Permiso, Long> getRepository() {
         return repository;

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class TipoReservaService extends BaseService<TipoReserva> implements ITipoReservaService {
     @Autowired
     private ITipoReservaRepository repository;
+
     @Override
     protected IBaseRepository<TipoReserva, Long> getRepository() {
         return repository;

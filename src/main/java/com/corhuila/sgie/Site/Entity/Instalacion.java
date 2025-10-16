@@ -4,7 +4,10 @@ import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -32,7 +35,7 @@ public class Instalacion extends Auditoria {
     @JoinColumn(name = "id_categoria_instalacion")
     private CategoriaInstalacion categoriaInstalacion;
 
-    @OneToMany(mappedBy = "instalacion",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "instalacion", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetalleReservaInstalacion> detalleReservaInstalaciones = new HashSet<>();
 

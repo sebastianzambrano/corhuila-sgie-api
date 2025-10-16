@@ -30,7 +30,7 @@ public class MantenimientoEquipoController extends BaseController<MantenimientoE
             @RequestBody CerrarMantenimientoEquipoDTO request) {
 
         CerrarMantenimientoEquipoResponseDTO actualizado =
-                mantenimientoEquipoService.cerrarMantenimientoEquipo(idDetalle,request.getFechaProximaMantenimiento(), request.getResultadoMantenimiento());
+                mantenimientoEquipoService.cerrarMantenimientoEquipo(idDetalle, request.getFechaProximaMantenimiento(), request.getResultadoMantenimiento());
 
         return ResponseEntity.ok(actualizado);
     }

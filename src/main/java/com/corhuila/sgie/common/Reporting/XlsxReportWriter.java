@@ -224,31 +224,33 @@ public class XlsxReportWriter implements ReportWriter {
             cell.setCellStyle(textStyle(workbook, styleCache, true));
         }
     }
-/*
-    private CellStyle baseStyle(Workbook workbook, Map<String, CellStyle> cache, String key, boolean wrap) {
-        return cache.computeIfAbsent(key, k -> {
-            CellStyle style = workbook.createCellStyle();
-            style.setWrapText(wrap);
-            return style;
-        });
-    }
-*/
+
+    /*
+        private CellStyle baseStyle(Workbook workbook, Map<String, CellStyle> cache, String key, boolean wrap) {
+            return cache.computeIfAbsent(key, k -> {
+                CellStyle style = workbook.createCellStyle();
+                style.setWrapText(wrap);
+                return style;
+            });
+        }
+    */
     private CellStyle baseStyle(Workbook workbook, boolean wrap) {
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(wrap);
         return style;
     }
-/*
-    private CellStyle textStyle(Workbook workbook, Map<String, CellStyle> cache, boolean wrap) {
-        String key = "text_" + wrap;
-        return cache.computeIfAbsent(key, k -> {
-            CellStyle style = baseStyle(workbook, cache, k, wrap);
-            DataFormat dataFormat = workbook.createDataFormat();
-            style.setDataFormat(dataFormat.getFormat("@"));
-            return style;
-        });
-    }
-*/
+
+    /*
+        private CellStyle textStyle(Workbook workbook, Map<String, CellStyle> cache, boolean wrap) {
+            String key = "text_" + wrap;
+            return cache.computeIfAbsent(key, k -> {
+                CellStyle style = baseStyle(workbook, cache, k, wrap);
+                DataFormat dataFormat = workbook.createDataFormat();
+                style.setDataFormat(dataFormat.getFormat("@"));
+                return style;
+            });
+        }
+    */
     private CellStyle textStyle(Workbook workbook, Map<String, CellStyle> cache, boolean wrap) {
         String key = "text_" + wrap;
         return cache.computeIfAbsent(key, k -> {
@@ -272,17 +274,17 @@ public class XlsxReportWriter implements ReportWriter {
     }
 */
 
-private CellStyle numberStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
-    String key = "number_" + format + "_" + wrap;
-    return cache.computeIfAbsent(key, k -> {
-        CellStyle style = baseStyle(workbook, wrap);
-        if (!format.isEmpty()) {
-            DataFormat dataFormat = workbook.createDataFormat();
-            style.setDataFormat(dataFormat.getFormat(format));
-        }
-        return style;
-    });
-}
+    private CellStyle numberStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
+        String key = "number_" + format + "_" + wrap;
+        return cache.computeIfAbsent(key, k -> {
+            CellStyle style = baseStyle(workbook, wrap);
+            if (!format.isEmpty()) {
+                DataFormat dataFormat = workbook.createDataFormat();
+                style.setDataFormat(dataFormat.getFormat(format));
+            }
+            return style;
+        });
+    }
 /*
     private CellStyle dateStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
         String key = "date_" + format + "_" + wrap;
@@ -304,6 +306,7 @@ private CellStyle numberStyle(Workbook workbook, Map<String, CellStyle> cache, S
             return style;
         });
     }
+
     private static final class SheetContext {
         private final Sheet sheet;
         private int nextRowIndex;

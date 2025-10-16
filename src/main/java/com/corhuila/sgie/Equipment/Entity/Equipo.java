@@ -8,7 +8,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -38,7 +41,7 @@ public class Equipo extends Auditoria {
     @JsonView(Views.Complete.class)
     private TipoEquipo tipoEquipo;
 
-    @OneToMany(mappedBy = "equipo",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "equipo", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetalleReservaEquipo> detalleReservaEquipos = new HashSet<>();
 

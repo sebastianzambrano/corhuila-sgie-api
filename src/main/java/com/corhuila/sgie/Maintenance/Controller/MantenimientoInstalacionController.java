@@ -1,6 +1,5 @@
 package com.corhuila.sgie.Maintenance.Controller;
 
-import com.corhuila.sgie.Booking.DTO.IReservaEquipoDTO;
 import com.corhuila.sgie.Maintenance.DTO.*;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
@@ -31,7 +30,7 @@ public class MantenimientoInstalacionController extends BaseController<Mantenimi
             @RequestBody CerrarMantenimientoInstalacionDTO request) {
 
         CerrarMantenimientoInstalacionResponseDTO actualizado =
-                mantenimientoInstalacionService.cerrarMantenimientoInstalacion(idDetalle,request.getFechaProximaMantenimiento(), request.getResultadoMantenimiento());
+                mantenimientoInstalacionService.cerrarMantenimientoInstalacion(idDetalle, request.getFechaProximaMantenimiento(), request.getResultadoMantenimiento());
 
         return ResponseEntity.ok(actualizado);
     }

@@ -4,7 +4,10 @@ import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -34,7 +37,7 @@ public class Persona extends Auditoria {
     @OneToOne(mappedBy = "persona", fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
     private Usuario usuario;
 
-    @OneToMany(mappedBy = "persona",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "persona", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Reserva> reservas = new HashSet<>();
 

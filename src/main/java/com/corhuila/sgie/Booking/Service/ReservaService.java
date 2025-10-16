@@ -2,16 +2,13 @@ package com.corhuila.sgie.Booking.Service;
 
 import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaGeneralDTO;
-import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
 import com.corhuila.sgie.Booking.DTO.ReservaGeneralReporteDTO;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IReservaService;
-import com.corhuila.sgie.Site.DTO.InstalacionReporteDTO;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +31,7 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
     @Override
     public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle) {
-        List<Object[]> results =repository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
+        List<Object[]> results = repository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
@@ -43,7 +40,7 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
     @Override
     public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle) {
-        List<Object[]> results =repository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
+        List<Object[]> results = repository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
@@ -78,7 +75,7 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
     @Transactional(readOnly = true)
     public List<ReservaGeneralReporteDTO> obtenerDatosEnMemoria(String numeroIdentificacion) {
-        Supplier<Stream<ReservaGeneralReporteDTO>> supplier = proveedorStream(numeroIdentificacion );
+        Supplier<Stream<ReservaGeneralReporteDTO>> supplier = proveedorStream(numeroIdentificacion);
         try (Stream<ReservaGeneralReporteDTO> stream = supplier.get()) {
             return stream.toList();
         }

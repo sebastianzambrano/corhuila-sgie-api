@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class RolService extends BaseService<Rol> implements IRolService {
     @Autowired
     private IRolRepository repository;
+
     @Override
     protected IBaseRepository<Rol, Long> getRepository() {
         return repository;

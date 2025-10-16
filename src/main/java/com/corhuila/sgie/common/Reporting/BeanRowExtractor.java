@@ -15,57 +15,6 @@ import java.util.stream.Collectors;
 
 public final class BeanRowExtractor {
 
-    public static final class ColumnMeta {
-        private final String property;
-        private final String header;
-        private final int order;
-        private final String format;
-        private final int width;
-        private final boolean autosize;
-        private final boolean wrap;
-        private final boolean text;
-        private final Function<Object, Object> getter;
-
-        ColumnMeta(String property,
-                   String header,
-                   int order,
-                   String format,
-                   int width,
-                   boolean autosize,
-                   boolean wrap,
-                   boolean text,
-                   Function<Object, Object> getter) {
-            this.property = property;
-            this.header = header;
-            this.order = order;
-            this.format = format;
-            this.width = width;
-            this.autosize = autosize;
-            this.wrap = wrap;
-            this.text = text;
-            this.getter = getter;
-        }
-
-        public String property() { return property; }
-        public String header() { return header; }
-        public int order() { return order; }
-        public String format() { return format; }
-        public int width() { return width; }
-        public boolean autosize() { return autosize; }
-        public boolean wrap() { return wrap; }
-        public boolean text() { return text; }
-        public Object get(Object bean) {
-            try {
-                return getter.apply(bean);
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        ColumnMeta withOrder(int newOrder) {
-            return new ColumnMeta(property, header, newOrder, format, width, autosize, wrap, text, getter);
-        }
-    }
-
     private static final Map<Class<?>, List<ColumnMeta>> CACHE = new ConcurrentHashMap<>();
 
     private BeanRowExtractor() {
@@ -288,13 +237,15 @@ public final class BeanRowExtractor {
     private static void makeAccessible(Field field) {
         try {
             field.setAccessible(true);
-        } catch (Throwable ignored) { }
+        } catch (Throwable ignored) {
+        }
     }
 
     private static void makeAccessible(Method method) {
         try {
             method.setAccessible(true);
-        } catch (Throwable ignored) { }
+        } catch (Throwable ignored) {
+        }
     }
 
     private static String propertyNameFromGetter(String methodName) {
@@ -329,5 +280,81 @@ public final class BeanRowExtractor {
             sb.append(c);
         }
         return sb.toString().replaceAll(" +", " ").trim();
+    }
+
+    public static final class ColumnMeta {
+        private final String property;
+        private final String header;
+        private final int order;
+        private final String format;
+        private final int width;
+        private final boolean autosize;
+        private final boolean wrap;
+        private final boolean text;
+        private final Function<Object, Object> getter;
+
+        ColumnMeta(String property,
+                   String header,
+                   int order,
+                   String format,
+                   int width,
+                   boolean autosize,
+                   boolean wrap,
+                   boolean text,
+                   Function<Object, Object> getter) {
+            this.property = property;
+            this.header = header;
+            this.order = order;
+            this.format = format;
+            this.width = width;
+            this.autosize = autosize;
+            this.wrap = wrap;
+            this.text = text;
+            this.getter = getter;
+        }
+
+        public String property() {
+            return property;
+        }
+
+        public String header() {
+            return header;
+        }
+
+        public int order() {
+            return order;
+        }
+
+        public String format() {
+            return format;
+        }
+
+        public int width() {
+            return width;
+        }
+
+        public boolean autosize() {
+            return autosize;
+        }
+
+        public boolean wrap() {
+            return wrap;
+        }
+
+        public boolean text() {
+            return text;
+        }
+
+        public Object get(Object bean) {
+            try {
+                return getter.apply(bean);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        ColumnMeta withOrder(int newOrder) {
+            return new ColumnMeta(property, header, newOrder, format, width, autosize, wrap, text, getter);
+        }
     }
 }

@@ -27,5 +27,6 @@ public class PaisController extends BaseController<Pais, IPaisService> {
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<ApiResponseDto<List<Pais>>> byContinente(@PathVariable Long id) {
         List<Pais> data = repository.findByContinenteIdAndStateTrue(id);
-        return ResponseEntity.ok(new ApiResponseDto<>("Datos obtenidos", data, true));}
+        return ResponseEntity.ok(new ApiResponseDto<>("Datos obtenidos", data, true));
+    }
 }

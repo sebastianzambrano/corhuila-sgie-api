@@ -27,20 +27,20 @@ import static com.corhuila.sgie.common.Reporting.HelperUtils.isStreaming;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/instalacion")
-public class InstalacionController extends BaseController <Instalacion, IInstalacionService>{
+public class InstalacionController extends BaseController<Instalacion, IInstalacionService> {
+    private final ReporteGenericoService reporteGenericoService;
+    private final InstalacionService instalacionService;
+
     public InstalacionController(IInstalacionService service, ReporteGenericoService reporteGenericoService, InstalacionService instalacionService) {
         super(service, "INSTALACION");
         this.reporteGenericoService = reporteGenericoService;
         this.instalacionService = instalacionService;
     }
 
-    private final ReporteGenericoService reporteGenericoService;
-    private final InstalacionService instalacionService;
-
     @GetMapping("/instalacion-campus")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
     public ResponseEntity<List<IInstalacionCampusDTO>> findInstalacionesCampus(@RequestParam String nombreInstalacion, @RequestParam String nombreCampus) {
-        List<IInstalacionCampusDTO> instalacionesCampus = service.findInstalacionesCampus(nombreInstalacion,nombreCampus);
+        List<IInstalacionCampusDTO> instalacionesCampus = service.findInstalacionesCampus(nombreInstalacion, nombreCampus);
         return ResponseEntity.ok(instalacionesCampus);
     }
 
@@ -67,7 +67,7 @@ public class InstalacionController extends BaseController <Instalacion, IInstala
                 }
             };
 
-            HttpHeaders headers =  buildHeaders(reporte);
+            HttpHeaders headers = buildHeaders(reporte);
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(body);

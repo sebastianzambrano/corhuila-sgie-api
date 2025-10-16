@@ -6,7 +6,6 @@ import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoInstalacionReque
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoInstalacionDTO;
 import com.corhuila.sgie.Maintenance.DTO.MantenimientoInstalacionResponseDTO;
-import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoInstalacionRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
@@ -31,6 +30,7 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
     private IReservaRepository reservaRepository;
     @Autowired
     private NotificacionService notificacionService;
+
     @Override
     protected IBaseRepository<MantenimientoInstalacion, Long> getRepository() {
         return repository;
@@ -117,8 +117,10 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
 
         // Actualizar campos del mantenimiento
         if (request.getDescripcion() != null) mantenimiento.setDescripcion(request.getDescripcion());
-        if (request.getFechaProximaMantenimiento() != null) mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());
-        if (request.getResultadoMantenimiento() != null) mantenimiento.setResultadoMantenimiento(request.getResultadoMantenimiento());
+        if (request.getFechaProximaMantenimiento() != null)
+            mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());
+        if (request.getResultadoMantenimiento() != null)
+            mantenimiento.setResultadoMantenimiento(request.getResultadoMantenimiento());
 
         // Actualizar campos de la reserva relacionados (opcionales)
         if (request.getNombreReserva() != null) reserva.setNombre(request.getNombreReserva());
@@ -146,6 +148,7 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
                 reserva.getHoraFin()
         );
     }
+
     @Override
     protected void afterSave(MantenimientoInstalacion detalle) {
         if (detalle.getReserva() != null && detalle.getReserva().getId() != null) {

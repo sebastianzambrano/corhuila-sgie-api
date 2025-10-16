@@ -40,12 +40,12 @@ public class NotificacionDiariaService {
                     String destinatario = reserva.getPersona().getUsuario().getEmail();
                     String asunto = "Resumen de reservas abiertas - " + hoy;
                     String cuerpo = String.format("""
-                        Hola %s, tienes una reserva pendiente:
-                        - Nombre: %s
-                        - Fecha: %s
-                        - Hora inicio: %s
-                        - Hora fin: %s
-                    """,
+                                        Hola %s, tienes una reserva pendiente:
+                                        - Nombre: %s
+                                        - Fecha: %s
+                                        - Hora inicio: %s
+                                        - Hora fin: %s
+                                    """,
                             reserva.getPersona().getNombres(),
                             reserva.getNombre(),
                             reserva.getFechaReserva(),

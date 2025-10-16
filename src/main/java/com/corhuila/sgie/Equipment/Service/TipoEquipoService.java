@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class TipoEquipoService extends BaseService<TipoEquipo> implements ITipoEquipoService {
     @Autowired
     private ITipoEquipoRepository repository;
+
     @Override
     protected IBaseRepository<TipoEquipo, Long> getRepository() {
         return repository;

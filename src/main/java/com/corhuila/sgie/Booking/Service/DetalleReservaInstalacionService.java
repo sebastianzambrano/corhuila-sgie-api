@@ -4,7 +4,6 @@ import com.corhuila.sgie.Booking.DTO.ActualizarReservaDetalleInstalacionRequestD
 import com.corhuila.sgie.Booking.DTO.CerrarDetalleReservaInstalacionResponseDTO;
 import com.corhuila.sgie.Booking.DTO.DetalleReservaInstalacionResponseDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
-import com.corhuila.sgie.Booking.Entity.DetalleReservaEquipo;
 import com.corhuila.sgie.Booking.Entity.DetalleReservaInstalacion;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IDetalleReservaInstalacionRepository;
@@ -32,6 +31,7 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
     private IReservaRepository reservaRepository;
     @Autowired
     private NotificacionService notificacionService;
+
     @Override
     protected IBaseRepository<DetalleReservaInstalacion, Long> getRepository() {
         return repository;

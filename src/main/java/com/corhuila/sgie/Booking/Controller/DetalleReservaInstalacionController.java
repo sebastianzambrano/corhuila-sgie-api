@@ -14,7 +14,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/detalle-reserva-instalacion")
-public class DetalleReservaInstalacionController extends BaseController<DetalleReservaInstalacion,IDetalleReservaInstalacionService> {
+public class DetalleReservaInstalacionController extends BaseController<DetalleReservaInstalacion, IDetalleReservaInstalacionService> {
 
     private final DetalleReservaInstalacionService detalleReservaInstalacionService;
 
@@ -25,17 +25,17 @@ public class DetalleReservaInstalacionController extends BaseController<DetalleR
     }
 
 
-        @PutMapping("/{idDetalle}/cerrar-detalle-reserva-instalacion")
-        @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
-        public ResponseEntity<CerrarDetalleReservaInstalacionResponseDTO> cerrarDetalleReservaInstalacion(
-                @PathVariable Long idDetalle,
-                @RequestBody CerrarDetalleReservaInstalacionRequestDTO request) {
+    @PutMapping("/{idDetalle}/cerrar-detalle-reserva-instalacion")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
+    public ResponseEntity<CerrarDetalleReservaInstalacionResponseDTO> cerrarDetalleReservaInstalacion(
+            @PathVariable Long idDetalle,
+            @RequestBody CerrarDetalleReservaInstalacionRequestDTO request) {
 
-            CerrarDetalleReservaInstalacionResponseDTO actualizado =
-                    detalleReservaInstalacionService.cerrarDetalleReservaInstalacion(idDetalle, request.getEntregaInstalacion());
+        CerrarDetalleReservaInstalacionResponseDTO actualizado =
+                detalleReservaInstalacionService.cerrarDetalleReservaInstalacion(idDetalle, request.getEntregaInstalacion());
 
-            return ResponseEntity.ok(actualizado);
-        }
+        return ResponseEntity.ok(actualizado);
+    }
 
     @PutMapping("/{idDetalle}/actualizar-detalle-reserva")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class ContinenteService extends BaseService<Continente> implements IContinenteService {
     @Autowired
     private IContinenteRepository repository;
+
     @Override
     protected IBaseRepository<Continente, Long> getRepository() {
         return repository;

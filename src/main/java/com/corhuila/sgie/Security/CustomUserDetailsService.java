@@ -1,6 +1,8 @@
 package com.corhuila.sgie.Security;
 
-import com.corhuila.sgie.User.Entity.*;
+import com.corhuila.sgie.User.Entity.PermisoRolEntidad;
+import com.corhuila.sgie.User.Entity.Rol;
+import com.corhuila.sgie.User.Entity.Usuario;
 import com.corhuila.sgie.User.IRepository.IPermisoRolEntidadRepository;
 import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
 import org.springframework.security.core.GrantedAuthority;

@@ -18,15 +18,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
+    private final IUsuarioRepository repository;
     @Value("${jwt.secret:change_this_secret_to_a_strong_one}")
     private String secret;
-
     @Value("${jwt.expiration-ms:21600000}") // 6 horas por defecto
     private long expirationMs;
-
     private Key key;
-
-    private final IUsuarioRepository repository;
 
     public JwtUtil(IUsuarioRepository repository) {
         this.repository = repository;

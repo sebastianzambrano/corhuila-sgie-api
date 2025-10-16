@@ -1,14 +1,15 @@
 package com.corhuila.sgie.common.Reporting;
 
 import com.lowagie.text.*;
+import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 
+import java.awt.*;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Stream;
-import java.awt.Color;
 
 public class PdfReportWriter implements ReportWriter {
 
@@ -57,13 +58,13 @@ public class PdfReportWriter implements ReportWriter {
         rows.forEach(bean -> {
             List<Object> values = BeanRowExtractor.values(bean);
             try {
-            for (Object value : values) {
-                String text = value == null ? "" : String.valueOf(value);
-                PdfPCell cell = new PdfPCell(new Phrase(text, bodyFont));
-                cell.setPadding(5f);
-                table.addCell(cell);
-            }}catch (Exception ex)
-            {
+                for (Object value : values) {
+                    String text = value == null ? "" : String.valueOf(value);
+                    PdfPCell cell = new PdfPCell(new Phrase(text, bodyFont));
+                    cell.setPadding(5f);
+                    table.addCell(cell);
+                }
+            } catch (Exception ex) {
                 throw new IllegalStateException("Error generando el PDF", ex);
             }
         });

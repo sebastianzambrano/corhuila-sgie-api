@@ -1,7 +1,6 @@
 package com.corhuila.sgie.Site.Controller;
 
 import com.corhuila.sgie.Site.DTO.CampusReporteDTO;
-import com.corhuila.sgie.Site.DTO.InstalacionReporteDTO;
 import com.corhuila.sgie.Site.Entity.Campus;
 import com.corhuila.sgie.Site.IRepository.ICampusRepository;
 import com.corhuila.sgie.Site.Service.CampusService;
@@ -29,15 +28,13 @@ import static com.corhuila.sgie.common.Reporting.HelperUtils.isStreaming;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/campus")
-public class CampusController extends BaseController <Campus, CampusService> {
-
-    @Autowired
-    private ICampusRepository repository;
-
-    @Autowired
-    private CampusService campusService;
+public class CampusController extends BaseController<Campus, CampusService> {
 
     private final ReporteGenericoService reporteGenericoService;
+    @Autowired
+    private ICampusRepository repository;
+    @Autowired
+    private CampusService campusService;
 
     public CampusController(CampusService service, ReporteGenericoService reporteGenericoService) {
         super(service, "CAMPUS");
@@ -74,7 +71,7 @@ public class CampusController extends BaseController <Campus, CampusService> {
                 }
             };
 
-            HttpHeaders headers =  buildHeaders(reporte);
+            HttpHeaders headers = buildHeaders(reporte);
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(body);

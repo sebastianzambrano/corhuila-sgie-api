@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class CategoriaMantenimientoInstalacionService extends BaseService<CategoriaMantenimientoInstalacion> implements ICategoriaMantenimientoInstalacionService {
     @Autowired
     private ICategoriaMantenimientoInstalacionRepository repository;
+
     @Override
     protected IBaseRepository<CategoriaMantenimientoInstalacion, Long> getRepository() {
         return repository;

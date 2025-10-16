@@ -3,9 +3,10 @@ package com.corhuila.sgie.common;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
+public class BaseController<T extends Auditoria, S extends IBaseService<T>> {
     protected S service;
     protected String entityName;
 
@@ -75,7 +76,7 @@ public class BaseController <T extends Auditoria, S extends IBaseService<T>> {
 
     @DeleteMapping("{id}")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ELIMINAR')")
-    public ResponseEntity<ApiResponseDto<T>> delete (@PathVariable Long id){
+    public ResponseEntity<ApiResponseDto<T>> delete(@PathVariable Long id) {
         try {
             service.delete(id);
             return ResponseEntity.ok(new ApiResponseDto<T>("Registro eliminado", null, true));

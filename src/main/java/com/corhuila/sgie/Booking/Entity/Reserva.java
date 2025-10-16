@@ -7,7 +7,10 @@ import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -40,11 +43,11 @@ public class Reserva extends Auditoria {
     @JoinColumn(name = "id_tipo_reserva", nullable = false)
     private TipoReserva tipoReserva;
 
-    @OneToMany(mappedBy = "reserva",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reserva", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetalleReservaInstalacion> detalleReservaInstalaciones = new HashSet<>();
 
-    @OneToMany(mappedBy = "reserva",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "reserva", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<DetalleReservaEquipo> detalleReservaEquipos = new HashSet<>();
 

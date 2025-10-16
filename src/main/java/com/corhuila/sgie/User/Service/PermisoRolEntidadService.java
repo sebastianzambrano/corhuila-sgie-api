@@ -25,6 +25,7 @@ public class PermisoRolEntidadService extends BaseService<PermisoRolEntidad> imp
     public List<IPermisoPorPersonaDTO> obtenerPermisos(String numeroIdentificacion) {
         return repository.findPermisosPorNumeroIdentificacion(numeroIdentificacion);
     }
+
     public List<IPermisoRolEntidadDTO> findPermisosByRolByEntidad() {
         return repository.findPermisosByRolByEntidad();
     }

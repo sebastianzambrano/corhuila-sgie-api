@@ -5,5 +5,5 @@ import com.corhuila.sgie.common.IBaseRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface ITipoEquipoRepository extends IBaseRepository<TipoEquipo,Long> {
+public interface ITipoEquipoRepository extends IBaseRepository<TipoEquipo, Long> {
 }

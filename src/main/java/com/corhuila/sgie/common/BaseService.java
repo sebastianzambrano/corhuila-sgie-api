@@ -20,7 +20,7 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     protected void afterSave(T entity) {
         // vacío por defecto
     }
-    
+
 
     @Override
     public List<T> findByStateTrue() {
@@ -43,7 +43,7 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
 
 
     @Override
-    public T save(T entity) throws Exception{
+    public T save(T entity) throws Exception {
         try {
             //entity.setCreatedAt(LocalDateTime.now());
             //return getRepository().save(entity);
@@ -63,13 +63,13 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
 
         if (op.isEmpty()) {
             throw new Exception("Registro no encontrado");
-        }else if(op.get().getDeletedAt() != null) {
+        } else if (op.get().getDeletedAt() != null) {
             throw new Exception("Registro inhabilitado");
         }
 
         T entityUpdate = op.get();
 
-        String[] ignoreProperties = {"id","createdAt","deletedAt","state","password"};
+        String[] ignoreProperties = {"id", "createdAt", "deletedAt", "state", "password"};
         BeanUtils.copyProperties(entity, entityUpdate, ignoreProperties);
         entityUpdate.setUpdatedAt(LocalDateTime.now());
         getRepository().save(entityUpdate);
@@ -89,6 +89,7 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
 
         getRepository().save(entityUpdate);
     }
+
     @Override
     @Transactional
     public void cambiarEstado(Long id, Boolean estado) throws Exception {

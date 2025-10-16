@@ -2,8 +2,11 @@ package com.corhuila.sgie.User.Entity;
 
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter

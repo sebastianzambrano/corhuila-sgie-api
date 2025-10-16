@@ -5,14 +5,24 @@ import java.time.LocalTime;
 
 public interface IMantenimientoInstalacionDTO {
     String getTipoReserva();
+
     String getNombreReserva();
+
     String getNombrePersona();
+
     String getNumeroIdentificacion();
+
     String getNombreInstalacion();
+
     LocalDate getFechaReserva();      // si en BD es DATE => LocalDate
+
     LocalTime getHoraInicioReserva(); // si en BD es TIME => LocalTime
+
     LocalTime getHoraFinReserva();    // idem
+
     String getTipoMantenimiento();
+
     Boolean getEstadoMantenimiento();
+
     Boolean getEstadoReserva();
 }

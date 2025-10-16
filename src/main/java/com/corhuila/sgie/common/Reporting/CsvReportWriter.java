@@ -10,6 +10,33 @@ public class CsvReportWriter implements ReportWriter {
 
     private static final byte[] UTF8_BOM = new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF};
 
+    private static void writeLine(OutputStream out, List<String> columns) throws Exception {
+        String line = String.join(",", columns) + "\n";
+        out.write(line.getBytes(StandardCharsets.UTF_8));
+    }
+
+    private static String escape(String value) {
+        if (value == null) {
+            return "";
+        }
+        String escaped = value.replace("\"", "\"\"");
+        if (escaped.contains(",") || escaped.contains("\n") || escaped.contains("\r")) {
+            return "\"" + escaped + "\"";
+        }
+        return escaped;
+    }
+
+    private static String sanitize(String value) {
+        if (value == null || value.isEmpty()) {
+            return "";
+        }
+        char first = value.charAt(0);
+        if (first == '=' || first == '+' || first == '-' || first == '@') {
+            return "'" + value;
+        }
+        return value;
+    }
+
     @Override
     public String contentType() {
         return "text/csv; charset=UTF-8";
@@ -44,32 +71,5 @@ public class CsvReportWriter implements ReportWriter {
                 throw new IllegalStateException("Error generando el CSV", ex);
             }
         });
-    }
-
-    private static void writeLine(OutputStream out, List<String> columns) throws Exception {
-        String line = String.join(",", columns) + "\n";
-        out.write(line.getBytes(StandardCharsets.UTF_8));
-    }
-
-    private static String escape(String value) {
-        if (value == null) {
-            return "";
-        }
-        String escaped = value.replace("\"", "\"\"");
-        if (escaped.contains(",") || escaped.contains("\n") || escaped.contains("\r")) {
-            return "\"" + escaped + "\"";
-        }
-        return escaped;
-    }
-
-    private static String sanitize(String value) {
-        if (value == null || value.isEmpty()) {
-            return "";
-        }
-        char first = value.charAt(0);
-        if (first == '=' || first == '+' || first == '-' || first == '@') {
-            return "'" + value;
-        }
-        return value;
     }
 }

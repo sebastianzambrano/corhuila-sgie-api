@@ -2,7 +2,6 @@ package com.corhuila.sgie.Site.Controller;
 
 import com.corhuila.sgie.Site.Entity.Departamento;
 import com.corhuila.sgie.Site.IRepository.IDepartamentoRepository;
-import com.corhuila.sgie.Site.IRepository.IPaisRepository;
 import com.corhuila.sgie.Site.IService.IDepartamentoService;
 import com.corhuila.sgie.common.ApiResponseDto;
 import com.corhuila.sgie.common.BaseController;

@@ -7,27 +7,29 @@ import com.corhuila.sgie.Equipment.Entity.Equipo;
 import com.corhuila.sgie.Equipment.IService.IEquipoService;
 import com.corhuila.sgie.Equipment.Service.EquipoService;
 import com.corhuila.sgie.Equipment.Service.HojaDeVidaEquipoService;
-import com.corhuila.sgie.common.Reporting.ReporteGenericoService;
 import com.corhuila.sgie.common.BaseController;
 import com.corhuila.sgie.common.Reporting.GeneradorReporteUtil;
 import com.corhuila.sgie.common.Reporting.ReportFormat;
+import com.corhuila.sgie.common.Reporting.ReporteGenericoService;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import org.springframework.http.MediaType;
+
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import static com.corhuila.sgie.common.Reporting.HelperUtils.buildHeaders;
 import static com.corhuila.sgie.common.Reporting.HelperUtils.isStreaming;
 
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/equipo")
-public class EquipoController extends BaseController <Equipo, IEquipoService>{
+public class EquipoController extends BaseController<Equipo, IEquipoService> {
 
     private final ReporteGenericoService reporteGenericoService;
     private final HojaDeVidaEquipoService hojaDeVidaEquipoService;
@@ -42,7 +44,7 @@ public class EquipoController extends BaseController <Equipo, IEquipoService>{
 
     @GetMapping("/equipo-instalacion")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'CONSULTAR')")
-    public ResponseEntity<List<IEquipoInstalacionDTO>> findEquiposInstalaciones(@RequestParam(required = false) String codigoEquipo, @RequestParam(required = false) String nombreInstalacion ) {
+    public ResponseEntity<List<IEquipoInstalacionDTO>> findEquiposInstalaciones(@RequestParam(required = false) String codigoEquipo, @RequestParam(required = false) String nombreInstalacion) {
         List<IEquipoInstalacionDTO> equiposInstalaciones = service.findEquiposInstalaciones(codigoEquipo, nombreInstalacion);
         return ResponseEntity.ok(equiposInstalaciones);
     }
@@ -77,7 +79,7 @@ public class EquipoController extends BaseController <Equipo, IEquipoService>{
                 }
             };
 
-            HttpHeaders headers =  buildHeaders(reporte);
+            HttpHeaders headers = buildHeaders(reporte);
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(body);

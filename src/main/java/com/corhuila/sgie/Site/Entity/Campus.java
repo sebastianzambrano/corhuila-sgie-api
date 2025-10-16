@@ -3,7 +3,10 @@ package com.corhuila.sgie.Site.Entity;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -27,7 +30,7 @@ public class Campus extends Auditoria {
     @JoinColumn(name = "id_municipio")
     private Municipio municipio;
 
-    @OneToMany(mappedBy = "campus",fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "campus", fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Instalacion> instalaciones = new HashSet<>();
 

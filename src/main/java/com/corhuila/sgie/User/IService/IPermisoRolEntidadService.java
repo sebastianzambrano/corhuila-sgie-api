@@ -9,5 +9,6 @@ import java.util.List;
 
 public interface IPermisoRolEntidadService extends IBaseService<PermisoRolEntidad> {
     List<IPermisoPorPersonaDTO> obtenerPermisos(String numeroIdentificacion);
+
     List<IPermisoRolEntidadDTO> findPermisosByRolByEntidad();
 }

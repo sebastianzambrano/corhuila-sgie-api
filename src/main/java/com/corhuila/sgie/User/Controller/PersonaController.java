@@ -1,6 +1,5 @@
 package com.corhuila.sgie.User.Controller;
 
-import com.corhuila.sgie.User.DTO.IPermisoPorPersonaDTO;
 import com.corhuila.sgie.User.DTO.IPersonaUsuarioDTO;
 import com.corhuila.sgie.User.Entity.Persona;
 import com.corhuila.sgie.User.IService.IPersonaService;

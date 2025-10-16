@@ -8,7 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 
-public class AuditoriaListener  {
+public class AuditoriaListener {
 
     @PrePersist
     public void setCreatedUser(Auditoria entidad) {

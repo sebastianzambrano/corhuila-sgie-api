@@ -66,7 +66,7 @@ public class UsuarioService extends BaseService<Usuario> implements IUsuarioServ
 
         Usuario usuarioUpdate = op.get();
 
-        String[] ignoreProperties = {"id","createdAt","deletedAt","state"};
+        String[] ignoreProperties = {"id", "createdAt", "deletedAt", "state"};
 
         // ⚡ Si no viene password, lo ignoramos
         if (entity.getPassword() == null || entity.getPassword().isBlank()) {

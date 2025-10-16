@@ -15,6 +15,7 @@ import java.util.List;
 public class PersonaService extends BaseService<Persona> implements IPersonaService {
     @Autowired
     private IPersonaRepository repository;
+
     @Override
     protected IBaseRepository<Persona, Long> getRepository() {
         return repository;
