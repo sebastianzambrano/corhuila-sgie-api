@@ -1,13 +1,18 @@
 package com.corhuila.sgie.Equipment.IRepository;
 
+import com.corhuila.sgie.Equipment.DTO.EquipoReporteDTO;
 import com.corhuila.sgie.Equipment.DTO.IEquipoInstalacionDTO;
 import com.corhuila.sgie.Equipment.Entity.Equipo;
 import com.corhuila.sgie.common.IBaseRepository;
+import jakarta.persistence.QueryHint;
+import org.hibernate.jpa.HibernateHints;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Repository
 public interface IEquipoRepository extends IBaseRepository<Equipo,Long> {
@@ -35,4 +40,23 @@ public interface IEquipoRepository extends IBaseRepository<Equipo,Long> {
             @Param("codigoEquipo") String codigoEquipo,
             @Param("nombreInstalacion") String nombreInstalacion
     );
+
+@Query("""
+    SELECT new com.corhuila.sgie.Equipment.DTO.EquipoReporteDTO(
+        eq.id,
+        eq.codigo,
+        te.nombre,
+        eq.state,
+        ins.nombre,
+        ce.nombre,
+        ca.nombre
+    )
+    FROM Equipo eq
+    JOIN eq.instalacion ins
+    JOIN ins.campus ca
+    JOIN eq.tipoEquipo te
+    JOIN te.categoriaEquipo ce
+    """)
+    @QueryHints(@QueryHint(name = HibernateHints.HINT_FETCH_SIZE, value = "1000"))
+    Stream<EquipoReporteDTO> generarReporteEquipos();
 }

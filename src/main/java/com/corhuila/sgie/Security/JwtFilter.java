@@ -35,6 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger") ||
                 path.startsWith("/swagger-ui") ||
+                path.startsWith("/api/equipos/reportes") ||
                 path.startsWith("/auth")) {
             filterChain.doFilter(request, response);
             return;
@@ -88,5 +89,15 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    @Override
+    protected boolean shouldNotFilterAsyncDispatch() {
+        return false;
+    }
+
+    @Override
+    protected boolean shouldNotFilterErrorDispatch() {
+        return true;
     }
 }

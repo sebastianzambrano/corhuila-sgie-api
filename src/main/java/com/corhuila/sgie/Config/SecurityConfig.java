@@ -49,6 +49,8 @@ public class SecurityConfig {
 
         return http
                 .csrf(AbstractHttpConfigurer::disable)
+                //.csrf(csrf -> csrf.disable()) // o configurar CookieCsrfTokenRepository si se usa cookie para access
+                //.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(Customizer.withDefaults()) // 👈 habilita CORS
                 .authorizeHttpRequests(auth -> auth
                         // rutas públicas
@@ -56,7 +58,9 @@ public class SecurityConfig {
                                 "/v1/api/usuario/login",
                                 "/v1/api/usuario/me",
                                 "/v3/api-docs/**",
-                                "/swagger-ui/**"
+                                "/swagger-ui/**",
+                                "/api/equipos/reportes/**",
+                                "/error"
                         ).permitAll()
                         // todas las demás requieren token
                         .anyRequest().authenticated()
@@ -83,7 +87,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(12);
     }
 
     @Bean
@@ -91,6 +95,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.addAllowedOrigin("http://localhost:5173");
+        config.addAllowedOrigin("https://sgie-web.[institucion].edu.co");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

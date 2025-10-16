@@ -3,18 +3,23 @@ package com.corhuila.sgie.Booking.Service;
 import com.corhuila.sgie.Booking.DTO.HoraDisponibleDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaGeneralDTO;
 import com.corhuila.sgie.Booking.DTO.IReservaInstalacionDTO;
+import com.corhuila.sgie.Booking.DTO.ReservaGeneralReporteDTO;
 import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IReservaService;
+import com.corhuila.sgie.Site.DTO.InstalacionReporteDTO;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ReservaService extends BaseService<Reserva> implements IReservaService {
@@ -65,5 +70,17 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
     public List<IReservaGeneralDTO> findReservasYMantenimientosByNumeroIdentificacion(String numeroIdentificacion) {
         return repository.findReservasYMantenimientosByNumeroIdentificacion(numeroIdentificacion);
+    }
+
+    public Supplier<Stream<ReservaGeneralReporteDTO>> proveedorStream(String numeroIdentificacion) {
+        return () -> repository.findReservasYMantenimientosByNumeroIdentificacionReport(numeroIdentificacion);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ReservaGeneralReporteDTO> obtenerDatosEnMemoria(String numeroIdentificacion) {
+        Supplier<Stream<ReservaGeneralReporteDTO>> supplier = proveedorStream(numeroIdentificacion );
+        try (Stream<ReservaGeneralReporteDTO> stream = supplier.get()) {
+            return stream.toList();
+        }
     }
 }
