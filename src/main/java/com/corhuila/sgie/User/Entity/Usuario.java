@@ -3,6 +3,7 @@ package com.corhuila.sgie.User.Entity;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ public class Usuario extends Auditoria {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "El correo electronico es obligatorio")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
     private String password;
 

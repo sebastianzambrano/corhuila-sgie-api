@@ -4,6 +4,7 @@ import com.corhuila.sgie.Booking.Entity.Reserva;
 import com.corhuila.sgie.common.Auditoria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class Persona extends Auditoria {
     private String nombres;
     private String apellidos;
     private String tipoDocumento;
+    @NotBlank(message = "El número de identificación es obligatorio")
+    @Column(name = "numero_identificacion", unique = true, nullable = false)
     private String numeroIdentificacion;
     private String telefonoMovil;
 

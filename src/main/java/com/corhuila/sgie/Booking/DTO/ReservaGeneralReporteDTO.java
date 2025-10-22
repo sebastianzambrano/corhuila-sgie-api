@@ -11,7 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservaGeneralReporteDTO {
-    @ReportColumn(header = "ID Reserva", order = 0)
+    /*@ReportColumn(header = "ID Reserva", order = 0)
     private Long idReserva;
 
     @ReportColumn(header = "ID Detalle Reserva Equipo", order = 1)
@@ -28,7 +28,7 @@ public class ReservaGeneralReporteDTO {
 
     @ReportColumn(header = "ID Tipo Reserva", order = 5)
     private Long idTipoReserva;
-
+*/
     @ReportColumn(header = "Tipo de Reserva", order = 6)
     private String tipoReserva;
 
@@ -46,25 +46,25 @@ public class ReservaGeneralReporteDTO {
 
     @ReportColumn(header = "Hora Fin", order = 11)
     private java.sql.Time horaFinReserva;
-
-    @ReportColumn(header = "ID Persona", order = 12)
-    private Long idPersona;
-
+    /*
+        @ReportColumn(header = "ID Persona", order = 12)
+        private Long idPersona;
+    */
     @ReportColumn(header = "Nombre Persona", order = 13)
     private String nombrePersona;
 
     @ReportColumn(header = "N° Identificación", order = 14)
     private String numeroIdentificacion;
-
-    @ReportColumn(header = "ID Instalación", order = 15)
-    private Long idInstalacion;
-
+    /*
+        @ReportColumn(header = "ID Instalación", order = 15)
+        private Long idInstalacion;
+    */
     @ReportColumn(header = "Nombre Instalación", order = 16)
     private String nombreInstalacion;
-
-    @ReportColumn(header = "ID Equipo", order = 17)
-    private Long idEquipo;
-
+    /*
+        @ReportColumn(header = "ID Equipo", order = 17)
+        private Long idEquipo;
+    */
     @ReportColumn(header = "Nombre Equipo", order = 18)
     private String nombreEquipo;
 
@@ -73,19 +73,19 @@ public class ReservaGeneralReporteDTO {
 
     @ReportColumn(header = "N° Estudiantes", order = 20)
     private Integer numeroEstudiantes;
-
-    @ReportColumn(header = "ID Instalación Destino", order = 21)
-    private Long idInstalacionDestino;
-
+    /*
+        @ReportColumn(header = "ID Instalación Destino", order = 21)
+        private Long idInstalacionDestino;
+    */
     @ReportColumn(header = "Tipo Mantenimiento", order = 22)
     private String tipoMantenimiento;
 
     @ReportColumn(header = "Descripción Mantenimiento", order = 23)
     private String descripcionMantenimiento;
-
-    @ReportColumn(header = "ID Categoría Mantenimiento", order = 24)
-    private Long idCategoriaMantenimiento;
-
+    /*
+        @ReportColumn(header = "ID Categoría Mantenimiento", order = 24)
+        private Long idCategoriaMantenimiento;
+    */
     @ReportColumn(header = "Estado Mantenimiento", order = 25)
     private String estadoMantenimiento;
 

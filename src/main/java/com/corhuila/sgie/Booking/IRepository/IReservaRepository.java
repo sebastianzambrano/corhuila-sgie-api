@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 @Repository
 public interface IReservaRepository extends IBaseRepository<Reserva, Long> {
 
-    @Query(value = "SELECT * FROM horas_disponibles_instalacion(:fecha, :idInstalacion)", nativeQuery = true)
+    @Query(value = "SELECT * FROM horas_disponibles_instalacion(:fecha, :idInstalacion, :idDetalle)", nativeQuery = true)
     List<Object[]> findHorasDisponiblesInstalacion(@Param("fecha") LocalDate fecha,
                                                    @Param("idInstalacion") Integer idInstalacion,
                                                    @Param("idDetalle") Long idDetalle);
@@ -217,160 +217,108 @@ public interface IReservaRepository extends IBaseRepository<Reserva, Long> {
     );
 
     @Query(value = """
-            SELECT
-              re.id                                  AS "idReserva",
-              dre.id                                 AS "idDetalleRerservaEquipo",
-              CAST(NULL AS BIGINT)                   AS "idDetalleRerservaInstalacion",
-              CAST(NULL AS BIGINT)                   AS "idMantenimientoEquipo",
-              CAST(NULL AS BIGINT)                   AS "idMantenimientoInstalacion",
-              tr.id                                  AS "idTipoReserva",
-              tr.nombre                              AS "tipoReserva",
-              re.nombre                              AS "nombreReserva",
-              re.descripcion                         AS "descripcionReserva",
-              re.fecha_reserva                       AS "fechaReserva",
-              re.hora_inicio                         AS "horaInicioReserva",
-              re.hora_fin                            AS "horaFinReserva",
-              pe.id                                  AS "idPersona",
-              pe.nombres                             AS "nombrePersona",
-              pe.numero_identificacion               AS "numeroIdentificacion",
-              ins.id                                 AS "idInstalacion",
-              ins.nombre                             AS "nombreInstalacion",
-              eq.id                                  AS "idEquipo",
-              te.nombre                              AS "nombreEquipo",
-              dre.programa_academico                 AS "programaAcademico",
-              dre.numero_estudiantes                 AS "numeroEstudiantes",
-              dre.id_instalacion_destino             AS "idInstalacionDestino",
-              CAST(NULL AS TEXT)                     AS "tipoMantenimiento",
-              CAST(NULL AS TEXT)                     AS "descripcionMantenimiento",
-              CAST(NULL AS BIGINT)                   AS "idCategoriaMantenimiento",
-              CAST(NULL AS TEXT)                     AS "estadoMantenimiento",
-              CAST(re.state AS TEXT)                 AS "estadoReserva",
-              CAST(dre.state AS TEXT)                AS "estadoDetalle"
-            FROM detalle_reserva_equipo dre
-            JOIN reserva re ON dre.id_reserva = re.id
-            JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
-            JOIN persona pe ON re.id_persona = pe.id
-            JOIN equipo eq ON dre.id_equipo = eq.id
-            JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
-            JOIN instalacion ins ON dre.id_instalacion_destino = ins.id
-            WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
+                        SELECT
+                          tr.nombre                              AS "tipoReserva",
+                          re.nombre                              AS "nombreReserva",
+                          re.descripcion                         AS "descripcionReserva",
+                          re.fecha_reserva                       AS "fechaReserva",
+                          re.hora_inicio                         AS "horaInicioReserva",
+                          re.hora_fin                            AS "horaFinReserva",
+                          pe.nombres                             AS "nombrePersona",
+                          pe.numero_identificacion               AS "numeroIdentificacion",
+                          ins.nombre                             AS "nombreInstalacion",
+                          te.nombre                              AS "nombreEquipo",
+                          dre.programa_academico                 AS "programaAcademico",
+                          dre.numero_estudiantes                 AS "numeroEstudiantes",
+                          CAST(NULL AS TEXT)                     AS "tipoMantenimiento",
+                          CAST(NULL AS TEXT)                     AS "descripcionMantenimiento",
+                          CAST(re.state AS TEXT)                 AS "estadoReserva"
+                        FROM detalle_reserva_equipo dre
+                        JOIN reserva re ON dre.id_reserva = re.id
+                        JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
+                        JOIN persona pe ON re.id_persona = pe.id
+                        JOIN equipo eq ON dre.id_equipo = eq.id
+                        JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
+                        JOIN instalacion ins ON dre.id_instalacion_destino = ins.id
+                        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
             
-            UNION ALL
+                        UNION ALL
             
-            SELECT
-              re.id                                  AS "idReserva",
-              CAST(NULL AS BIGINT)                   AS "idDetalleRerservaEquipo",
-              dri.id                                 AS "idDetalleRerservaInstalacion",
-              CAST(NULL AS BIGINT)                   AS "idMantenimientoEquipo",
-              CAST(NULL AS BIGINT)                   AS "idMantenimientoInstalacion",
-              tr.id                                  AS "idTipoReserva",
-              tr.nombre                              AS "tipoReserva",
-              re.nombre                              AS "nombreReserva",
-              re.descripcion                         AS "descripcionReserva",
-              re.fecha_reserva                       AS "fechaReserva",
-              re.hora_inicio                         AS "horaInicioReserva",
-              re.hora_fin                            AS "horaFinReserva",
-              pe.id                                  AS "idPersona",
-              pe.nombres                             AS "nombrePersona",
-              pe.numero_identificacion               AS "numeroIdentificacion",
-              ins.id                                 AS "idInstalacion",
-              ins.nombre                             AS "nombreInstalacion",
-              CAST(NULL AS BIGINT)                   AS "idEquipo",
-              CAST(NULL AS TEXT)                     AS "nombreEquipo",
-              dri.programa_academico                 AS "programaAcademico",
-              dri.numero_estudiantes                 AS "numeroEstudiantes",
-              CAST(NULL AS BIGINT)                   AS "idInstalacionDestino",
-              CAST(NULL AS TEXT)                     AS "tipoMantenimiento",
-              CAST(NULL AS TEXT)                     AS "descripcionMantenimiento",
-              CAST(NULL AS BIGINT)                   AS "idCategoriaMantenimiento",
-              CAST(NULL AS TEXT)                     AS "estadoMantenimiento",
-              CAST(re.state AS TEXT)                 AS "estadoReserva",
-              CAST(dri.state AS TEXT)                AS "estadoDetalle"
-            FROM detalle_reserva_instalacion dri
-            JOIN reserva re ON dri.id_reserva = re.id
-            JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
-            JOIN persona pe ON re.id_persona = pe.id
-            JOIN instalacion ins ON dri.id_instalacion = ins.id
-            WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
+                        SELECT
+                          tr.nombre                              AS "tipoReserva",
+                          re.nombre                              AS "nombreReserva",
+                          re.descripcion                         AS "descripcionReserva",
+                          re.fecha_reserva                       AS "fechaReserva",
+                          re.hora_inicio                         AS "horaInicioReserva",
+                          re.hora_fin                            AS "horaFinReserva",
+                          pe.nombres                             AS "nombrePersona",
+                          pe.numero_identificacion               AS "numeroIdentificacion",
+            +              ins.nombre                             AS "nombreInstalacion",
+                          CAST(NULL AS TEXT)                     AS "nombreEquipo",
+                          dri.programa_academico                 AS "programaAcademico",
+                          dri.numero_estudiantes                 AS "numeroEstudiantes",
+                          CAST(NULL AS TEXT)                     AS "tipoMantenimiento",
+                          CAST(NULL AS TEXT)                     AS "descripcionMantenimiento",
+                          CAST(re.state AS TEXT)                 AS "estadoReserva"
+                        FROM detalle_reserva_instalacion dri
+                        JOIN reserva re ON dri.id_reserva = re.id
+                        JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
+                        JOIN persona pe ON re.id_persona = pe.id
+                        JOIN instalacion ins ON dri.id_instalacion = ins.id
+                        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
             
-            UNION ALL
+                        UNION ALL
             
-            SELECT
-              re.id                                  AS "idReserva",
-              CAST(NULL AS BIGINT)                   AS "idDetalleRerservaEquipo",
-              CAST(NULL AS BIGINT)                   AS "idDetalleRerservaInstalacion",
-              me.id                                  AS "idMantenimientoEquipo",
-              CAST(NULL AS BIGINT)                   AS "idMantenimientoInstalacion",
-              tr.id                                  AS "idTipoReserva",
-              tr.nombre                              AS "tipoReserva",
-              re.nombre                              AS "nombreReserva",
-              re.descripcion                         AS "descripcionReserva",
-              re.fecha_reserva                       AS "fechaReserva",
-              re.hora_inicio                         AS "horaInicioReserva",
-              re.hora_fin                            AS "horaFinReserva",
-              pe.id                                  AS "idPersona",
-              pe.nombres                             AS "nombrePersona",
-              pe.numero_identificacion               AS "numeroIdentificacion",
-              CAST(NULL AS BIGINT)                   AS "idInstalacion",
-              CAST(NULL AS TEXT)                     AS "nombreInstalacion",
-              eq.id                                  AS "idEquipo",
-              te.nombre                              AS "nombreEquipo",
-              CAST(NULL AS TEXT)                     AS "programaAcademico",
-              CAST(NULL AS INTEGER)                  AS "numeroEstudiantes",
-              CAST(NULL AS BIGINT)                   AS "idInstalacionDestino",
-              cme.nombre                             AS "tipoMantenimiento",
-              me.descripcion                         AS "descripcionMantenimiento",
-              me.id_categoria_mantenimiento_equipo   AS "idCategoriaMantenimiento",
-              CAST(me.state AS TEXT)                 AS "estadoMantenimiento",
-              CAST(re.state AS TEXT)                 AS "estadoReserva",
-              CAST(NULL AS TEXT)                     AS "estadoDetalle"
-            FROM mantenimiento_equipo me
-            JOIN reserva re ON me.id_reserva = re.id
-            JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
-            JOIN persona pe ON re.id_persona = pe.id
-            JOIN equipo eq ON me.id_equipo = eq.id
-            JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
-            JOIN categoria_mantenimiento_equipo cme ON me.id_categoria_mantenimiento_equipo = cme.id
-            WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
+                        SELECT
+                          tr.nombre                              AS "tipoReserva",
+                          re.nombre                              AS "nombreReserva",
+                          re.descripcion                         AS "descripcionReserva",
+                          re.fecha_reserva                       AS "fechaReserva",
+                          re.hora_inicio                         AS "horaInicioReserva",
+                          re.hora_fin                            AS "horaFinReserva",
+                          pe.nombres                             AS "nombrePersona",
+                          pe.numero_identificacion               AS "numeroIdentificacion",
+                          CAST(NULL AS TEXT)                     AS "nombreInstalacion",
+                          te.nombre                              AS "nombreEquipo",
+                          CAST(NULL AS TEXT)                     AS "programaAcademico",
+                          CAST(NULL AS INTEGER)                  AS "numeroEstudiantes",
+                          cme.nombre                             AS "tipoMantenimiento",
+                          me.descripcion                         AS "descripcionMantenimiento",
+                          CAST(re.state AS TEXT)                 AS "estadoReserva"
+                        FROM mantenimiento_equipo me
+                        JOIN reserva re ON me.id_reserva = re.id
+                        JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
+                        JOIN persona pe ON re.id_persona = pe.id
+                        JOIN equipo eq ON me.id_equipo = eq.id
+                        JOIN tipo_equipo te ON eq.id_tipo_equipo = te.id
+                        JOIN categoria_mantenimiento_equipo cme ON me.id_categoria_mantenimiento_equipo = cme.id
+                        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
             
-            UNION ALL
+                        UNION ALL
             
-            SELECT
-              re.id                                  AS "idReserva",
-              CAST(NULL AS BIGINT)                   AS "idDetalleRerservaEquipo",
-              CAST(NULL AS BIGINT)                   AS "idDetalleRerservaInstalacion",
-              CAST(NULL AS BIGINT)                   AS "idMantenimientoEquipo",
-              mi.id                                  AS "idMantenimientoInstalacion",
-              tr.id                                  AS "idTipoReserva",
-              tr.nombre                              AS "tipoReserva",
-              re.nombre                              AS "nombreReserva",
-              re.descripcion                         AS "descripcionReserva",
-              re.fecha_reserva                       AS "fechaReserva",
-              re.hora_inicio                         AS "horaInicioReserva",
-              re.hora_fin                            AS "horaFinReserva",
-              pe.id                                  AS "idPersona",
-              pe.nombres                             AS "nombrePersona",
-              pe.numero_identificacion               AS "numeroIdentificacion",
-              ins.id                                 AS "idInstalacion",
-              ins.nombre                             AS "nombreInstalacion",
-              CAST(NULL AS BIGINT)                   AS "idEquipo",
-              CAST(NULL AS TEXT)                     AS "nombreEquipo",
-              CAST(NULL AS TEXT)                     AS "programaAcademico",
-              CAST(NULL AS INTEGER)                  AS "numeroEstudiantes",
-              CAST(NULL AS BIGINT)                   AS "idInstalacionDestino",
-              cmi.nombre                             AS "tipoMantenimiento",
-              mi.descripcion                         AS "descripcionMantenimiento",
-              mi.id_categoria_mantenimiento_instalacion AS "idCategoriaMantenimiento",
-              CAST(mi.state AS TEXT)                 AS "estadoMantenimiento",
-              CAST(re.state AS TEXT)                 AS "estadoReserva",
-              CAST(NULL AS TEXT)                     AS "estadoDetalle"
-            FROM mantenimiento_instalacion mi
-            JOIN reserva re ON mi.id_reserva = re.id
-            JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
-            JOIN persona pe ON re.id_persona = pe.id
-            JOIN instalacion ins ON mi.id_instalacion = ins.id
-            JOIN categoria_mantenimiento_instalacion cmi ON mi.id_categoria_mantenimiento_instalacion = cmi.id
-            WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
+                        SELECT
+                          tr.nombre                              AS "tipoReserva",
+                          re.nombre                              AS "nombreReserva",
+                          re.descripcion                         AS "descripcionReserva",
+                          re.fecha_reserva                       AS "fechaReserva",
+                          re.hora_inicio                         AS "horaInicioReserva",
+                          re.hora_fin                            AS "horaFinReserva",
+                          pe.nombres                             AS "nombrePersona",
+                          pe.numero_identificacion               AS "numeroIdentificacion",
+                          ins.nombre                             AS "nombreInstalacion",
+                          CAST(NULL AS TEXT)                     AS "nombreEquipo",
+                          CAST(NULL AS TEXT)                     AS "programaAcademico",
+                          CAST(NULL AS INTEGER)                  AS "numeroEstudiantes",
+                          cmi.nombre                             AS "tipoMantenimiento",
+                          mi.descripcion                         AS "descripcionMantenimiento",
+                          CAST(re.state AS TEXT)                 AS "estadoReserva"
+                        FROM mantenimiento_instalacion mi
+                        JOIN reserva re ON mi.id_reserva = re.id
+                        JOIN tipo_reserva tr ON re.id_tipo_reserva = tr.id
+                        JOIN persona pe ON re.id_persona = pe.id
+                        JOIN instalacion ins ON mi.id_instalacion = ins.id
+                        JOIN categoria_mantenimiento_instalacion cmi ON mi.id_categoria_mantenimiento_instalacion = cmi.id
+                        WHERE (:numeroIdentificacion IS NULL OR :numeroIdentificacion = '' OR pe.numero_identificacion = :numeroIdentificacion)
             """,
             nativeQuery = true)
     @QueryHints(@QueryHint(name = org.hibernate.jpa.HibernateHints.HINT_FETCH_SIZE, value = "1000"))
