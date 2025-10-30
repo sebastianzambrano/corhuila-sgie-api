@@ -7,8 +7,6 @@ import com.corhuila.sgie.Site.IRepository.IInstalacionRepository;
 import com.corhuila.sgie.Site.IService.IInstalacionService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import com.corhuila.sgie.common.Reporting.ReporteGenericoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +16,12 @@ import java.util.stream.Stream;
 
 @Service
 public class InstalacionService extends BaseService<Instalacion> implements IInstalacionService {
-    @Autowired
-    private IInstalacionRepository repository;
 
-    @Autowired
-    private ReporteGenericoService reporteGenericoService;
+    private final IInstalacionRepository repository;
+
+    public InstalacionService(IInstalacionRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     protected IBaseRepository<Instalacion, Long> getRepository() {
@@ -35,7 +34,7 @@ public class InstalacionService extends BaseService<Instalacion> implements IIns
     }
 
     public Supplier<Stream<InstalacionReporteDTO>> proveedorStream() {
-        return () -> repository.generarReporteInstalaciones();
+        return repository::generarReporteInstalaciones;
     }
 
     @Transactional(readOnly = true)

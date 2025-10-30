@@ -12,9 +12,6 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditoriaListener.class)
 public abstract class Auditoria {
-    /*@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;*/
 
     @Column(name = "state")
     private Boolean state;

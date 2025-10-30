@@ -1,8 +1,6 @@
 package com.corhuila.sgie.common.Reporting;
 
 import jakarta.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
@@ -22,7 +20,6 @@ import java.util.stream.Stream;
 @Service
 public class ReporteGenericoService {
 
-    private static final Logger log = LoggerFactory.getLogger(ReporteGenericoService.class);
     private final TransactionTemplate readOnlyTxTemplate;
 
     public ReporteGenericoService(PlatformTransactionManager transactionManager) {
@@ -69,6 +66,7 @@ public class ReporteGenericoService {
                 headers.setContentLength(size);
             }
         } catch (Exception ignored) {
+            // Se ignora la excepción al hacer flush del buffer porque la respuesta ya fue enviada
         }
         return ResponseEntity.ok()
                 .headers(headers)
@@ -84,6 +82,7 @@ public class ReporteGenericoService {
         return construirRespuesta(reporte);
     }
 
+
     public <T> ResponseEntity<StreamingResponseBody> generarStreaming(ReportFormat format,
                                                                       Supplier<Stream<T>> streamSupplier,
                                                                       Class<T> dtoType,
@@ -93,23 +92,16 @@ public class ReporteGenericoService {
         ReportWriter writer = GeneradorReporteUtil.resolveWriter(format);
         String resolvedFileName = GeneradorReporteUtil.sugerirNombreArchivo(fileName, format);
 
-        StreamingResponseBody body = outputStream -> {
-            try {
+        StreamingResponseBody body = outputStream ->
                 readOnlyTxTemplate.execute(status -> {
                     try (Stream<T> stream = streamSupplier.get()) {
                         GeneradorReporteUtil.escribir(outputStream, format, dtoType, stream, title);
                         outputStream.flush();
                     } catch (Exception ex) {
-                        log.error("Error generando el reporte {} en formato {}", fileName, format, ex);
                         throw new IllegalStateException("Error generando el reporte", ex);
                     }
                     return null;
                 });
-            } catch (Exception e) {
-                log.error("Error en streaming del reporte {}", fileName, e);
-                throw e;
-            }
-        };
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(writer.contentType()));
@@ -121,6 +113,56 @@ public class ReporteGenericoService {
                 .headers(headers)
                 .body(body);
     }
+
+    /*
+    public <T> ResponseEntity<StreamingResponseBody> generarStreaming(
+            ReportFormat format,
+            Supplier<Stream<T>> streamSupplier,
+            Class<T> dtoType,
+            String fileName,
+            String title
+    ) {
+        Objects.requireNonNull(streamSupplier, "El supplier del stream es obligatorio");
+
+        // 1) Genera el reporte DENTRO de la transacción y CIERRA el stream.
+        //    Si algo falla aquí, aún NO se han enviado headers binarios y tu @ControllerAdvice
+        //    podrá responder JSON sin romper el content-type.
+        GeneradorReporteUtil.GeneratedReport reporte = readOnlyTxTemplate.execute(status -> {
+            try (Stream<T> stream = streamSupplier.get()) {
+                return GeneradorReporteUtil.generarEnMemoria(format, stream, dtoType, fileName, title);
+            } catch (Exception ex) {
+                throw new IllegalStateException("Error generando el reporte", ex);
+            }
+        });
+
+        // 2) Prepara el cuerpo streaming leyendo del Resource ya generado en memoria.
+        StreamingResponseBody body = os -> {
+            try (var in = reporte.resource().getInputStream()) {
+                in.transferTo(os);
+                os.flush();
+            }
+        };
+
+        // 3) Arma los headers binarios SOLO ahora que ya tienes el archivo listo.
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(reporte.mediaType());
+        headers.setContentDisposition(ContentDisposition.attachment()
+                .filename(reporte.fileName())
+                .build());
+        try {
+            long size = reporte.resource().contentLength();
+            if (size >= 0) {
+                headers.setContentLength(size);
+            }
+        } catch (Exception ignored) {
+            // Si no puedes calcular el length, omítelo.
+        }
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(body);
+    }
+*/
 
     public <T> void escribirAlResponse(HttpServletResponse response,
                                        ReportFormat format,
@@ -160,6 +202,7 @@ public class ReporteGenericoService {
         try {
             response.flushBuffer();
         } catch (Exception ignored) {
+            // Se ignora la excepción al hacer flush del buffer porque la respuesta ya fue enviada al cliente
         }
     }
 }

@@ -5,13 +5,16 @@ import com.corhuila.sgie.Site.IRepository.IContinenteRepository;
 import com.corhuila.sgie.Site.IService.IContinenteService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ContinenteService extends BaseService<Continente> implements IContinenteService {
-    @Autowired
-    private IContinenteRepository repository;
+
+    private final IContinenteRepository repository;
+
+    public ContinenteService(IContinenteRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     protected IBaseRepository<Continente, Long> getRepository() {

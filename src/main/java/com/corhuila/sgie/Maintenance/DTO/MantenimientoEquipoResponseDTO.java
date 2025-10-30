@@ -18,7 +18,6 @@ public class MantenimientoEquipoResponseDTO {
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;
 
-    // Datos de la reserva
     private String nombreReserva;
     private String descripcionReserva;
     private LocalDate fechaReserva;

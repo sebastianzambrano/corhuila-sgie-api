@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: sgie
+  profiles:
+    default: dev
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        secure: ${SESSION_COOKIE_SECURE:false}
+        same-site: ${SESSION_COOKIE_SAMESITE:Lax}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration-ms: ${JWT_EXPIRATION_MS}
+
+security:
+  jwt:
+    cookie:
+      name: ${JWT_COOKIE_NAME:token}
+      secure: ${JWT_COOKIE_SECURE:false}
+      same-site: ${JWT_COOKIE_SAMESITE:None}
+      max-age-seconds: ${JWT_COOKIE_MAX_AGE:3600}
+
+logging:
+  level:
+    root: INFO
+  pattern:
+    level: "%5p [%X{requestId}]"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when_authorized

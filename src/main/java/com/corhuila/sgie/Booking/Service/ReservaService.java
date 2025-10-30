@@ -8,21 +8,23 @@ import com.corhuila.sgie.Booking.IRepository.IReservaRepository;
 import com.corhuila.sgie.Booking.IService.IReservaService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
 public class ReservaService extends BaseService<Reserva> implements IReservaService {
 
-    @Autowired
-    private IReservaRepository repository;
+    private final IReservaRepository repository;
+
+    public ReservaService(IReservaRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     protected IBaseRepository<Reserva, Long> getRepository() {
@@ -35,7 +37,7 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -44,11 +46,11 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
-    public Reserva save(Reserva reserva) throws Exception {
+    public Reserva save(Reserva reserva) throws DataAccessException {
         List<Reserva> solapadas = repository.findReservasSolapadas(
                 reserva.getFechaReserva(),
                 reserva.getHoraInicio(),
@@ -57,7 +59,7 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
         );
 
         if (!solapadas.isEmpty()) {
-            throw new Exception("La reserva se solapa con otra existente entre "
+            throw new IllegalStateException("La reserva se solapa con otra existente entre "
                     + solapadas.get(0).getHoraInicio() + " y " + solapadas.get(0).getHoraFin());
         }
 

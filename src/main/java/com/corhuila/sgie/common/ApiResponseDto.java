@@ -1,15 +1,15 @@
 package com.corhuila.sgie.common;
 
-import com.corhuila.sgie.User.Entity.Usuario;
-
-import java.util.List;
 
 public class ApiResponseDto<T> {
     private Boolean status;
     private T data;
     private String message;
 
-    public ApiResponseDto(boolean b, List<Usuario> usuarios, String consultaExitosa) {
+    public ApiResponseDto(boolean status, T data, String message) {
+        this.status = status;
+        this.data = data;
+        this.message = message;
     }
 
     public ApiResponseDto(String message, T data, Boolean status) {

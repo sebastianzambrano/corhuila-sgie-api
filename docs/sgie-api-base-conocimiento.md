@@ -13,13 +13,10 @@
   - JWT jjwt (api, impl, jackson) para firmas HS256.
   - MapStruct y Lombok (generacion de DTO y boilerplate).
   - Driver `org.postgresql:postgresql`.
-- **Application properties** (`src/main/resources/application.properties`):
-  - Conexion local a PostgreSQL `jdbc:postgresql://localhost:5432/sgie` (usuario `sebastianzambrano`).
-  - `spring.jpa.hibernate.ddl-auto=update` y `spring.jpa.show-sql=true`.
-  - Clave JWT y expiracion via variables `JWT_SECRET` y `JWT_EXPIRATION_MS` (fallback a valores de desarrollo).
-  - Configuracion SMTP (Gmail) para envio de correos.
-  - Logging detallado (`org.hibernate.SQL`, `BasicBinder`, `org.springframework.security` en DEBUG/TRACE).
-  - CORS abierto para `http://localhost:5173`, cookies HTTP-only `same-site=Lax`.
+- **Configuración centralizada**:
+  - `src/main/resources/application.yml`: define defaults neutrales, habilita perfiles `dev|qa|prod`, configura mail, JWT y cookies leyendo **únicamente** variables de entorno (`JWT_SECRET`, `MAIL_*`, `CORS_ALLOWED_ORIGINS`, etc.).
+  - `application-dev.yml`, `application-qa.yml`, `application-prod.yml`: cada perfil inyecta credenciales vía variables (`*_DB_URL`, `*_DB_USERNAME`, `*_DB_PASSWORD`, `PROD_JWT_COOKIE_MAX_AGE`, etc.) sin secretos embebidos.
+  - `src/test/resources/application-test.yml`: usa H2 en memoria y secret de prueba para los tests.
 
 ## Arquitectura
 - **Capas**:

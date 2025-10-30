@@ -7,15 +7,17 @@ import com.corhuila.sgie.User.IRepository.IPermisoRolEntidadRepository;
 import com.corhuila.sgie.User.IService.IPermisoRolEntidadService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class PermisoRolEntidadService extends BaseService<PermisoRolEntidad> implements IPermisoRolEntidadService {
-    @Autowired
-    private IPermisoRolEntidadRepository repository;
+    private final IPermisoRolEntidadRepository repository;
+
+    public PermisoRolEntidadService(IPermisoRolEntidadRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     protected IBaseRepository<PermisoRolEntidad, Long> getRepository() {

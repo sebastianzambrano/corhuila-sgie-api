@@ -24,7 +24,7 @@ public class DetalleReservaEquipo extends Auditoria {
 
     private String programaAcademico;
     private Short numeroEstudiantes;
-    private String EntregaEquipo;
+    private String entregaEquipo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_equipo", nullable = false)

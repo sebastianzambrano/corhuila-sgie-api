@@ -1,5 +1,6 @@
 package com.corhuila.sgie.common.Reporting;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.stream.Stream;
 
@@ -8,5 +9,5 @@ public interface ReportWriter {
 
     String extension();
 
-    void write(OutputStream out, Class<?> dtoType, Stream<?> rows, String title) throws Exception;
+    void write(OutputStream out, Class<?> dtoType, Stream<?> rows, String title) throws IOException;
 }

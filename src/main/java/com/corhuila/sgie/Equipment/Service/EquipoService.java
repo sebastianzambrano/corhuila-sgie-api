@@ -7,7 +7,6 @@ import com.corhuila.sgie.Equipment.IRepository.IEquipoRepository;
 import com.corhuila.sgie.Equipment.IService.IEquipoService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,11 @@ import java.util.stream.Stream;
 
 @Service
 public class EquipoService extends BaseService<Equipo> implements IEquipoService {
-    @Autowired
-    private IEquipoRepository repository;
+    private final IEquipoRepository repository;
+
+    public EquipoService(IEquipoRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     protected IBaseRepository<Equipo, Long> getRepository() {
@@ -31,7 +33,7 @@ public class EquipoService extends BaseService<Equipo> implements IEquipoService
     }
 
     public Supplier<Stream<EquipoReporteDTO>> proveedorStream() {
-        return () -> repository.generarReporteEquipos();
+        return repository::generarReporteEquipos;
     }
 
     @Transactional(readOnly = true)

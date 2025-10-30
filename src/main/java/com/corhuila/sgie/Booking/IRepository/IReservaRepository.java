@@ -253,7 +253,7 @@ public interface IReservaRepository extends IBaseRepository<Reserva, Long> {
                           re.hora_fin                            AS "horaFinReserva",
                           pe.nombres                             AS "nombrePersona",
                           pe.numero_identificacion               AS "numeroIdentificacion",
-            +              ins.nombre                             AS "nombreInstalacion",
+                          ins.nombre                             AS "nombreInstalacion",
                           CAST(NULL AS TEXT)                     AS "nombreEquipo",
                           dri.programa_academico                 AS "programaAcademico",
                           dri.numero_estudiantes                 AS "numeroEstudiantes",

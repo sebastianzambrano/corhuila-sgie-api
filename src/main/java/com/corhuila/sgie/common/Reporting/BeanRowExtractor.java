@@ -10,8 +10,7 @@ import java.lang.reflect.RecordComponent;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.function.UnaryOperator;
 
 public final class BeanRowExtractor {
 
@@ -23,7 +22,7 @@ public final class BeanRowExtractor {
     public static List<String> headers(Class<?> dtoType) {
         return metas(dtoType).stream()
                 .map(ColumnMeta::header)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static List<Object> values(Object row) {
@@ -49,63 +48,8 @@ public final class BeanRowExtractor {
         Map<String, ColumnMeta> annotated = new LinkedHashMap<>();
         Set<String> explicitProperties = new HashSet<>();
 
-        for (Field field : allFields(dtoType)) {
-            ReportColumn column = field.getAnnotation(ReportColumn.class);
-            if (column == null) {
-                continue;
-            }
-            makeAccessible(field);
-            Function<Object, Object> getter = bean -> {
-                try {
-                    return field.get(bean);
-                } catch (IllegalAccessException e) {
-                    throw new IllegalStateException("No se pudo leer el campo " + field.getName(), e);
-                }
-            };
-            ColumnMeta meta = new ColumnMeta(
-                    field.getName(),
-                    column.header(),
-                    column.order(),
-                    column.format(),
-                    column.width(),
-                    column.autosize(),
-                    column.wrap(),
-                    column.text(),
-                    getter);
-            explicitProperties.add(field.getName());
-            annotated.put(field.getName(), meta);
-        }
-
-        for (Method method : dtoType.getMethods()) {
-            if (method.getParameterCount() != 0) {
-                continue;
-            }
-            ReportColumn column = method.getAnnotation(ReportColumn.class);
-            if (column == null) {
-                continue;
-            }
-            makeAccessible(method);
-            String propertyName = propertyNameFromGetter(method.getName());
-            Function<Object, Object> getter = bean -> {
-                try {
-                    return method.invoke(bean);
-                } catch (Exception e) {
-                    throw new IllegalStateException("No se pudo invocar el getter " + method.getName(), e);
-                }
-            };
-            ColumnMeta meta = new ColumnMeta(
-                    propertyName,
-                    column.header(),
-                    column.order(),
-                    column.format(),
-                    column.width(),
-                    column.autosize(),
-                    column.wrap(),
-                    column.text(),
-                    getter);
-            explicitProperties.add(propertyName);
-            annotated.put(propertyName, meta);
-        }
+        processAnnotatedFields(dtoType, annotated, explicitProperties);
+        processAnnotatedMethods(dtoType, annotated, explicitProperties);
 
         List<ColumnMeta> annotatedList = new ArrayList<>(annotated.values());
         annotatedList.sort(Comparator.comparingInt(ColumnMeta::order).thenComparing(ColumnMeta::header));
@@ -121,108 +65,148 @@ public final class BeanRowExtractor {
                 .orElse(-1) + 1;
 
         for (ColumnMeta fallback : defaults) {
-            if (explicitProperties.contains(fallback.property())) {
-                continue;
+            if (!explicitProperties.contains(fallback.property())) {
+                annotatedList.add(fallback.withOrder(nextOrder++));
             }
-            annotatedList.add(fallback.withOrder(nextOrder++));
         }
 
         annotatedList.sort(Comparator.comparingInt(ColumnMeta::order).thenComparing(ColumnMeta::header));
         return List.copyOf(annotatedList);
     }
 
+    private static void processAnnotatedFields(Class<?> dtoType, Map<String, ColumnMeta> annotated, Set<String> explicitProperties) {
+        for (Field field : allFields(dtoType)) {
+            ReportColumn column = field.getAnnotation(ReportColumn.class);
+            if (column == null) {
+                continue;
+            }
+            UnaryOperator<Object> getter = bean -> getFieldValue(field, bean);
+
+            ColumnMeta meta = ColumnMeta.builder()
+                    .property(field.getName())
+                    .header(column.header())
+                    .order(column.order())
+                    .format(column.format())
+                    .width(column.width())
+                    .autosize(column.autosize())
+                    .wrap(column.wrap())
+                    .text(column.text())
+                    .getter(getter)
+                    .build();
+            explicitProperties.add(field.getName());
+            annotated.put(field.getName(), meta);
+        }
+    }
+
+    private static void processAnnotatedMethods(Class<?> dtoType, Map<String, ColumnMeta> annotated, Set<String> explicitProperties) {
+        for (Method method : dtoType.getMethods()) {
+            if (method.getParameterCount() == 0 && method.getAnnotation(ReportColumn.class) != null) {
+                ReportColumn column = method.getAnnotation(ReportColumn.class);
+                UnaryOperator<Object> getter = bean -> invokeMethod(method, bean);
+                String propertyName = propertyNameFromGetter(method.getName());
+
+                ColumnMeta meta = ColumnMeta.builder()
+                        .property(propertyName)
+                        .header(column.header())
+                        .order(column.order())
+                        .format(column.format())
+                        .width(column.width())
+                        .autosize(column.autosize())
+                        .wrap(column.wrap())
+                        .text(column.text())
+                        .getter(getter)
+                        .build();
+                explicitProperties.add(propertyName);
+                annotated.put(propertyName, meta);
+            }
+        }
+    }
+
+
     private static List<ColumnMeta> defaultColumns(Class<?> dtoType) {
         Map<String, ColumnMeta> map = new LinkedHashMap<>();
         AtomicInteger order = new AtomicInteger(0);
 
+        processFields(dtoType, map, order);
+        processBeanProperties(dtoType, map, order);
+        processRecordComponents(dtoType, map, order);
+
+        return new ArrayList<>(map.values());
+    }
+
+    private static void processFields(Class<?> dtoType, Map<String, ColumnMeta> map, AtomicInteger order) {
         for (Field field : allFields(dtoType)) {
             if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
-            makeAccessible(field);
-            map.computeIfAbsent(field.getName(), name -> new ColumnMeta(
-                    name,
-                    defaultHeader(name),
-                    order.getAndIncrement(),
-                    "",
-                    -1,
-                    false,
-                    false,
-                    false,
-                    bean -> {
-                        try {
-                            return field.get(bean);
-                        } catch (IllegalAccessException e) {
-                            throw new IllegalStateException("No se pudo leer el campo " + name, e);
-                        }
-                    }
-            ));
-        }
 
+            map.computeIfAbsent(field.getName(), name -> ColumnMeta.builder()
+                    .property(name)
+                    .header(defaultHeader(name))
+                    .order(order.getAndIncrement())
+                    .format("")
+                    .width(-1)
+                    .autosize(false)
+                    .wrap(false)
+                    .text(false)
+                    .getter(bean -> getFieldValue(field, bean))
+                    .build());
+        }
+    }
+
+    private static void processBeanProperties(Class<?> dtoType, Map<String, ColumnMeta> map, AtomicInteger order) {
         try {
             PropertyDescriptor[] descriptors = Introspector.getBeanInfo(dtoType).getPropertyDescriptors();
             for (PropertyDescriptor descriptor : descriptors) {
                 String name = descriptor.getName();
-                if ("class".equals(name) || map.containsKey(name)) {
-                    continue;
-                }
                 Method readMethod = descriptor.getReadMethod();
-                if (readMethod == null) {
-                    continue;
+
+                if (!"class".equals(name) && !map.containsKey(name) && readMethod != null) {
+
+                    map.put(name, ColumnMeta.builder()
+                            .property(name)
+                            .header(defaultHeader(name))
+                            .order(order.getAndIncrement())
+                            .format("")
+                            .width(-1)
+                            .autosize(false)
+                            .wrap(false)
+                            .text(false)
+                            .getter(bean -> invokeMethod(readMethod, bean))
+                            .build());
                 }
-                makeAccessible(readMethod);
-                map.put(name, new ColumnMeta(
-                        name,
-                        defaultHeader(name),
-                        order.getAndIncrement(),
-                        "",
-                        -1,
-                        false,
-                        false,
-                        false,
-                        bean -> {
-                            try {
-                                return readMethod.invoke(bean);
-                            } catch (Exception e) {
-                                throw new IllegalStateException("No se pudo invocar el getter " + readMethod.getName(), e);
-                            }
-                        }
-                ));
             }
         } catch (IntrospectionException ignored) {
             // Si ocurre se ignora, ya se cubrió por campos.
         }
+    }
 
-        if (dtoType.isRecord()) {
-            for (RecordComponent component : dtoType.getRecordComponents()) {
-                String name = component.getName();
-                if (map.containsKey(name)) {
-                    continue;
-                }
-                Method accessor = component.getAccessor();
-                makeAccessible(accessor);
-                map.put(name, new ColumnMeta(
-                        name,
-                        defaultHeader(name),
-                        order.getAndIncrement(),
-                        "",
-                        -1,
-                        false,
-                        false,
-                        false,
-                        bean -> {
-                            try {
-                                return accessor.invoke(bean);
-                            } catch (Exception e) {
-                                throw new IllegalStateException("No se pudo invocar el accessor del record " + name, e);
-                            }
-                        }
-                ));
-            }
+    private static void processRecordComponents(Class<?> dtoType, Map<String, ColumnMeta> map, AtomicInteger order) {
+        if (!dtoType.isRecord()) {
+            return;
         }
 
-        return new ArrayList<>(map.values());
+        for (RecordComponent component : dtoType.getRecordComponents()) {
+            String name = component.getName();
+            if (map.containsKey(name)) {
+                continue;
+            }
+            Method accessor = component.getAccessor();
+
+            map.put(name, ColumnMeta.builder()
+                    .property(name)
+                    .header(defaultHeader(name))
+                    .order(order.getAndIncrement())
+                    .format("")
+                    .width(-1)
+                    .autosize(false)
+                    .wrap(false)
+                    .text(false)
+                    .getter(bean -> invokeMethod(accessor, bean))
+                    .build());
+        }
     }
+
 
     private static List<Field> allFields(Class<?> type) {
         List<Field> fields = new ArrayList<>();
@@ -234,19 +218,45 @@ public final class BeanRowExtractor {
         return fields;
     }
 
-    private static void makeAccessible(Field field) {
+
+    private static Object getFieldValue(Field field, Object bean) {
         try {
-            field.setAccessible(true);
-        } catch (Throwable ignored) {
+            // Intenta acceso directo primero
+            if (field.canAccess(bean)) {
+                return field.get(bean);
+            }
+
+            // Usa MethodHandles como alternativa segura
+            var lookup = java.lang.invoke.MethodHandles.privateLookupIn(
+                    field.getDeclaringClass(),
+                    java.lang.invoke.MethodHandles.lookup()
+            );
+            var handle = lookup.unreflectGetter(field);
+            return handle.invoke(bean);
+        } catch (Throwable e) {
+            throw new IllegalStateException("No se pudo leer el campo " + field.getName(), e);
         }
     }
 
-    private static void makeAccessible(Method method) {
+    private static Object invokeMethod(Method method, Object bean) {
         try {
-            method.setAccessible(true);
-        } catch (Throwable ignored) {
+            // Intenta acceso directo primero
+            if (method.canAccess(bean)) {
+                return method.invoke(bean);
+            }
+
+            // Usa MethodHandles como alternativa segura
+            var lookup = java.lang.invoke.MethodHandles.privateLookupIn(
+                    method.getDeclaringClass(),
+                    java.lang.invoke.MethodHandles.lookup()
+            );
+            var handle = lookup.unreflect(method);
+            return handle.invoke(bean);
+        } catch (Throwable e) {
+            throw new IllegalStateException("No se pudo invocar el método " + method.getName(), e);
         }
     }
+
 
     private static String propertyNameFromGetter(String methodName) {
         if (methodName.startsWith("get") && methodName.length() > 3) {
@@ -291,26 +301,22 @@ public final class BeanRowExtractor {
         private final boolean autosize;
         private final boolean wrap;
         private final boolean text;
-        private final Function<Object, Object> getter;
+        private final UnaryOperator<Object> getter;
 
-        ColumnMeta(String property,
-                   String header,
-                   int order,
-                   String format,
-                   int width,
-                   boolean autosize,
-                   boolean wrap,
-                   boolean text,
-                   Function<Object, Object> getter) {
-            this.property = property;
-            this.header = header;
-            this.order = order;
-            this.format = format;
-            this.width = width;
-            this.autosize = autosize;
-            this.wrap = wrap;
-            this.text = text;
-            this.getter = getter;
+        private ColumnMeta(Builder builder) {
+            this.property = builder.property;
+            this.header = builder.header;
+            this.order = builder.order;
+            this.format = builder.format;
+            this.width = builder.width;
+            this.autosize = builder.autosize;
+            this.wrap = builder.wrap;
+            this.text = builder.text;
+            this.getter = builder.getter;
+        }
+
+        public static Builder builder() {
+            return new Builder();
         }
 
         public String property() {
@@ -354,7 +360,80 @@ public final class BeanRowExtractor {
         }
 
         ColumnMeta withOrder(int newOrder) {
-            return new ColumnMeta(property, header, newOrder, format, width, autosize, wrap, text, getter);
+            return builder()
+                    .property(property)
+                    .header(header)
+                    .order(newOrder)
+                    .format(format)
+                    .width(width)
+                    .autosize(autosize)
+                    .wrap(wrap)
+                    .text(text)
+                    .getter(getter)
+                    .build();
+        }
+
+        public static class Builder {
+            private String property;
+            private String header;
+            private int order;
+            private String format = "";
+            private int width = -1;
+            private boolean autosize;
+            private boolean wrap;
+            private boolean text;
+            private UnaryOperator<Object> getter;
+
+            public Builder property(String property) {
+                this.property = property;
+                return this;
+            }
+
+            public Builder header(String header) {
+                this.header = header;
+                return this;
+            }
+
+            public Builder order(int order) {
+                this.order = order;
+                return this;
+            }
+
+            public Builder format(String format) {
+                this.format = format;
+                return this;
+            }
+
+            public Builder width(int width) {
+                this.width = width;
+                return this;
+            }
+
+            public Builder autosize(boolean autosize) {
+                this.autosize = autosize;
+                return this;
+            }
+
+            public Builder wrap(boolean wrap) {
+                this.wrap = wrap;
+                return this;
+            }
+
+            public Builder text(boolean text) {
+                this.text = text;
+                return this;
+            }
+
+            public Builder getter(UnaryOperator<Object> getter) {
+                this.getter = getter;
+                return this;
+            }
+
+            public ColumnMeta build() {
+                return new ColumnMeta(this);
+            }
         }
     }
+
 }
+

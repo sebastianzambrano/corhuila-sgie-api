@@ -5,6 +5,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
@@ -28,7 +29,7 @@ public final class GeneradorReporteUtil {
                                 ReportFormat format,
                                 Class<?> dtoType,
                                 Stream<?> rows,
-                                String title) throws Exception {
+                                String title) throws IOException {
         Objects.requireNonNull(out, "El OutputStream es obligatorio");
         Objects.requireNonNull(format, "El formato es obligatorio");
         Objects.requireNonNull(dtoType, "El tipo de DTO es obligatorio");
@@ -40,7 +41,7 @@ public final class GeneradorReporteUtil {
                                                    Collection<?> data,
                                                    Class<?> dtoType,
                                                    String fileName,
-                                                   String title) throws Exception {
+                                                   String title) throws IOException {
         Stream<?> stream = data == null ? Stream.empty() : data.stream();
         return generarEnMemoria(format, stream, dtoType, fileName, title);
     }
@@ -49,7 +50,7 @@ public final class GeneradorReporteUtil {
                                                    Stream<?> rows,
                                                    Class<?> dtoType,
                                                    String fileName,
-                                                   String title) throws Exception {
+                                                   String title) throws IOException {
         Objects.requireNonNull(rows, "El stream de datos es obligatorio");
         ReportWriter writer = resolveWriter(format);
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

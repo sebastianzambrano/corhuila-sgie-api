@@ -1,17 +1,23 @@
 package com.corhuila.sgie.User.Controller;
 
+import com.corhuila.sgie.Config.JwtCookieProperties;
 import com.corhuila.sgie.Security.JwtUtil;
 import com.corhuila.sgie.User.DTO.LoginRequest;
+import com.corhuila.sgie.User.DTO.UsuarioCreateRequest;
+import com.corhuila.sgie.User.DTO.UsuarioResponse;
+import com.corhuila.sgie.User.DTO.UsuarioUpdateRequest;
+import com.corhuila.sgie.User.Entity.Persona;
 import com.corhuila.sgie.User.Entity.Usuario;
 import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
 import com.corhuila.sgie.User.IService.IUsuarioService;
-import com.corhuila.sgie.User.Service.UsuarioService;
-import com.corhuila.sgie.common.BaseController;
+import com.corhuila.sgie.common.ApiResponseDto;
+import com.corhuila.sgie.common.EstadoDTO;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,83 +25,116 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("v1/api/usuario")
-public class UsuarioController extends BaseController<Usuario, IUsuarioService> {
+public class UsuarioController {
 
-    private final AuthenticationManager authManager;
+    private static final String ENTITY_NAME = "USUARIO";
+    private static final String ROLE_PREFIX = "ROLE_";
+
+    private final IUsuarioService usuarioService;
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
     private final IUsuarioRepository usuarioRepository;
-    private final UsuarioService usuarioService;
+    private final JwtCookieProperties jwtCookieProperties;
 
-    public UsuarioController(IUsuarioService service,
-                             AuthenticationManager authManager,
+    public UsuarioController(IUsuarioService usuarioService,
                              UserDetailsService userDetailsService,
                              JwtUtil jwtUtil,
-                             IUsuarioRepository usuarioRepository, UsuarioService usuarioService) {
-        super(service, "USUARIO");
-        this.authManager = authManager;
+                             IUsuarioRepository usuarioRepository,
+                             JwtCookieProperties jwtCookieProperties) {
+        this.usuarioService = usuarioService;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.usuarioRepository = usuarioRepository;
-        this.usuarioService = usuarioService;
+        this.jwtCookieProperties = jwtCookieProperties;
+    }
+
+    @GetMapping
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, '" + ENTITY_NAME + "', 'CONSULTAR')")
+    public ResponseEntity<ApiResponseDto<List<UsuarioResponse>>> listarActivos() {
+        List<UsuarioResponse> data = usuarioService.findByStateTrue()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        return ResponseEntity.ok(new ApiResponseDto<>("Datos obtenidos", data, true));
+    }
+
+    @GetMapping("{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, '" + ENTITY_NAME + "', 'CONSULTAR')")
+    public ResponseEntity<ApiResponseDto<UsuarioResponse>> obtenerPorId(@PathVariable Long id) throws Exception {
+        Usuario usuario = usuarioService.findById(id);
+        return ResponseEntity.ok(new ApiResponseDto<>("Registro encontrado", toResponse(usuario), true));
+    }
+
+    @PostMapping
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, '" + ENTITY_NAME + "', 'CREAR')")
+    public ResponseEntity<ApiResponseDto<UsuarioResponse>> crear(@Valid @RequestBody UsuarioCreateRequest request) throws Exception {
+        Usuario nuevo = toEntity(request);
+        Usuario guardado = usuarioService.save(nuevo);
+        return ResponseEntity.ok(new ApiResponseDto<>("Datos guardados", toResponse(guardado), true));
+    }
+
+    @PutMapping("{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, '" + ENTITY_NAME + "', 'ACTUALIZAR')")
+    public ResponseEntity<ApiResponseDto<Void>> actualizar(@PathVariable Long id,
+                                                           @Valid @RequestBody UsuarioUpdateRequest request) throws Exception {
+        Usuario cambios = toEntity(request);
+        usuarioService.update(id, cambios);
+        return ResponseEntity.ok(new ApiResponseDto<>("Datos actualizados", null, true));
+    }
+
+    @PutMapping("{id}/cambiar-estado")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, '" + ENTITY_NAME + "', 'ACTUALIZAR')")
+    public ResponseEntity<ApiResponseDto<Void>> cambiarEstado(@PathVariable Long id,
+                                                              @Valid @RequestBody EstadoDTO estadoDto) throws Exception {
+        usuarioService.cambiarEstado(id, estadoDto.getEstado());
+        return ResponseEntity.ok(new ApiResponseDto<>("Estado actualizado", null, true));
+    }
+
+    @DeleteMapping("{id}")
+    @PreAuthorize("@permissionEvaluator.hasPermission(authentication, '" + ENTITY_NAME + "', 'ELIMINAR')")
+    public ResponseEntity<ApiResponseDto<Void>> eliminar(@PathVariable Long id) throws Exception {
+        usuarioService.delete(id);
+        return ResponseEntity.ok(new ApiResponseDto<>("Registro eliminado", null, true));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody LoginRequest req, HttpServletResponse response) {
+    public ResponseEntity<Map<String, Object>> login(@Valid @RequestBody LoginRequest req, HttpServletResponse response) {
 
-        // Autenticación
-        Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword()));
-
-        // Obtener UserDetails
         UserDetails ud = userDetailsService.loadUserByUsername(req.getEmail());
 
-        // Obtener usuario desde DB para capturar idUsuario
         Usuario usuario = usuarioRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        // Generar token pasando idUsuario explícitamente
         String token = jwtUtil.generateToken(usuario.getId(), ud.getUsername(), ud.getAuthorities());
 
-        // 🔒 Crear cookie segura con SameSite
-        ResponseCookie cookie = ResponseCookie.from("token", token)
-                .httpOnly(true)
-                .secure(false) // ✅ cambia a true en producción con HTTPS
-                .path("/")
-                .maxAge(60 * 60)
-                .sameSite("None") // o "None" si usas frontend separado con cookies cross-site
-                .build();
+        ResponseCookie cookie = buildTokenCookie(token, jwtCookieProperties.getMaxAgeSeconds());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        response.addHeader("Set-Cookie", cookie.toString());
-
-        // Extraer roles y permisos como antes
         List<String> roles = ud.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(a -> a.startsWith("ROLE_"))
-                .map(a -> a.substring(5))
-                .collect(Collectors.toList());
+                .filter(a -> a.startsWith(ROLE_PREFIX))
+                .map(a -> a.substring(ROLE_PREFIX.length()))
+                .toList();
 
         List<String> permisos = ud.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(a -> !a.startsWith("ROLE_"))
-                .collect(Collectors.toList());
+                .filter(a -> !a.startsWith(ROLE_PREFIX))
+                .toList();
 
-        // Construir respuesta
         Map<String, Object> resp = new HashMap<>();
         resp.put("token", token);
         resp.put("email", usuario.getEmail());
-        resp.put("idUsuario", usuario.getId()); // opcional, útil para frontend
+        resp.put("idUsuario", usuario.getId());
         resp.put("roles", roles);
         resp.put("permisos", permisos);
-        //return resp;
+
         return ResponseEntity.ok(resp);
     }
 
@@ -112,19 +151,19 @@ public class UsuarioController extends BaseController<Usuario, IUsuarioService> 
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(a -> a.startsWith("ROLE_"))
-                .map(a -> a.substring(5))
+                .filter(a -> a.startsWith(ROLE_PREFIX))
+                .map(a -> a.substring(ROLE_PREFIX.length()))
                 .toList();
 
         List<String> permisos = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .filter(a -> !a.startsWith("ROLE_"))
+                .filter(a -> !a.startsWith(ROLE_PREFIX))
                 .toList();
 
         Map<String, Object> resp = new HashMap<>();
         resp.put("idUsuario", usuario.getId());
         resp.put("email", usuario.getEmail());
-        resp.put("roles", roles);   // 👈 importante: array
+        resp.put("roles", roles);
         resp.put("permisos", permisos);
 
         return ResponseEntity.ok(resp);
@@ -132,14 +171,67 @@ public class UsuarioController extends BaseController<Usuario, IUsuarioService> 
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("token", "")
-                .httpOnly(true)
-                .secure(false)
-                .path("/")
-                .maxAge(0) // expira inmediatamente
-                .sameSite("Lax")
-                .build();
-        response.addHeader("Set-Cookie", cookie.toString());
+        ResponseCookie cookie = buildTokenCookie("", 0);
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ResponseEntity.ok().build();
+    }
+
+    private ResponseCookie buildTokenCookie(String value, long maxAgeSeconds) {
+        return ResponseCookie.from(jwtCookieProperties.getName(), value)
+                .httpOnly(true)
+                .secure(jwtCookieProperties.isSecure())
+                .sameSite(jwtCookieProperties.getSameSite())
+                .path("/")
+                .maxAge(maxAgeSeconds)
+                .build();
+    }
+
+    private UsuarioResponse toResponse(Usuario usuario) {
+        UsuarioResponse dto = new UsuarioResponse();
+        dto.setId(usuario.getId());
+        dto.setEmail(usuario.getEmail());
+        dto.setState(usuario.getState());
+        dto.setCreatedAt(usuario.getCreatedAt());
+        dto.setUpdatedAt(usuario.getUpdatedAt());
+
+        if (usuario.getPersona() != null) {
+            dto.setPersonaId(usuario.getPersona().getId());
+            dto.setPersonaNombres(usuario.getPersona().getNombres());
+            dto.setPersonaApellidos(usuario.getPersona().getApellidos());
+            dto.setPersonaNumeroIdentificacion(usuario.getPersona().getNumeroIdentificacion());
+            if (usuario.getPersona().getRol() != null) {
+                dto.setRoles(List.of(usuario.getPersona().getRol().getNombre()));
+            } else {
+                dto.setRoles(Collections.emptyList());
+            }
+        } else {
+            dto.setRoles(Collections.emptyList());
+        }
+
+        return dto;
+    }
+
+    private Usuario toEntity(UsuarioCreateRequest request) {
+        Usuario usuario = new Usuario();
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(request.getPassword());
+        usuario.setPersona(buildPersonaReference(request.getPersonaId()));
+        return usuario;
+    }
+
+    private Usuario toEntity(UsuarioUpdateRequest request) {
+        Usuario usuario = new Usuario();
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(request.getPassword());
+        if (request.getPersonaId() != null) {
+            usuario.setPersona(buildPersonaReference(request.getPersonaId()));
+        }
+        return usuario;
+    }
+
+    private Persona buildPersonaReference(Long personaId) {
+        Persona persona = new Persona();
+        persona.setId(personaId);
+        return persona;
     }
 }

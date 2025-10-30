@@ -13,18 +13,14 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActualizarReservaDetalleEquipoRequestDTO {
-    // campos reserva (opcionales)
     private String nombreReserva;
     private String descripcionReserva;
     private LocalDate fechaReserva;
     private LocalTime horaInicio;
     private LocalTime horaFin;
 
-    // campos detalle equipo (opcionales)
     private String programaAcademico;
     private Short numeroEstudiantes;
     private Long idEquipo;
     private Long idInstalacionDestino;
-
-    // si necesitas otros campos inclúyelos
 }

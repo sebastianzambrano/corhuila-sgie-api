@@ -29,7 +29,7 @@ public class Continente extends Auditoria {
 
     @OneToMany(mappedBy = "continente", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Pais> Paises = new HashSet<>();
+    private Set<Pais> paises = new HashSet<>();
 
     // equals/hashCode SOLO por id
     @Override

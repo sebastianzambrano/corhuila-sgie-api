@@ -28,6 +28,7 @@ import static com.corhuila.sgie.common.Reporting.HelperUtils.isStreaming;
 @RestController
 @RequestMapping("v1/api/instalacion")
 public class InstalacionController extends BaseController<Instalacion, IInstalacionService> {
+
     private final ReporteGenericoService reporteGenericoService;
     private final InstalacionService instalacionService;
 

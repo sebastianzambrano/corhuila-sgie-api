@@ -5,6 +5,8 @@ import com.corhuila.sgie.User.Entity.Rol;
 import com.corhuila.sgie.User.Entity.Usuario;
 import com.corhuila.sgie.User.IRepository.IPermisoRolEntidadRepository;
 import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,8 @@ import java.util.Set;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
+    private static final Logger log = LoggerFactory.getLogger(CustomUserDetailsService.class);
+
     private final IUsuarioRepository usuarioRepository;
 
     private final IPermisoRolEntidadRepository permisoRolEntidadRepository;
@@ -33,19 +37,21 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        System.out.println(">>> loadUserByUsername llamado con: " + email);
+        if (log.isDebugEnabled()) {
+            log.debug("Cargando usuario por email {}", email);
+        }
 
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
 
-        System.out.println(">>> Usuario encontrado: " + usuario.getEmail());
+        if (log.isTraceEnabled()) {
+            log.trace("Usuario {} localizado, evaluando roles", usuario.getEmail());
+        }
 
         Rol rol = usuario.getPersona() != null ? usuario.getPersona().getRol() : null;
         if (rol == null) {
             throw new UsernameNotFoundException("El usuario no tiene rol asignado");
         }
-
-        System.out.println(">>> Rol encontrado: " + rol.getNombre());
 
         Set<GrantedAuthority> authorities = new HashSet<>();
 
@@ -64,7 +70,9 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
 
-        System.out.println(">>> Authorities finales: " + authorities);
+        if (log.isTraceEnabled()) {
+            log.trace("Usuario {} con authorities {}", usuario.getEmail(), authorities);
+        }
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(usuario.getEmail())

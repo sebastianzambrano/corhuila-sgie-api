@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:sgie_test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+jwt:
+  secret: test-secret-12345678901234567890123456789012
+  expiration-ms: 3600000
+
+security:
+  jwt:
+    cookie:
+      name: token
+      secure: false
+      same-site: Lax
+      max-age-seconds: 3600

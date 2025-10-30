@@ -10,6 +10,15 @@ import java.util.List;
 
 @Service
 public class NotificacionDiariaService {
+
+    private static final String PLANTILLA_CORREO_RESERCA = """
+                Hola %s, tienes una reserva pendiente:
+                - Nombre: %s
+                - Fecha: %s
+                - Hora inicio: %s
+                - Hora fin: %s
+            """;
+
     private final IReservaRepository reservaRepository;
     private final NotificacionService notificacionService;
 
@@ -39,13 +48,7 @@ public class NotificacionDiariaService {
                 .forEach(reserva -> {
                     String destinatario = reserva.getPersona().getUsuario().getEmail();
                     String asunto = "Resumen de reservas abiertas - " + hoy;
-                    String cuerpo = String.format("""
-                                        Hola %s, tienes una reserva pendiente:
-                                        - Nombre: %s
-                                        - Fecha: %s
-                                        - Hora inicio: %s
-                                        - Hora fin: %s
-                                    """,
+                    String cuerpo = String.format(PLANTILLA_CORREO_RESERCA,
                             reserva.getPersona().getNombres(),
                             reserva.getNombre(),
                             reserva.getFechaReserva(),

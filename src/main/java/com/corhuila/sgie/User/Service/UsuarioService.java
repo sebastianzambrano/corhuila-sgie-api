@@ -7,25 +7,26 @@ import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
 import com.corhuila.sgie.User.IService.IUsuarioService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Optional;
 
 @Service
 public class UsuarioService extends BaseService<Usuario> implements IUsuarioService {
-    @Autowired
-    private IUsuarioRepository repository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final IUsuarioRepository repository;
+    private final PasswordEncoder passwordEncoder;
+    private final IPersonaRepository personaRepository;
 
-    @Autowired
-    private IPersonaRepository personaRepository;
+    public UsuarioService(IUsuarioRepository repository, PasswordEncoder passwordEncoder, IPersonaRepository personaRepository) {
+        this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
+        this.personaRepository = personaRepository;
+    }
 
     @Override
     protected IBaseRepository<Usuario, Long> getRepository() {
@@ -33,51 +34,64 @@ public class UsuarioService extends BaseService<Usuario> implements IUsuarioServ
     }
 
     @Override
-    public Usuario save(Usuario entity) throws Exception {
-        // validar persona
-        Persona persona = personaRepository.findById(entity.getPersona().getId())
-                .orElseThrow(() -> new Exception("La persona no existe"));
-
-        if (persona.getUsuario() != null) {
-            throw new Exception("La persona ya tiene un usuario asociado");
+    @Transactional(rollbackFor = DataAccessException.class)
+    public Usuario save(Usuario entity) throws DataAccessException {
+        if (entity.getPersona() == null || entity.getPersona().getId() == null) {
+            throw new IllegalStateException("La persona asociada es obligatoria");
         }
 
-        // crear usuario
-        Usuario usuario = new Usuario();
-        usuario.setEmail(entity.getEmail());
-        usuario.setPassword(passwordEncoder.encode(entity.getPassword()));
-        usuario.setPersona(persona);
+        Persona persona = personaRepository.findById(entity.getPersona().getId())
+                .orElseThrow(() -> new IllegalStateException("La persona no existe"));
 
-        Usuario saved = repository.save(usuario);
+        if (persona.getUsuario() != null) {
+            throw new IllegalStateException("La persona ya tiene un usuario asociado");
+        }
 
-        return super.save(saved);
+        entity.setPersona(persona);
+        entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+        persona.setUsuario(entity);
+
+        return super.save(entity);
     }
 
 
     @Override
-    public void update(Long id, Usuario entity) throws Exception {
+    @Transactional(rollbackFor = DataAccessException.class)
+    public void update(Long id, Usuario entity) throws DataAccessException {
         Optional<Usuario> op = repository.findById(id);
 
         if (op.isEmpty()) {
-            throw new Exception("Usuario no encontrado");
+            throw new IllegalStateException("Usuario no encontrado");
         } else if (op.get().getDeletedAt() != null) {
-            throw new Exception("Usuario inhabilitado");
+            throw new IllegalStateException("Usuario inhabilitado");
         }
 
         Usuario usuarioUpdate = op.get();
 
-        String[] ignoreProperties = {"id", "createdAt", "deletedAt", "state"};
+        if (entity.getPersona() != null) {
+            if (entity.getPersona().getId() == null) {
+                throw new IllegalStateException("La persona asociada es obligatoria");
+            }
 
-        // ⚡ Si no viene password, lo ignoramos
-        if (entity.getPassword() == null || entity.getPassword().isBlank()) {
-            ignoreProperties = Arrays.copyOf(ignoreProperties, ignoreProperties.length + 1);
-            ignoreProperties[ignoreProperties.length - 1] = "password";
-        } else {
-            // ⚡ Si viene password, lo encriptamos antes de guardar
-            entity.setPassword(passwordEncoder.encode(entity.getPassword()));
+            Persona persona = personaRepository.findById(entity.getPersona().getId())
+                    .orElseThrow(() -> new IllegalStateException("La persona no existe"));
+
+            if (persona.getUsuario() != null && !persona.getUsuario().getId().equals(usuarioUpdate.getId())) {
+                throw new IllegalStateException("La persona ya tiene un usuario asociado");
+            }
+
+            usuarioUpdate.setPersona(persona);
+            persona.setUsuario(usuarioUpdate);
         }
 
-        BeanUtils.copyProperties(entity, usuarioUpdate, ignoreProperties);
+        if (entity.getEmail() != null) {
+            usuarioUpdate.setEmail(entity.getEmail());
+        }
+
+        if (entity.getPassword() != null && !entity.getPassword().isBlank()) {
+            usuarioUpdate.setPassword(passwordEncoder.encode(entity.getPassword()));
+        }
+
         usuarioUpdate.setUpdatedAt(LocalDateTime.now());
         repository.save(usuarioUpdate);
     }

@@ -67,3 +67,6 @@ replay_pid*
 
 # Sistema operativo
 .DS_Store
+
+# Entornos locales
+.env

@@ -1,13 +1,14 @@
 package com.corhuila.sgie.common;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 public abstract class BaseService<T extends Auditoria> implements IBaseService<T> {
 
     protected abstract IBaseRepository<T, Long> getRepository();
@@ -17,70 +18,77 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
         return getRepository().findAll();
     }
 
-    protected void afterSave(T entity) {
-        // vacío por defecto
-    }
-
 
     @Override
     public List<T> findByStateTrue() {
         return getRepository().findAll()
                 .stream()
                 .filter(t -> Boolean.TRUE.equals(t.getState()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
-    public T findById(Long id) throws Exception {
+    public T findById(Long id) throws DataAccessException {
         Optional<T> op = getRepository().findById(id);
 
         if (op.isEmpty()) {
-            throw new Exception("Registro no encontrado");
+            throw new IllegalStateException("Registro no encontrado");
         }
 
         return op.get();
     }
 
+    protected void beforeSave(T entity) {
+        // Hook opcional
+    }
+
+    protected void afterSave(T entity) {
+        // Hook opcional
+    }
+
+    protected String[] ignoredPropertiesOnUpdate() {
+        return new String[]{"id", "createdAt", "updatedAt", "deletedAt", "state", "password"};
+    }
+
+    protected void copyUpdatableFields(T source, T target) {
+        BeanUtils.copyProperties(source, target, ignoredPropertiesOnUpdate());
+    }
 
     @Override
-    public T save(T entity) throws Exception {
-        try {
-            //entity.setCreatedAt(LocalDateTime.now());
-            //return getRepository().save(entity);
-            T saved = getRepository().save(entity);
-            afterSave(saved); // aquí se dispara el hook
-            return saved;
-        } catch (Exception e) {
-            // Captura la excepción
-            throw new Exception("Error al guardar la entidad: " + e.getMessage());
-        }
+    @Transactional(rollbackFor = Exception.class)
+    public T save(T entity) throws DataAccessException {
+        beforeSave(entity);
+        T saved = getRepository().save(entity);
+        afterSave(saved);
+        return saved;
     }
 
 
     @Override
-    public void update(Long id, T entity) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void update(Long id, T entity) throws DataAccessException {
         Optional<T> op = getRepository().findById(id);
 
         if (op.isEmpty()) {
-            throw new Exception("Registro no encontrado");
+            throw new IllegalStateException("Registro no encontrado");
         } else if (op.get().getDeletedAt() != null) {
-            throw new Exception("Registro inhabilitado");
+            throw new IllegalStateException("Registro inhabilitado");
         }
 
         T entityUpdate = op.get();
 
-        String[] ignoreProperties = {"id", "createdAt", "deletedAt", "state", "password"};
-        BeanUtils.copyProperties(entity, entityUpdate, ignoreProperties);
+        copyUpdatableFields(entity, entityUpdate);
         entityUpdate.setUpdatedAt(LocalDateTime.now());
         getRepository().save(entityUpdate);
     }
 
     @Override
-    public void delete(Long id) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(Long id) throws DataAccessException {
         Optional<T> op = getRepository().findById(id);
 
         if (op.isEmpty()) {
-            throw new Exception("Registro no encontrado");
+            throw new IllegalStateException("Registro no encontrado");
         }
 
         T entityUpdate = op.get();
@@ -91,11 +99,11 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     }
 
     @Override
-    @Transactional
-    public void cambiarEstado(Long id, Boolean estado) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void cambiarEstado(Long id, Boolean estado) throws DataAccessException {
         Optional<T> optional = getRepository().findById(id);
         if (optional.isEmpty()) {
-            throw new Exception("Registro no encontrado para actualizar estado");
+            throw new IllegalStateException("Registro no encontrado para actualizar estado");
         }
 
         T entity = optional.get();

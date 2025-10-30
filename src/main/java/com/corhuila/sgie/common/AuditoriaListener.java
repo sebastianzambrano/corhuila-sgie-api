@@ -34,8 +34,8 @@ public class AuditoriaListener {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated()) {
             Object details = auth.getDetails();
-            if (details instanceof Long) {
-                return (Long) details;
+            if (details instanceof Long longDetails) {
+                return longDetails;
             }
         }
         return 0L;

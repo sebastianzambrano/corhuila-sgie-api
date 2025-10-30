@@ -24,7 +24,7 @@ public class PdfReportWriter implements ReportWriter {
     }
 
     @Override
-    public void write(OutputStream out, Class<?> dtoType, Stream<?> rows, String title) throws Exception {
+    public void write(OutputStream out, Class<?> dtoType, Stream<?> rows, String title) {
         Document document = new Document(PageSize.A4.rotate(), 36, 36, 24, 24);
         PdfWriter writer = PdfWriter.getInstance(document, out);
         writer.setCloseStream(false);

@@ -5,7 +5,6 @@ import com.corhuila.sgie.Site.IRepository.IMunicipioRepository;
 import com.corhuila.sgie.Site.IService.IMunicipioService;
 import com.corhuila.sgie.common.ApiResponseDto;
 import com.corhuila.sgie.common.BaseController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/api/municipio")
 public class MunicipioController extends BaseController<Municipio, IMunicipioService> {
-    @Autowired
-    private IMunicipioRepository repository;
 
-    public MunicipioController(IMunicipioService service) {
+    private final IMunicipioRepository repository;
+
+    public MunicipioController(IMunicipioService service, IMunicipioRepository repository) {
         super(service, "MUNICIPIO");
+        this.repository = repository;
     }
 
     @GetMapping("/por-departamento/{id}")

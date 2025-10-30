@@ -1,6 +1,5 @@
 package com.corhuila.sgie.Security;
 
-import com.corhuila.sgie.User.IRepository.IUsuarioRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
@@ -14,20 +13,15 @@ import org.springframework.stereotype.Component;
 
 import java.security.Key;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtUtil {
-    private final IUsuarioRepository repository;
+
     @Value("${jwt.secret:change_this_secret_to_a_strong_one}")
     private String secret;
     @Value("${jwt.expiration-ms:21600000}") // 6 horas por defecto
     private long expirationMs;
     private Key key;
-
-    public JwtUtil(IUsuarioRepository repository) {
-        this.repository = repository;
-    }
 
     @PostConstruct
     public void init() {
@@ -38,7 +32,7 @@ public class JwtUtil {
         Map<String, Object> claims = new HashMap<>();
         List<String> auth = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
+                .toList();
 
         claims.put("auth", auth);
         claims.put("idUsuario", idUsuario);

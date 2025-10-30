@@ -7,6 +7,10 @@ import java.util.Locale;
 
 public class HelperUtils {
 
+    private HelperUtils() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
     public static HttpHeaders buildHeaders(GeneradorReporteUtil.GeneratedReport reporte) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(reporte.mediaType());
@@ -19,6 +23,8 @@ public class HelperUtils {
                 headers.setContentLength(size);
             }
         } catch (Exception ignored) {
+            // Se ignora la excepción porque contentLength() puede fallar en algunos recursos
+            // y no queremos que esto afecte la generación del reporte
         }
         return headers;
     }

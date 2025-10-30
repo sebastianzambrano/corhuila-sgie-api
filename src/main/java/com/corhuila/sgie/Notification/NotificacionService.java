@@ -1,20 +1,30 @@
 package com.corhuila.sgie.Notification;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
 public class NotificacionService {
-    @Autowired
-    private JavaMailSender mailSender;
+
+    private static final Logger log = LoggerFactory.getLogger(NotificacionService.class);
+
+    private final JavaMailSender mailSender;
+
+    public NotificacionService(JavaMailSender mailSender) {
+        this.mailSender = mailSender;
+    }
 
     public void enviarCorreoReserva(String destinatario, String asunto, String cuerpo) {
-        // Aquí implementas con JavaMailSender o el cliente que uses
-        System.out.println("Enviando correo a: " + destinatario);
-        System.out.println("Asunto: " + asunto);
-        System.out.println("Cuerpo: " + cuerpo);
+        if (destinatario == null || destinatario.isBlank()) {
+            log.warn("Notificación omitida: destinatario vacío");
+            return;
+        }
+
+        String maskedEmail = maskEmail(destinatario);
+        log.info("Preparando envío de correo a {}", maskedEmail);
 
         try {
             SimpleMailMessage mensaje = new SimpleMailMessage();
@@ -24,10 +34,18 @@ public class NotificacionService {
             mensaje.setFrom("jszambrano@corhuila.edu.co");
 
             mailSender.send(mensaje);
-            System.out.println("Correo enviado a: " + destinatario);
+            log.info("Correo enviado correctamente a {}", maskedEmail);
         } catch (Exception e) {
-            System.err.println("Error enviando correo: " + e.getMessage());
+            log.error("Error enviando correo a {}: {}", maskedEmail, e.getMessage(), e);
         }
 
+    }
+
+    private String maskEmail(String email) {
+        int atIndex = email.indexOf("@");
+        if (atIndex <= 2) {
+            return "***" + email.substring(atIndex);
+        }
+        return email.substring(0, 2) + "***" + email.substring(atIndex);
     }
 }

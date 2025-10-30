@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 @Repository
 public interface IInstalacionRepository extends IBaseRepository<Instalacion, Long> {
-    // Query corregida + IDs
     @Query(value = """
             SELECT 
                 co.id   AS idContinente,

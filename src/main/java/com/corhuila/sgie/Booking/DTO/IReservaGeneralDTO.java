@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public interface IReservaGeneralDTO {
-    // Identificadores
+
     Long getIdReserva();
 
     Long getIdDetalleRerservaEquipo();
@@ -15,12 +15,10 @@ public interface IReservaGeneralDTO {
 
     Long getIdMantenimientoInstalacion();
 
-    // Tipo de reserva
     Long getIdTipoReserva();
 
     String getTipoReserva();
 
-    // Información general de la reserva
     String getNombreReserva();
 
     String getDescripcionReserva();
@@ -31,14 +29,12 @@ public interface IReservaGeneralDTO {
 
     LocalTime getHoraFinReserva();
 
-    // Persona
     Long getIdPersona();
 
     String getNombrePersona();
 
     String getNumeroIdentificacion();
 
-    // Instalación / Equipo
     Long getIdInstalacion();
 
     String getNombreInstalacion();
@@ -47,14 +43,12 @@ public interface IReservaGeneralDTO {
 
     String getNombreEquipo();
 
-    // Información académica
     String getProgramaAcademico();
 
     Integer getNumeroEstudiantes();
 
     Long getIdInstalacionDestino();
 
-    // Mantenimiento
     String getTipoMantenimiento();
 
     String getDescripcionMantenimiento();
@@ -63,7 +57,6 @@ public interface IReservaGeneralDTO {
 
     String getEstadoMantenimiento();
 
-    // Estados
     String getEstadoReserva();
 
     String getEstadoDetalle();

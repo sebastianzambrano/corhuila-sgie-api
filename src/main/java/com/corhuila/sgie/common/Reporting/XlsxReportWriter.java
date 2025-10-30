@@ -32,7 +32,7 @@ public class XlsxReportWriter implements ReportWriter {
     }
 
     @Override
-    public void write(OutputStream out, Class<?> dtoType, Stream<?> rows, String title) throws Exception {
+    public void write(OutputStream out, Class<?> dtoType, Stream<?> rows, String title) {
         List<BeanRowExtractor.ColumnMeta> metas = BeanRowExtractor.metas(dtoType);
         try (SXSSFWorkbook workbook = new SXSSFWorkbook(200)) {
             workbook.setCompressTempFiles(true);
@@ -76,8 +76,11 @@ public class XlsxReportWriter implements ReportWriter {
             }
 
             workbook.write(out);
+        } catch (Exception ex) {
+            throw new IllegalStateException("Error escribiendo reporte XLSX", ex);
         }
     }
+
 
     private SheetContext createSheet(SXSSFWorkbook workbook,
                                      List<BeanRowExtractor.ColumnMeta> metas,
@@ -149,6 +152,7 @@ public class XlsxReportWriter implements ReportWriter {
         return style;
     }
 
+
     private void writeCell(Workbook workbook,
                            Row row,
                            int columnIndex,
@@ -156,101 +160,97 @@ public class XlsxReportWriter implements ReportWriter {
                            BeanRowExtractor.ColumnMeta meta,
                            Map<String, CellStyle> styleCache) {
         Cell cell = row.createCell(columnIndex);
-        String format = meta.format();
-        boolean wrap = meta.wrap();
-        boolean forceText = meta.text();
 
         if (value == null) {
             cell.setBlank();
             return;
         }
 
-        if (forceText) {
-            cell.setCellValue(String.valueOf(value));
-            if (wrap || !format.isEmpty()) {
-                cell.setCellStyle(textStyle(workbook, styleCache, wrap));
-            }
+        if (meta.text()) {
+            setCellAsText(workbook, cell, value, meta.wrap(), styleCache);
             return;
         }
 
         if (value instanceof Number number) {
-            cell.setCellValue(number.doubleValue());
-            if (!format.isEmpty() || wrap) {
-                cell.setCellStyle(numberStyle(workbook, styleCache, format, wrap));
-            }
+            setCellAsNumber(workbook, cell, number, meta.format(), meta.wrap(), styleCache);
             return;
         }
 
         if (value instanceof Boolean bool) {
-            cell.setCellValue(bool);
-            if (wrap) {
-                cell.setCellStyle(textStyle(workbook, styleCache, true));
-            }
+            setCellAsBoolean(workbook, cell, bool, meta.wrap(), styleCache);
             return;
         }
 
-        if (value instanceof Date date) {
-            cell.setCellValue(date);
-            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
+        if (handleDateTypes(workbook, cell, value, meta.format(), meta.wrap(), styleCache)) {
             return;
         }
 
-        if (value instanceof LocalDate localDate) {
-            cell.setCellValue(java.sql.Date.valueOf(localDate));
-            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
-            return;
-        }
+        setCellAsText(workbook, cell, value, meta.wrap(), styleCache);
+    }
 
-        if (value instanceof LocalDateTime localDateTime) {
-            cell.setCellValue(java.sql.Timestamp.valueOf(localDateTime));
-            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
-            return;
-        }
-
-        if (value instanceof OffsetDateTime offsetDateTime) {
-            cell.setCellValue(java.sql.Timestamp.valueOf(offsetDateTime.toLocalDateTime()));
-            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
-            return;
-        }
-
-        if (value instanceof ZonedDateTime zonedDateTime) {
-            cell.setCellValue(java.sql.Timestamp.valueOf(zonedDateTime.toLocalDateTime()));
-            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
-            return;
-        }
-
+    private void setCellAsText(Workbook workbook, Cell cell, Object value, boolean wrap, Map<String, CellStyle> styleCache) {
         cell.setCellValue(String.valueOf(value));
         if (wrap) {
             cell.setCellStyle(textStyle(workbook, styleCache, true));
         }
     }
 
-    /*
-        private CellStyle baseStyle(Workbook workbook, Map<String, CellStyle> cache, String key, boolean wrap) {
-            return cache.computeIfAbsent(key, k -> {
-                CellStyle style = workbook.createCellStyle();
-                style.setWrapText(wrap);
-                return style;
-            });
+    private void setCellAsNumber(Workbook workbook, Cell cell, Number number, String format, boolean wrap, Map<String, CellStyle> styleCache) {
+        cell.setCellValue(number.doubleValue());
+        if (!format.isEmpty() || wrap) {
+            cell.setCellStyle(numberStyle(workbook, styleCache, format, wrap));
         }
-    */
+    }
+
+    private void setCellAsBoolean(Workbook workbook, Cell cell, Boolean bool, boolean wrap, Map<String, CellStyle> styleCache) {
+        cell.setCellValue(bool);
+        if (wrap) {
+            cell.setCellStyle(textStyle(workbook, styleCache, true));
+        }
+    }
+
+    private boolean handleDateTypes(Workbook workbook, Cell cell, Object value, String format, boolean wrap, Map<String, CellStyle> styleCache) {
+        if (value instanceof Date date) {
+            cell.setCellValue(date);
+            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
+            return true;
+        }
+
+        if (value instanceof LocalDate localDate) {
+            cell.setCellValue(java.sql.Date.valueOf(localDate));
+            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
+            return true;
+        }
+
+        if (value instanceof LocalDateTime localDateTime) {
+            cell.setCellValue(java.sql.Timestamp.valueOf(localDateTime));
+            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
+            return true;
+        }
+
+        if (value instanceof OffsetDateTime offsetDateTime) {
+            cell.setCellValue(java.sql.Timestamp.valueOf(offsetDateTime.toLocalDateTime()));
+            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
+            return true;
+        }
+
+        if (value instanceof ZonedDateTime zonedDateTime) {
+            cell.setCellValue(java.sql.Timestamp.valueOf(zonedDateTime.toLocalDateTime()));
+            cell.setCellStyle(dateStyle(workbook, styleCache, format, wrap));
+            return true;
+        }
+
+        return false;
+    }
+
+
     private CellStyle baseStyle(Workbook workbook, boolean wrap) {
         CellStyle style = workbook.createCellStyle();
         style.setWrapText(wrap);
         return style;
     }
 
-    /*
-        private CellStyle textStyle(Workbook workbook, Map<String, CellStyle> cache, boolean wrap) {
-            String key = "text_" + wrap;
-            return cache.computeIfAbsent(key, k -> {
-                CellStyle style = baseStyle(workbook, cache, k, wrap);
-                DataFormat dataFormat = workbook.createDataFormat();
-                style.setDataFormat(dataFormat.getFormat("@"));
-                return style;
-            });
-        }
-    */
+
     private CellStyle textStyle(Workbook workbook, Map<String, CellStyle> cache, boolean wrap) {
         String key = "text_" + wrap;
         return cache.computeIfAbsent(key, k -> {
@@ -260,19 +260,7 @@ public class XlsxReportWriter implements ReportWriter {
             return style;
         });
     }
-/*
-    private CellStyle numberStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
-        String key = "number_" + format + "_" + wrap;
-        return cache.computeIfAbsent(key, k -> {
-            CellStyle style = baseStyle(workbook, cache, k, wrap);
-            if (!format.isEmpty()) {
-                DataFormat dataFormat = workbook.createDataFormat();
-                style.setDataFormat(dataFormat.getFormat(format));
-            }
-            return style;
-        });
-    }
-*/
+
 
     private CellStyle numberStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
         String key = "number_" + format + "_" + wrap;
@@ -285,17 +273,7 @@ public class XlsxReportWriter implements ReportWriter {
             return style;
         });
     }
-/*
-    private CellStyle dateStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
-        String key = "date_" + format + "_" + wrap;
-        return cache.computeIfAbsent(key, k -> {
-            CellStyle style = baseStyle(workbook, cache, k, wrap);
-            DataFormat dataFormat = workbook.createDataFormat();
-            style.setDataFormat(dataFormat.getFormat(format.isEmpty() ? "yyyy-mm-dd" : format));
-            return style;
-        });
-    }
-*/
+
 
     private CellStyle dateStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
         String key = "date_" + format + "_" + wrap;

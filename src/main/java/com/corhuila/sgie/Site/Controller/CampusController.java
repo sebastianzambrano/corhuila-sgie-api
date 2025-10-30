@@ -9,7 +9,6 @@ import com.corhuila.sgie.common.BaseController;
 import com.corhuila.sgie.common.Reporting.GeneradorReporteUtil;
 import com.corhuila.sgie.common.Reporting.ReportFormat;
 import com.corhuila.sgie.common.Reporting.ReporteGenericoService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +30,14 @@ import static com.corhuila.sgie.common.Reporting.HelperUtils.isStreaming;
 public class CampusController extends BaseController<Campus, CampusService> {
 
     private final ReporteGenericoService reporteGenericoService;
-    @Autowired
-    private ICampusRepository repository;
-    @Autowired
-    private CampusService campusService;
+    private final ICampusRepository repository;
+    private final CampusService campusService;
 
-    public CampusController(CampusService service, ReporteGenericoService reporteGenericoService) {
+    public CampusController(CampusService service, ReporteGenericoService reporteGenericoService, ICampusRepository repository) {
         super(service, "CAMPUS");
         this.reporteGenericoService = reporteGenericoService;
+        this.repository = repository;
+        this.campusService = service;
     }
 
     @GetMapping("/por-municipio/{id}")

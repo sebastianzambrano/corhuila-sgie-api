@@ -6,7 +6,6 @@ import com.corhuila.sgie.Site.IRepository.ICampusRepository;
 import com.corhuila.sgie.Site.IService.ICapusService;
 import com.corhuila.sgie.common.BaseService;
 import com.corhuila.sgie.common.IBaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +15,12 @@ import java.util.stream.Stream;
 
 @Service
 public class CampusService extends BaseService<Campus> implements ICapusService {
-    @Autowired
-    private ICampusRepository repository;
+
+    private final ICampusRepository repository;
+
+    public CampusService(ICampusRepository repository) {
+        this.repository = repository;
+    }
 
     @Override
     protected IBaseRepository<Campus, Long> getRepository() {
@@ -25,7 +28,7 @@ public class CampusService extends BaseService<Campus> implements ICapusService 
     }
 
     public Supplier<Stream<CampusReporteDTO>> proveedorStream() {
-        return () -> repository.generarReporteCampuss();
+        return repository::generarReporteCampuss;
     }
 
     @Transactional(readOnly = true)

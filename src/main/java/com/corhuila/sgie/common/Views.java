@@ -1,9 +1,9 @@
 package com.corhuila.sgie.common;
 
 public class Views {
-    public static class Simple {
+    public interface Simple {
     }
 
-    public static class Complete {
+    public interface Complete {
     }
 }

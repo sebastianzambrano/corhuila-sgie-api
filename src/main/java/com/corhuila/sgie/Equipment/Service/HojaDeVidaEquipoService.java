@@ -8,25 +8,26 @@ import com.corhuila.sgie.Equipment.DTO.ReservaEquipoHistorialDTO;
 import com.corhuila.sgie.Equipment.Entity.Equipo;
 import com.corhuila.sgie.Equipment.IRepository.IEquipoRepository;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoEquipoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class HojaDeVidaEquipoService {
-    @Autowired
-    private IEquipoRepository equipoRepository;
+    private final IEquipoRepository equipoRepository;
 
-    @Autowired
-    private IDetalleReservaEquipoRepository detalleReservaEquipoRepository;
+    private final IDetalleReservaEquipoRepository detalleReservaEquipoRepository;
 
-    @Autowired
-    private IMantenimientoEquipoRepository mantenimientoEquipoRepository;
+    private final IMantenimientoEquipoRepository mantenimientoEquipoRepository;
+
+    public HojaDeVidaEquipoService(IEquipoRepository equipoRepository, IDetalleReservaEquipoRepository detalleReservaEquipoRepository, IMantenimientoEquipoRepository mantenimientoEquipoRepository) {
+        this.equipoRepository = equipoRepository;
+        this.detalleReservaEquipoRepository = detalleReservaEquipoRepository;
+        this.mantenimientoEquipoRepository = mantenimientoEquipoRepository;
+    }
 
     public HojaDeVidaEquipoDTO getHojaDeVidaEquipo(Long idEquipo) {
         Equipo equipo = equipoRepository.findById(idEquipo)
@@ -63,7 +64,7 @@ public class HojaDeVidaEquipoService {
                         (String) r[4],
                         (String) r[5]
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         // Mantenimientos
         List<Object[]> mantenimientosResult = mantenimientoEquipoRepository.findHistorialMantenimientosByEquipo(idEquipo);
@@ -74,11 +75,13 @@ public class HojaDeVidaEquipoService {
                         (String) m[2],
                         (String) m[3]
                 ))
-                .collect(Collectors.toList());
+                .toList();
 
         // Estado actual
         String estadoActual = "Operativo";
-        if (!equipo.getState()) {
+        boolean equipoActivo = Boolean.TRUE.equals(equipo.getState());
+
+        if (!equipoActivo) {
             estadoActual = "Inactivo";
         } else if (!mantenimientos.isEmpty() && mantenimientos.get(0).getFechaProximaMantenimiento() != null
                 && mantenimientos.get(0).getFechaProximaMantenimiento().isAfter(LocalDate.now())) {

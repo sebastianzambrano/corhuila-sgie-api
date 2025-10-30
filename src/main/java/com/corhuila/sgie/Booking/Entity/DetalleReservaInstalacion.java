@@ -22,7 +22,7 @@ public class DetalleReservaInstalacion extends Auditoria {
     private Long id;
     private String programaAcademico;
     private Short numeroEstudiantes;
-    private String EntregaInstalacion;
+    private String entregaInstalacion;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_instalacion")

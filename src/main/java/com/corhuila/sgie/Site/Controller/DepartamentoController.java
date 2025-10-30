@@ -5,7 +5,6 @@ import com.corhuila.sgie.Site.IRepository.IDepartamentoRepository;
 import com.corhuila.sgie.Site.IService.IDepartamentoService;
 import com.corhuila.sgie.common.ApiResponseDto;
 import com.corhuila.sgie.common.BaseController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +16,11 @@ import java.util.List;
 @RequestMapping("v1/api/departamento")
 public class DepartamentoController extends BaseController<Departamento, IDepartamentoService> {
 
-    @Autowired
-    private IDepartamentoRepository repository;
+    private final IDepartamentoRepository repository;
 
-    public DepartamentoController(IDepartamentoService service) {
+    public DepartamentoController(IDepartamentoService service, IDepartamentoRepository repository) {
         super(service, "DEPARTAMENTO");
+        this.repository = repository;
     }
 
     @GetMapping("/por-pais/{id}")

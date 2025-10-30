@@ -5,7 +5,6 @@ import com.corhuila.sgie.Site.IRepository.IPaisRepository;
 import com.corhuila.sgie.Site.IService.IPaisService;
 import com.corhuila.sgie.common.ApiResponseDto;
 import com.corhuila.sgie.common.BaseController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +15,12 @@ import java.util.List;
 @RestController
 @RequestMapping("v1/api/pais")
 public class PaisController extends BaseController<Pais, IPaisService> {
-    @Autowired
-    private IPaisRepository repository;
 
-    public PaisController(IPaisService service) {
+    private final IPaisRepository repository;
+
+    public PaisController(IPaisService service, IPaisRepository repository) {
         super(service, "PAIS");
+        this.repository = repository;
     }
 
     @GetMapping("/por-continente/{id}")

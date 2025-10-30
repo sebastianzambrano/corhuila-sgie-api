@@ -13,14 +13,14 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActualizarMantenimientoInstalacionRequestDTO {
-    private String descripcion;
-    private LocalDate fechaProximaMantenimiento;
-    private String resultadoMantenimiento;
-
-    // opcionales de la reserva
     private String nombreReserva;
     private String descripcionReserva;
     private LocalDate fechaReserva;
     private LocalTime horaInicio;
     private LocalTime horaFin;
+
+    private String descripcion;
+    private LocalDate fechaProximaMantenimiento;
+    private String resultadoMantenimiento;
+    private Long idInstalacion;
 }
