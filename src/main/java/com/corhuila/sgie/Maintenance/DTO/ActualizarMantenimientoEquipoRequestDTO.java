@@ -23,4 +23,6 @@ public class ActualizarMantenimientoEquipoRequestDTO {
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;
     private Long idEquipo;
+    private Long categoriaMantenimientoEquipoId;
+    private String origen;
 }

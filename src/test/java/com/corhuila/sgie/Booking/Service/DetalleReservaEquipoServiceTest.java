@@ -29,8 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DetalleReservaEquipoServiceTest {
@@ -88,6 +87,8 @@ class DetalleReservaEquipoServiceTest {
         detalle.setEquipo(equipo);
         detalle.setState(true);
         reserva.getDetalleReservaEquipos().add(detalle);
+
+        lenient().when(reservaRepository.findById(reserva.getId())).thenReturn(Optional.of(reserva));
     }
 
     @Test
@@ -123,7 +124,7 @@ class DetalleReservaEquipoServiceTest {
         java.util.List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"08:00"});
         disponibilidad.add(new Object[]{"09:00"});
-        when(reservaRepository.findHorasDisponiblesEquipo(any(), anyInt(), anyLong()))
+        when(reservaRepository.findHorasDisponiblesEquipo(any(), anyInt(), anyLong(), any()))
                 .thenReturn(disponibilidad);
         when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(detalleRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -146,7 +147,7 @@ class DetalleReservaEquipoServiceTest {
         when(detalleRepository.findById(50L)).thenReturn(Optional.of(detalle));
         java.util.List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"08:00"});
-        when(reservaRepository.findHorasDisponiblesEquipo(any(), anyInt(), anyLong()))
+        when(reservaRepository.findHorasDisponiblesEquipo(any(), anyInt(), anyLong(), any()))
                 .thenReturn(disponibilidad);
 
         ActualizarReservaDetalleEquipoRequestDTO request = new ActualizarReservaDetalleEquipoRequestDTO();
@@ -171,7 +172,7 @@ class DetalleReservaEquipoServiceTest {
         java.util.List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"08:00"});
         disponibilidad.add(new Object[]{"09:00"});
-        when(reservaRepository.findHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), isNull()))
+        when(reservaRepository.findHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), isNull(), any()))
                 .thenReturn(disponibilidad);
 
         // Guardado y afterSave (envío de correo)
@@ -184,7 +185,7 @@ class DetalleReservaEquipoServiceTest {
         // Assert
         assertThat(guardado).isNotNull();
         verify(detalleRepository).save(any());
-        verify(reservaRepository).findHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), isNull());
+        verify(reservaRepository).findHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), isNull(), any());
         verify(notificacionService).enviarCorreoReserva(eq("user@mail.com"), anyString(), anyString());
     }
 
@@ -192,6 +193,7 @@ class DetalleReservaEquipoServiceTest {
     void save_fallaPorCamposObligatorios_instalacionDestino() {
         // Reserva válida
         Reserva r = new Reserva();
+        r.setId(999L);
         r.setFechaReserva(LocalDate.now());
         r.setHoraInicio(LocalTime.of(8, 0));
         r.setHoraFin(LocalTime.of(9, 0));
@@ -204,6 +206,8 @@ class DetalleReservaEquipoServiceTest {
         DetalleReservaEquipo d = new DetalleReservaEquipo();
         d.setReserva(r);
         d.setEquipo(eq);
+
+        when(reservaRepository.findById(r.getId())).thenReturn(Optional.of(r));
 
         assertThatThrownBy(() -> service.save(d))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -220,7 +224,7 @@ class DetalleReservaEquipoServiceTest {
         // Disponibilidad incompleta: solo 08:00, falta 09:00 para [08:00, 10:00)
         java.util.List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"08:00"});
-        when(reservaRepository.findHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), isNull()))
+        when(reservaRepository.findHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), isNull(), any()))
                 .thenReturn(disponibilidad);
 
         assertThatThrownBy(() -> service.save(detalle))

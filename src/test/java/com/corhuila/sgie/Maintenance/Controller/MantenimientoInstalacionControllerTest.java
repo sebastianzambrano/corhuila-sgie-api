@@ -49,14 +49,14 @@ class MantenimientoInstalacionControllerTest {
     @Test
     void actualizarMantenimientoInstalacionDevuelveDTO() {
         ActualizarMantenimientoInstalacionRequestDTO request = new ActualizarMantenimientoInstalacionRequestDTO();
-        request.setDescripcion("Actualizar");
+        request.setDescripcion("Nuevo mantenimiento");
 
         MantenimientoInstalacionResponseDTO dto = new MantenimientoInstalacionResponseDTO();
-        dto.setDescripcion("Actualizar");
+        dto.setDescripcion("Nuevo mantenimiento");
         when(service.actualizarMantenimientoInstalacion(2L, request)).thenReturn(dto);
 
         ResponseEntity<MantenimientoInstalacionResponseDTO> response = controller.actualizarMantenimientoInstalacion(2L, request);
-        assertThat(response.getBody().getDescripcion()).isEqualTo("Actualizar");
+        assertThat(response.getBody().getDescripcion()).isEqualTo("Nuevo mantenimiento");
     }
 
     @Test

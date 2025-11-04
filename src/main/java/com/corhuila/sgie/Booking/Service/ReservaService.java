@@ -32,8 +32,8 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
     }
 
     @Override
-    public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle) {
-        List<Object[]> results = repository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
+    public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle, String origen) {
+        List<Object[]> results = repository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle, origen);
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
@@ -41,13 +41,39 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
     }
 
     @Override
-    public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle) {
-        List<Object[]> results = repository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
+    public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle, String origen) {
+        List<Object[]> results = repository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle, origen);
 
         return results.stream()
                 .map(r -> new HoraDisponibleDTO(r[0].toString()))
                 .toList();
     }
+
+    @Override
+    protected void beforeSave(Reserva reserva) {
+        validateRequiredFields(reserva);
+        validateTimeOrder(reserva);
+    }
+
+    private void validateRequiredFields(Reserva reserva) {
+        if (reserva == null) {
+            throw new IllegalArgumentException("Reserva es obligatoria.");
+        }
+        if (java.util.stream.Stream.of(
+                reserva.getFechaReserva(),
+                reserva.getHoraInicio(),
+                reserva.getHoraFin()
+        ).anyMatch(java.util.Objects::isNull)) {
+            throw new IllegalArgumentException("Fecha y horas son obligatorias.");
+        }
+    }
+
+    private void validateTimeOrder(Reserva reserva) {
+        if (!reserva.getHoraFin().isAfter(reserva.getHoraInicio())) {
+            throw new IllegalArgumentException("La hora fin debe ser mayor que la hora inicio.");
+        }
+    }
+
 
     @Override
     public Reserva save(Reserva reserva) throws DataAccessException {

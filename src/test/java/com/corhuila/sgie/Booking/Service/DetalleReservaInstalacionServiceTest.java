@@ -103,7 +103,7 @@ class DetalleReservaInstalacionServiceTest {
         java.util.List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"08:00"});
         disponibilidad.add(new Object[]{"09:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), anyLong()))
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), anyLong(), any()))
                 .thenReturn(disponibilidad);
         when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(detalleRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -129,7 +129,7 @@ class DetalleReservaInstalacionServiceTest {
         java.util.List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"08:00"});
         disponibilidad.add(new Object[]{"09:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), eq(99), eq(40L)))
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), eq(99), eq(40L), any()))
                 .thenReturn(disponibilidad);
 
         when(reservaRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));

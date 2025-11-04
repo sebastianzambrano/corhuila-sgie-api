@@ -20,15 +20,17 @@ import java.util.stream.Stream;
 @Repository
 public interface IReservaRepository extends IBaseRepository<Reserva, Long> {
 
-    @Query(value = "SELECT * FROM horas_disponibles_instalacion(:fecha, :idInstalacion, :idDetalle)", nativeQuery = true)
+    @Query(value = "SELECT * FROM horas_disponibles_instalacion(:fecha, :idInstalacion, :idDetalle, :origen)", nativeQuery = true)
     List<Object[]> findHorasDisponiblesInstalacion(@Param("fecha") LocalDate fecha,
                                                    @Param("idInstalacion") Integer idInstalacion,
-                                                   @Param("idDetalle") Long idDetalle);
+                                                   @Param("idDetalle") Long idDetalle,
+                                                   @Param("origen") String origen);
 
-    @Query(value = "SELECT * FROM horas_disponibles_equipo(:fecha, :idEquipo, :idDetalle)", nativeQuery = true)
+    @Query(value = "SELECT * FROM horas_disponibles_equipo(:fecha, :idEquipo, :idDetalle, :origen)", nativeQuery = true)
     List<Object[]> findHorasDisponiblesEquipo(@Param("fecha") LocalDate fecha,
                                               @Param("idEquipo") Integer idEquipo,
-                                              @Param("idDetalle") Long idDetalle);
+                                              @Param("idDetalle") Long idDetalle,
+                                              @Param("origen") String origen);
 
     @Query("""
                 SELECT r 
@@ -39,9 +41,9 @@ public interface IReservaRepository extends IBaseRepository<Reserva, Long> {
                       (r.horaInicio < :horaFin AND r.horaFin > :horaInicio)
                   )
                   AND (
-                      ( :tipoReserva IN (1,3) AND r.tipoReserva.id IN (1,3) )
+                      ( :tipoReserva IN (1,4) AND r.tipoReserva.id IN (1,4) )
                       OR
-                      ( :tipoReserva IN (2,4) AND r.tipoReserva.id IN (2,4) )
+                      ( :tipoReserva IN (2,3) AND r.tipoReserva.id IN (2,3) )
                   )
             """)
     List<Reserva> findReservasSolapadas(

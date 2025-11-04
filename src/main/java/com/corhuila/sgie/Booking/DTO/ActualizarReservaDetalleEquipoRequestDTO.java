@@ -23,4 +23,5 @@ public class ActualizarReservaDetalleEquipoRequestDTO {
     private Short numeroEstudiantes;
     private Long idEquipo;
     private Long idInstalacionDestino;
+    private String origen;
 }

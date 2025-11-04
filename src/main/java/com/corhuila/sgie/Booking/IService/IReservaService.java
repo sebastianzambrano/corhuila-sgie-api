@@ -9,9 +9,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface IReservaService extends IBaseService<Reserva> {
-    List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle);
+    List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle, String origen);
 
-    List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle);
+    List<HoraDisponibleDTO> getHorasDisponiblesEquipo(LocalDate fecha, Integer idEquipo, Long idDetalle, String origen);
 
     List<IReservaGeneralDTO> findReservasYMantenimientosByNumeroIdentificacion(String numeroIdentificacion);
 }

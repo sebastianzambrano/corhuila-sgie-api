@@ -7,6 +7,7 @@ import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoEquipoRequestDTO
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoEquipoResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoEquipoDTO;
 import com.corhuila.sgie.Maintenance.DTO.MantenimientoEquipoResponseDTO;
+import com.corhuila.sgie.Maintenance.Entity.CategoriaMantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoEquipo;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoEquipoRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoEquipoService;
@@ -49,14 +50,11 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
 
     @Override
     protected void beforeSave(MantenimientoEquipo mantenimiento) {
-        Reserva reserva = mantenimiento.getReserva();
 
-        if (reserva == null || reserva.getFechaReserva() == null || reserva.getHoraInicio() == null || reserva.getHoraFin() == null) {
-            throw new IllegalArgumentException("Fecha y horas son obligatorias.");
-        }
-        if (!reserva.getHoraFin().isAfter(reserva.getHoraInicio())) {
-            throw new IllegalArgumentException("La hora fin debe ser mayor que la hora inicio.");
-        }
+        Long idReserva = mantenimiento.getReserva().getId();
+        Reserva reserva = reservaRepository.findById(idReserva)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con id: " + idReserva));
+
         if (mantenimiento.getEquipo() == null || mantenimiento.getEquipo().getId() == null) {
             throw new IllegalArgumentException("El equipo es obligatorio.");
         }
@@ -66,6 +64,7 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
                 .findHorasDisponiblesEquipo(
                         reserva.getFechaReserva(),
                         mantenimiento.getEquipo().getId().intValue(),
+                        null, // creación
                         null // creación
                 )
                 .stream()
@@ -169,8 +168,9 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
         LocalTime horaInicio = request.getHoraInicio() != null ? request.getHoraInicio() : reserva.getHoraInicio();
         LocalTime horaFin = request.getHoraFin() != null ? request.getHoraFin() : reserva.getHoraFin();
         Integer idEquipo = obtenerIdEquipoEfectivo(request, mantenimiento);
+        String origen = request.getOrigen();
 
-        validarHorasDisponibles(fecha, horaInicio, horaFin, idEquipo, idMantenimiento);
+        validarHorasDisponibles(fecha, horaInicio, horaFin, idEquipo, idMantenimiento, origen);
     }
 
     private Integer obtenerIdEquipoEfectivo(ActualizarMantenimientoEquipoRequestDTO request,
@@ -185,9 +185,10 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
             LocalTime horaInicio,
             LocalTime horaFin,
             Integer idEquipo,
-            Long idMantenimiento) {
+            Long idMantenimiento,
+            String origen) {
 
-        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo, idMantenimiento);
+        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo, idMantenimiento, origen);
         List<LocalTime> disponibles = horasDisponibles.stream()
                 .map(h -> LocalTime.parse(h[0].toString()))
                 .toList();
@@ -209,6 +210,11 @@ public class MantenimientoEquipoService extends BaseService<MantenimientoEquipo>
     private void actualizarCamposMantenimiento(ActualizarMantenimientoEquipoRequestDTO request, MantenimientoEquipo mantenimiento) {
         if (request.getDescripcion() != null) {
             mantenimiento.setDescripcion(request.getDescripcion());
+        }
+        if (request.getCategoriaMantenimientoEquipoId() != null) {
+            CategoriaMantenimientoEquipo categoriaMantenimientoEquipo = new CategoriaMantenimientoEquipo();
+            categoriaMantenimientoEquipo.setId(request.getCategoriaMantenimientoEquipoId());
+            mantenimiento.setCategoriaMantenimientoEquipo(categoriaMantenimientoEquipo);
         }
         if (request.getFechaProximaMantenimiento() != null) {
             mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());

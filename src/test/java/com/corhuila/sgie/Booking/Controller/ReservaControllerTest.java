@@ -48,23 +48,23 @@ class ReservaControllerTest {
     @Test
     void getHorasDisponiblesInstalacionDelegatesToService() {
         List<HoraDisponibleDTO> horas = List.of(new HoraDisponibleDTO("08:00"));
-        when(reservaServiceFacade.getHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), any()))
+        when(reservaServiceFacade.getHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), any(), any()))
                 .thenReturn(horas);
 
-        List<HoraDisponibleDTO> result = controller.getHorasDisponiblesInstalacion(LocalDate.now(), 1, null);
+        List<HoraDisponibleDTO> result = controller.getHorasDisponiblesInstalacion(LocalDate.now(), 1, null, null);
 
         assertThat(result).isEqualTo(horas);
-        verify(reservaServiceFacade).getHorasDisponiblesInstalacion(any(), anyInt(), any());
+        verify(reservaServiceFacade).getHorasDisponiblesInstalacion(any(), anyInt(), any(), any());
     }
 
     @Test
     void getHorasDisponiblesEquipoDelegatesToService() {
         List<HoraDisponibleDTO> horas = List.of(new HoraDisponibleDTO("09:00"));
-        when(reservaServiceFacade.getHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), any()))
+        when(reservaServiceFacade.getHorasDisponiblesEquipo(any(LocalDate.class), anyInt(), any(), any()))
                 .thenReturn(horas);
 
-        assertThat(controller.getHorasDisponiblesEquipo(LocalDate.now(), 2, 10L)).isEqualTo(horas);
-        verify(reservaServiceFacade).getHorasDisponiblesEquipo(any(), anyInt(), any());
+        assertThat(controller.getHorasDisponiblesEquipo(LocalDate.now(), 2, 10L, null)).isEqualTo(horas);
+        verify(reservaServiceFacade).getHorasDisponiblesEquipo(any(), anyInt(), any(), any());
     }
 
     @Test

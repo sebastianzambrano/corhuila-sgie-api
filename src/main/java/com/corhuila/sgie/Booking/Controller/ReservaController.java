@@ -46,9 +46,10 @@ public class ReservaController extends BaseController<Reserva, IReservaService> 
     public List<HoraDisponibleDTO> getHorasDisponiblesInstalacion(
             @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam("idInstalacion") Integer idInstalacion,
-            @RequestParam(value = "idDetalle", required = false) Long idDetalle) {
+            @RequestParam(value = "idDetalle", required = false) Long idDetalle,
+            @RequestParam(value = "origen", required = false) String origen) {
 
-        return service.getHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
+        return service.getHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle, origen);
     }
 
     @GetMapping("/horas-disponibles-equipo")
@@ -56,9 +57,10 @@ public class ReservaController extends BaseController<Reserva, IReservaService> 
     public List<HoraDisponibleDTO> getHorasDisponiblesEquipo(
             @RequestParam("fecha") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
             @RequestParam("idEquipo") Integer idEquipo,
-            @RequestParam(value = "idDetalle", required = false) Long idDetalle) {
+            @RequestParam(value = "idDetalle", required = false) Long idDetalle,
+            @RequestParam(value = "origen", required = false) String origen) {
 
-        return service.getHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
+        return service.getHorasDisponiblesEquipo(fecha, idEquipo, idDetalle, origen);
     }
 
     @GetMapping("/reservas-mantenimientos")

@@ -63,9 +63,9 @@ class ReservaServiceTest {
         List<Object[]> datos = new ArrayList<>();
         datos.add(new Object[]{"08:00"});
         datos.add(new Object[]{"09:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(), anyInt(), anyLong())).thenReturn(datos);
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(), anyInt(), anyLong(), any())).thenReturn(datos);
 
-        List<HoraDisponibleDTO> horas = reservaService.getHorasDisponiblesInstalacion(LocalDate.now(), 1, 1L);
+        List<HoraDisponibleDTO> horas = reservaService.getHorasDisponiblesInstalacion(LocalDate.now(), 1, 1L, null);
         assertThat(horas).extracting(HoraDisponibleDTO::getHora).containsExactly("08:00", "09:00");
     }
 
@@ -73,9 +73,9 @@ class ReservaServiceTest {
     void getHorasDisponiblesEquipoMapeaResultados() {
         List<Object[]> datos = new ArrayList<>();
         datos.add(new Object[]{"10:00"});
-        when(reservaRepository.findHorasDisponiblesEquipo(any(), anyInt(), anyLong())).thenReturn(datos);
+        when(reservaRepository.findHorasDisponiblesEquipo(any(), anyInt(), anyLong(), any())).thenReturn(datos);
 
-        List<HoraDisponibleDTO> horas = reservaService.getHorasDisponiblesEquipo(LocalDate.now(), 1, 1L);
+        List<HoraDisponibleDTO> horas = reservaService.getHorasDisponiblesEquipo(LocalDate.now(), 1, 1L, null);
         assertThat(horas).extracting(HoraDisponibleDTO::getHora).containsExactly("10:00");
     }
 

@@ -62,6 +62,8 @@ class MantenimientoInstalacionServiceTest {
         mantenimiento.setReserva(reserva);
         mantenimiento.setInstalacion(instalacion);
         mantenimiento.setState(true);
+
+        lenient().when(reservaRepository.findById(reserva.getId())).thenReturn(Optional.of(reserva));
     }
 
     @Test
@@ -90,7 +92,7 @@ class MantenimientoInstalacionServiceTest {
         List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"09:00"});
         disponibilidad.add(new Object[]{"10:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(), anyInt(), anyLong())).thenReturn(disponibilidad);
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(), anyInt(), anyLong(), any())).thenReturn(disponibilidad);
         when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(mantenimientoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -126,7 +128,7 @@ class MantenimientoInstalacionServiceTest {
         when(mantenimientoRepository.findById(22L)).thenReturn(Optional.of(mantenimiento));
         List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"09:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(), anyInt(), anyLong())).thenReturn(disponibilidad);
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(), anyInt(), anyLong(), any())).thenReturn(disponibilidad);
 
         ActualizarMantenimientoInstalacionRequestDTO request = new ActualizarMantenimientoInstalacionRequestDTO();
         request.setHoraInicio(LocalTime.of(9, 0));
@@ -173,8 +175,9 @@ class MantenimientoInstalacionServiceTest {
         // Disponibilidad debe incluir 10:00 para el rango 10:00-11:00
         List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"10:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), isNull()))
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), isNull(), any()))
                 .thenReturn(disponibilidad);
+        when(reservaRepository.findById(reservaRegistrada.getId())).thenReturn(Optional.of(reservaRegistrada));
 
         when(mantenimientoRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
         when(reservaRepository.findWithPersonaAndUsuarioById(88L)).thenReturn(Optional.of(reservaRegistrada));
@@ -214,8 +217,9 @@ class MantenimientoInstalacionServiceTest {
         // Disponibilidad: debe incluir 14:00 para que el rango 14:00-15:00 sea válido
         List<Object[]> disponibilidad = new ArrayList<>();
         disponibilidad.add(new Object[]{"14:00"});
-        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), isNull()))
+        when(reservaRepository.findHorasDisponiblesInstalacion(any(LocalDate.class), anyInt(), isNull(), any()))
                 .thenReturn(disponibilidad);
+        when(reservaRepository.findById(reservaSinUsuario.getId())).thenReturn(Optional.of(reservaSinUsuario));
 
         when(mantenimientoRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
         when(reservaRepository.findWithPersonaAndUsuarioById(91L)).thenReturn(Optional.of(reservaSinUsuario));

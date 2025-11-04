@@ -6,6 +6,7 @@ import com.corhuila.sgie.Maintenance.DTO.ActualizarMantenimientoInstalacionReque
 import com.corhuila.sgie.Maintenance.DTO.CerrarMantenimientoInstalacionResponseDTO;
 import com.corhuila.sgie.Maintenance.DTO.IMantenimientoInstalacionDTO;
 import com.corhuila.sgie.Maintenance.DTO.MantenimientoInstalacionResponseDTO;
+import com.corhuila.sgie.Maintenance.Entity.CategoriaMantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.Entity.MantenimientoInstalacion;
 import com.corhuila.sgie.Maintenance.IRepository.IMantenimientoInstalacionRepository;
 import com.corhuila.sgie.Maintenance.IService.IMantenimientoInstalacionService;
@@ -50,24 +51,23 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
     @Override
     protected void beforeSave(MantenimientoInstalacion mantenimiento) {
 
-        Reserva reserva = mantenimiento.getReserva();
+        Long idReserva = mantenimiento.getReserva().getId();
+        Reserva reserva = reservaRepository.findById(idReserva)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con id: " + idReserva));
 
-        if (reserva == null || reserva.getFechaReserva() == null || reserva.getHoraInicio() == null || reserva.getHoraFin() == null) {
-            throw new IllegalArgumentException("Fecha y horas son obligatorias.");
-        }
-        if (!reserva.getHoraFin().isAfter(reserva.getHoraInicio())) {
-            throw new IllegalArgumentException("La hora fin debe ser mayor que la hora inicio.");
-        }
+
         if (mantenimiento.getInstalacion() == null || mantenimiento.getInstalacion().getId() == null) {
             throw new IllegalArgumentException("la instalacion es obligatorio.");
         }
 
-        // DISPONIBILIDAD ***DE EQUIPO*** en creación (idDetalle = null)
+        // DISPONIBILIDAD ***DE INSTALACION*** en creación (idDetalle = null)
         List<LocalTime> disponibles = reservaRepository
                 .findHorasDisponiblesInstalacion(
                         reserva.getFechaReserva(),
                         mantenimiento.getInstalacion().getId().intValue(),
-                        null // creación
+                        mantenimiento.getId(),
+                        "MANTENIMIENTO"
+                        //null // creación
                 )
                 .stream()
                 .map(h -> LocalTime.parse(h[0].toString()))
@@ -173,8 +173,9 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
         LocalTime horaInicio = request.getHoraInicio() != null ? request.getHoraInicio() : reserva.getHoraInicio();
         LocalTime horaFin = request.getHoraFin() != null ? request.getHoraFin() : reserva.getHoraFin();
         Integer idInstalacion = obtenerIdInstalacionEfectiva(request, mantenimiento);
+        String origen = request.getOrigen();
 
-        validarHorasDisponibles(fecha, horaInicio, horaFin, idInstalacion, idMantenimiento);
+        validarHorasDisponibles(fecha, horaInicio, horaFin, idInstalacion, idMantenimiento, origen);
     }
 
     private Integer obtenerIdInstalacionEfectiva(ActualizarMantenimientoInstalacionRequestDTO request,
@@ -189,9 +190,10 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
             LocalTime horaInicio,
             LocalTime horaFin,
             Integer idInstalacion,
-            Long idMantenimiento) {
+            Long idMantenimiento,
+            String origen) {
 
-        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idMantenimiento);
+        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idMantenimiento, origen);
         List<LocalTime> disponibles = horasDisponibles.stream()
                 .map(h -> LocalTime.parse(h[0].toString()))
                 .toList();
@@ -214,6 +216,11 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
     private void actualizarCamposMantenimiento(ActualizarMantenimientoInstalacionRequestDTO request, MantenimientoInstalacion mantenimiento) {
         if (request.getDescripcion() != null) {
             mantenimiento.setDescripcion(request.getDescripcion());
+        }
+        if (request.getCategoriaMantenimientoInstalacionId() != null) {
+            CategoriaMantenimientoInstalacion categoriaMantenimientoInstalacion = new CategoriaMantenimientoInstalacion();
+            categoriaMantenimientoInstalacion.setId(request.getCategoriaMantenimientoInstalacionId());
+            mantenimiento.setCategoriaMantenimientoInstalacion(categoriaMantenimientoInstalacion);
         }
         if (request.getFechaProximaMantenimiento() != null) {
             mantenimiento.setFechaProximaMantenimiento(request.getFechaProximaMantenimiento());

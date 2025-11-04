@@ -51,24 +51,21 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
     @Override
     protected void beforeSave(DetalleReservaInstalacion detalle) {
 
-        Reserva reserva = detalle.getReserva();
+        Long idReserva = detalle.getReserva().getId();
+        Reserva reserva = reservaRepository.findById(idReserva)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con id: " + idReserva));
 
-        if (reserva == null || reserva.getFechaReserva() == null || reserva.getHoraInicio() == null || reserva.getHoraFin() == null) {
-            throw new IllegalArgumentException("Fecha y horas son obligatorias.");
-        }
-        if (!reserva.getHoraFin().isAfter(reserva.getHoraInicio())) {
-            throw new IllegalArgumentException("La hora fin debe ser mayor que la hora inicio.");
-        }
         if (detalle.getInstalacion() == null || detalle.getInstalacion().getId() == null) {
             throw new IllegalArgumentException("la instalacion es obligatorio.");
         }
 
-        // DISPONIBILIDAD ***DE EQUIPO*** en creación (idDetalle = null)
+        // DISPONIBILIDAD ***DE INSTALACION*** en creación (idDetalle = null)
         List<LocalTime> disponibles = reservaRepository
-                .findHorasDisponiblesEquipo(
+                .findHorasDisponiblesInstalacion(
                         reserva.getFechaReserva(),
                         detalle.getInstalacion().getId().intValue(),
-                        null // creación
+                        detalle.getId(),
+                        "RESERVA"
                 )
                 .stream()
                 .map(h -> LocalTime.parse(h[0].toString()))
@@ -128,8 +125,9 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
                 .orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
 
         Reserva reserva = detalle.getReserva();
+        String origen = request.getOrigen();
 
-        validarDisponibilidadSiCambiaFechaHora(request, reserva, detalle, idDetalle);
+        validarDisponibilidadSiCambiaFechaHora(request, reserva, detalle, idDetalle, origen);
         actualizarDatosReserva(request, reserva);
         actualizarDatosDetalle(request, detalle);
 
@@ -146,7 +144,9 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
             ActualizarReservaDetalleInstalacionRequestDTO request,
             Reserva reserva,
             DetalleReservaInstalacion detalle,
-            Long idDetalle) {
+            Long idDetalle,
+            String origen
+    ) {
 
         boolean cambiaFechaHoraInstalacion =
                 request.getFechaReserva() != null ||
@@ -155,7 +155,7 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
                         request.getIdInstalacion() != null;
 
         if (cambiaFechaHoraInstalacion) {
-            validarHorasDisponiblesInstalacion(request, reserva, detalle, idDetalle);
+            validarHorasDisponiblesInstalacion(request, reserva, detalle, idDetalle, origen);
         }
     }
 
@@ -170,14 +170,15 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
             ActualizarReservaDetalleInstalacionRequestDTO request,
             Reserva reserva,
             DetalleReservaInstalacion detalle,
-            Long idDetalle) {
+            Long idDetalle,
+            String origen) {
 
         LocalDate fecha = obtenerFechaEfectiva(request, reserva);
         LocalTime horaInicio = obtenerHoraInicioEfectiva(request, reserva);
         LocalTime horaFin = obtenerHoraFinEfectiva(request, reserva);
         Integer idInstalacion = obtenerIdInstalacionEfectiva(request, detalle);
 
-        List<LocalTime> disponibles = obtenerHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
+        List<LocalTime> disponibles = obtenerHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle, origen);
         List<LocalTime> rangoSolicitado = generarRangoHorario(horaInicio, horaFin);
 
         if (!disponibles.containsAll(rangoSolicitado)) {
@@ -198,8 +199,8 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
         return request.getHoraFin() != null ? request.getHoraFin() : reserva.getHoraFin();
     }
 
-    private List<LocalTime> obtenerHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle) {
-        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle);
+    private List<LocalTime> obtenerHorasDisponiblesInstalacion(LocalDate fecha, Integer idInstalacion, Long idDetalle, String origen) {
+        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesInstalacion(fecha, idInstalacion, idDetalle, origen);
         return horasDisponibles.stream()
                 .map(h -> LocalTime.parse(h[0].toString()))
                 .toList();

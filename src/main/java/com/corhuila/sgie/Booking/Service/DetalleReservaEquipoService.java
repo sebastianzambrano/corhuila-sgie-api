@@ -51,14 +51,11 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
 
     @Override
     protected void beforeSave(DetalleReservaEquipo detalle) {
-        Reserva reserva = detalle.getReserva();
 
-        if (reserva == null || reserva.getFechaReserva() == null || reserva.getHoraInicio() == null || reserva.getHoraFin() == null) {
-            throw new IllegalArgumentException("Fecha y horas son obligatorias.");
-        }
-        if (!reserva.getHoraFin().isAfter(reserva.getHoraInicio())) {
-            throw new IllegalArgumentException("La hora fin debe ser mayor que la hora inicio.");
-        }
+        Long idReserva = detalle.getReserva().getId();
+        Reserva reserva = reservaRepository.findById(idReserva)
+                .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con id: " + idReserva));
+
         if (detalle.getEquipo() == null || detalle.getEquipo().getId() == null) {
             throw new IllegalArgumentException("El equipo es obligatorio.");
         }
@@ -72,6 +69,7 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
                 .findHorasDisponiblesEquipo(
                         reserva.getFechaReserva(),
                         detalle.getEquipo().getId().intValue(),
+                        null, // creación,
                         null // creación
                 )
                 .stream()
@@ -179,8 +177,9 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
         LocalTime horaInicio = obtenerHoraInicioEfectiva(request, reserva);
         LocalTime horaFin = obtenerHoraFinEfectiva(request, reserva);
         Integer idEquipo = obtenerIdEquipoEfectivo(request, detalle);
+        String origen = request.getOrigen();
 
-        List<LocalTime> disponibles = obtenerHorasDisponibles(fecha, idEquipo, idDetalle);
+        List<LocalTime> disponibles = obtenerHorasDisponibles(fecha, idEquipo, idDetalle, origen);
         List<LocalTime> rangoSolicitado = generarRangoHorario(horaInicio, horaFin);
 
         if (!disponibles.containsAll(rangoSolicitado)) {
@@ -205,8 +204,8 @@ public class DetalleReservaEquipoService extends BaseService<DetalleReservaEquip
         return request.getIdEquipo() != null ? request.getIdEquipo().intValue() : detalle.getEquipo().getId().intValue();
     }
 
-    private List<LocalTime> obtenerHorasDisponibles(LocalDate fecha, Integer idEquipo, Long idDetalle) {
-        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle);
+    private List<LocalTime> obtenerHorasDisponibles(LocalDate fecha, Integer idEquipo, Long idDetalle, String origen) {
+        List<Object[]> horasDisponibles = reservaRepository.findHorasDisponiblesEquipo(fecha, idEquipo, idDetalle, origen);
         return horasDisponibles.stream()
                 .map(h -> LocalTime.parse(h[0].toString()))
                 .toList();

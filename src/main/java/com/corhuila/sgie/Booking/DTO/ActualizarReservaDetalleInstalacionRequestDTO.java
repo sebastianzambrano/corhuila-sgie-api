@@ -22,4 +22,5 @@ public class ActualizarReservaDetalleInstalacionRequestDTO {
     private String programaAcademico;
     private Short numeroEstudiantes;
     private Long idInstalacion;
+    private String origen;
 }
