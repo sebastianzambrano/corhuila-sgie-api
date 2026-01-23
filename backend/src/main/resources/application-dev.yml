@@ -13,6 +13,9 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  web:
+    cors:
+      allowed-origins: http://localhost:3000,http://localhost:5173
 
 logging:
   level:
@@ -20,6 +23,7 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
     org.springframework.security: DEBUG
+
 
 security:
   jwt:

@@ -45,7 +45,8 @@ public class SecurityConfig {
     private final JwtFilter jwtFilter;
     private final JwtCookieProperties jwtCookieProperties;
 
-    @Value("${spring.web.cors.allowed-origins:http://localhost:5173}")
+    // ← CAMBIO: Agregar localhost:3000
+    @Value("${spring.web.cors.allowed-origins:http://localhost:3000,http://localhost:5173}")
     private String allowedOrigins;
 
     public SecurityConfig(CustomUserDetailsService customUserDetailsService,
@@ -72,21 +73,17 @@ public class SecurityConfig {
         requestHandler.setCsrfRequestAttributeName(null);
 
         return http
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(csrfTokenRepository)
-                        .csrfTokenRequestHandler(requestHandler)
-                        .ignoringRequestMatchers(
-                                OPTIONS_REQUEST_MATCHER,
-                                LOGIN_REQUEST_MATCHER,
-                                LOGOUT_REQUEST_MATCHER
-                        )
-                )
+                // ← CAMBIO: Deshabilitar CSRF para desarrollo
+                .csrf(csrf -> csrf.disable())
+
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // rutas públicas
                         .requestMatchers(
                                 "/v1/api/usuario/login",
                                 "/v1/api/usuario/me",
+                                "/api/*",  // ← AGREGADO: Permitir /api/* temporalmente
+                                "/actuator/**",  // ← AGREGADO: Para testing
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/api/equipos/reportes/**",
@@ -97,11 +94,10 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new CsrfCookieFilter(jwtCookieProperties, CSRF_HEADER_NAME), CsrfFilter.class)
+                // ← CAMBIO: Comentar el filtro CSRF
+                // .addFilterAfter(new CsrfCookieFilter(jwtCookieProperties, CSRF_HEADER_NAME), CsrfFilter.class)
                 .build();
-
     }
-
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
@@ -113,7 +109,6 @@ public class SecurityConfig {
         return customUserDetailsService;
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -123,10 +118,16 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(parseAllowedOrigins());
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type", CSRF_HEADER_NAME));
-        config.setExposedHeaders(List.of(CSRF_HEADER_NAME));
+
+        // Parsear los orígenes permitidos
+        List<String> origins = parseAllowedOrigins();
+        config.setAllowedOrigins(origins);
+
+        // Permitir todos los headers comunes
+        config.setAllowedHeaders(List.of("*"));
+        config.setExposedHeaders(List.of(CSRF_HEADER_NAME, "Authorization"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setMaxAge(3600L); // Cache preflight por 1 hora
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

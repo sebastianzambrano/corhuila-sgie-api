@@ -35,6 +35,12 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        // Permitir todas las solicitudes OPTIONS (preflight CORS)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (esRutaPublica(request.getServletPath())) {
             filterChain.doFilter(request, response);
             return;
@@ -51,10 +57,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean esRutaPublica(String path) {
         return path.startsWith("/v1/api/usuario/login") ||
+                path.startsWith("/v1/api/usuario/me") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger") ||
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/api/equipos/reportes") ||
+                path.startsWith("/actuator") ||
+                path.startsWith("/error") ||
                 path.startsWith("/auth");
     }
 

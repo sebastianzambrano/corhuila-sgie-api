@@ -1,0 +1,22 @@
+services:
+  postgres-dev:
+    image: postgres:17.6
+    container_name: DataBase-dev
+    environment:
+      POSTGRES_DB: sgie_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d  # Montar carpeta completa
+    networks:
+      - sgie-network
+
+volumes:
+  postgres_dev_data:
+
+networks:
+  sgie-network:
+    driver: bridge
