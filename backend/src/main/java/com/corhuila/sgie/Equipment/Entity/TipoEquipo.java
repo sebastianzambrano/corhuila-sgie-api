@@ -22,10 +22,8 @@ public class TipoEquipo extends Auditoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private String descripcion;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoria_equipo", nullable = false)
     private CategoriaEquipo categoriaEquipo;

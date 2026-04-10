@@ -22,10 +22,8 @@ public class CategoriaEquipo extends Auditoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String nombre;
     private String descripcion;
-
     @OneToMany(mappedBy = "categoriaEquipo", fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<TipoEquipo> tipoEquipos = new HashSet<>();

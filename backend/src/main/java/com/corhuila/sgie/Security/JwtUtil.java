@@ -33,11 +33,9 @@ public class JwtUtil {
         List<String> auth = authorities.stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
-
         claims.put("auth", auth);
         claims.put("idUsuario", idUsuario);
         claims.put("email", email);
-
         Date now = new Date();
         Date exp = new Date(now.getTime() + expirationMs);
         return Jwts.builder()

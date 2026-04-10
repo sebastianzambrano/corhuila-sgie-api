@@ -74,7 +74,15 @@ public class SecurityConfig {
 
         return http
                 // ← CAMBIO: Deshabilitar CSRF para desarrollo
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                .csrfTokenRepository(csrfTokenRepository)
+                .csrfTokenRequestHandler(requestHandler)
+                .ignoringRequestMatchers(
+                        OPTIONS_REQUEST_MATCHER,
+                        LOGIN_REQUEST_MATCHER,
+                        LOGOUT_REQUEST_MATCHER
+                )
+                )
 
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
@@ -95,7 +103,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 // ← CAMBIO: Comentar el filtro CSRF
-                // .addFilterAfter(new CsrfCookieFilter(jwtCookieProperties, CSRF_HEADER_NAME), CsrfFilter.class)
+                .addFilterAfter(new CsrfCookieFilter(jwtCookieProperties, CSRF_HEADER_NAME), CsrfFilter.class)
                 .build();
     }
 

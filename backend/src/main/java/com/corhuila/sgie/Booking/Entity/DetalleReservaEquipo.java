@@ -38,7 +38,6 @@ public class DetalleReservaEquipo extends Auditoria {
     @JoinColumn(name = "id_instalacion_destino")
     private Instalacion instalacionDestino;
 
-
     // equals/hashCode SOLO por id
     @Override
     public boolean equals(Object o) {

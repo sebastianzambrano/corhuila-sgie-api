@@ -42,7 +42,6 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
         this.notificacionService = notificacionService;
     }
 
-
     @Override
     protected IBaseRepository<DetalleReservaInstalacion, Long> getRepository() {
         return repository;
@@ -249,7 +248,6 @@ public class DetalleReservaInstalacionService extends BaseService<DetalleReserva
                 reserva.getTipoReserva() != null ? reserva.getTipoReserva().getNombre() : null
         );
     }
-
 
     @Override
     protected void afterSave(DetalleReservaInstalacion detalle) {

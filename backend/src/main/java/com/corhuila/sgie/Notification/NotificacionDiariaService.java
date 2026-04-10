@@ -10,7 +10,6 @@ import java.util.List;
 
 @Service
 public class NotificacionDiariaService {
-
     private static final String PLANTILLA_CORREO_RESERCA = """
                 Hola %s, tienes una reserva pendiente:
                 - Nombre: %s
@@ -18,16 +17,13 @@ public class NotificacionDiariaService {
                 - Hora inicio: %s
                 - Hora fin: %s
             """;
-
     private final IReservaRepository reservaRepository;
     private final NotificacionService notificacionService;
-
     public NotificacionDiariaService(IReservaRepository reservaRepository,
                                      NotificacionService notificacionService) {
         this.reservaRepository = reservaRepository;
         this.notificacionService = notificacionService;
     }
-
     /**
      * Programa la tarea todos los días a las 11:59 PM
      */
@@ -37,11 +33,9 @@ public class NotificacionDiariaService {
 
         // 1. Consultar reservas abiertas
         List<Reserva> abiertas = reservaRepository.findByFechaReservaAndStateTrue(hoy);
-
         if (abiertas.isEmpty()) {
             return;
         }
-
         // 2. Agrupar por persona (si quieres notificar a cada usuario)
         abiertas.stream()
                 .filter(r -> r.getPersona() != null && r.getPersona().getUsuario() != null)
@@ -55,7 +49,6 @@ public class NotificacionDiariaService {
                             reserva.getHoraInicio(),
                             reserva.getHoraFin()
                     );
-
                     notificacionService.enviarCorreoReserva(destinatario, asunto, cuerpo);
                 });
     }

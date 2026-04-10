@@ -74,7 +74,6 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
         }
     }
 
-
     @Override
     public Reserva save(Reserva reserva) throws DataAccessException {
         List<Reserva> solapadas = repository.findReservasSolapadas(
@@ -91,7 +90,6 @@ public class ReservaService extends BaseService<Reserva> implements IReservaServ
 
         return super.save(reserva);
     }
-
 
     public List<IReservaGeneralDTO> findReservasYMantenimientosByNumeroIdentificacion(String numeroIdentificacion) {
         return repository.findReservasYMantenimientosByNumeroIdentificacion(numeroIdentificacion);

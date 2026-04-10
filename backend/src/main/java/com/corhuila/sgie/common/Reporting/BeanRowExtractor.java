@@ -122,15 +122,12 @@ public final class BeanRowExtractor {
         }
     }
 
-
     private static List<ColumnMeta> defaultColumns(Class<?> dtoType) {
         Map<String, ColumnMeta> map = new LinkedHashMap<>();
         AtomicInteger order = new AtomicInteger(0);
-
         processFields(dtoType, map, order);
         processBeanProperties(dtoType, map, order);
         processRecordComponents(dtoType, map, order);
-
         return new ArrayList<>(map.values());
     }
 
@@ -139,7 +136,6 @@ public final class BeanRowExtractor {
             if (Modifier.isStatic(field.getModifiers())) {
                 continue;
             }
-
             map.computeIfAbsent(field.getName(), name -> ColumnMeta.builder()
                     .property(name)
                     .header(defaultHeader(name))
@@ -218,7 +214,6 @@ public final class BeanRowExtractor {
         return fields;
     }
 
-
     private static Object getFieldValue(Field field, Object bean) {
         try {
             // Intenta acceso directo primero
@@ -256,7 +251,6 @@ public final class BeanRowExtractor {
             throw new IllegalStateException("No se pudo invocar el método " + method.getName(), e);
         }
     }
-
 
     private static String propertyNameFromGetter(String methodName) {
         if (methodName.startsWith("get") && methodName.length() > 3) {
@@ -434,6 +428,5 @@ public final class BeanRowExtractor {
             }
         }
     }
-
 }
 

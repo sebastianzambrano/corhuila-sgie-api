@@ -22,7 +22,6 @@ public class MantenimientoEquipoController extends BaseController<MantenimientoE
         this.mantenimientoEquipoService = mantenimientoEquipoService;
     }
 
-
     @PutMapping("/{idDetalle}/cerrar-mantenimiento-equipo")
     @PreAuthorize("@permissionEvaluator.hasPermission(authentication, this.entityName, 'ACTUALIZAR')")
     public ResponseEntity<CerrarMantenimientoEquipoResponseDTO> cerrarMantenimientoEquipo(

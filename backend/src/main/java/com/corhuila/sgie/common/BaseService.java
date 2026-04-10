@@ -18,7 +18,6 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
         return getRepository().findAll();
     }
 
-
     @Override
     public List<T> findByStateTrue() {
         return getRepository().findAll()
@@ -30,11 +29,9 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     @Override
     public T findById(Long id) throws DataAccessException {
         Optional<T> op = getRepository().findById(id);
-
         if (op.isEmpty()) {
             throw new IllegalStateException("Registro no encontrado");
         }
-
         return op.get();
     }
 
@@ -63,7 +60,6 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
         return saved;
     }
 
-
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(Long id, T entity) throws DataAccessException {
@@ -76,7 +72,6 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
         }
 
         T entityUpdate = op.get();
-
         copyUpdatableFields(entity, entityUpdate);
         entityUpdate.setUpdatedAt(LocalDateTime.now());
         getRepository().save(entityUpdate);
@@ -86,7 +81,6 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) throws DataAccessException {
         Optional<T> op = getRepository().findById(id);
-
         if (op.isEmpty()) {
             throw new IllegalStateException("Registro no encontrado");
         }
@@ -94,7 +88,6 @@ public abstract class BaseService<T extends Auditoria> implements IBaseService<T
         T entityUpdate = op.get();
         entityUpdate.setDeletedAt(LocalDateTime.now());
         entityUpdate.setState(Boolean.FALSE);
-
         getRepository().save(entityUpdate);
     }
 

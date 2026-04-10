@@ -29,7 +29,6 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtCookieProperties = jwtCookieProperties;
     }
 
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
@@ -57,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private boolean esRutaPublica(String path) {
         return path.startsWith("/v1/api/usuario/login") ||
-                path.startsWith("/v1/api/usuario/me") ||
+                //path.startsWith("/v1/api/usuario/me") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/swagger") ||
                 path.startsWith("/swagger-ui") ||

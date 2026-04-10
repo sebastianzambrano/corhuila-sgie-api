@@ -55,7 +55,6 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
         Reserva reserva = reservaRepository.findById(idReserva)
                 .orElseThrow(() -> new IllegalArgumentException("Reserva no encontrada con id: " + idReserva));
 
-
         if (mantenimiento.getInstalacion() == null || mantenimiento.getInstalacion().getId() == null) {
             throw new IllegalArgumentException("la instalacion es obligatorio.");
         }
@@ -85,25 +84,19 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
             Long idMantenimiento,
             LocalDate fechaProximaMantenimiento,
             String resultadoMantenimiento) {
-
         MantenimientoInstalacion mantenimiento = repository.findById(idMantenimiento)
                 .orElseThrow(() -> new RuntimeException("Mantenimiento no encontrado"));
-
         Reserva reserva = mantenimiento.getReserva();
-
         // actualizar mantenimiento
         mantenimiento.setFechaProximaMantenimiento(fechaProximaMantenimiento);
         mantenimiento.setResultadoMantenimiento(resultadoMantenimiento);
         mantenimiento.setState(false);
         mantenimiento.setUpdatedAt(LocalDateTime.now());
-
         // cerrar reserva directamente porque es 1:1
         reserva.setState(false);
         reserva.setUpdatedAt(LocalDateTime.now());
         reservaRepository.save(reserva);
-
         MantenimientoInstalacion saved = repository.save(mantenimiento);
-
         return new CerrarMantenimientoInstalacionResponseDTO(
                 saved.getId(),
                 saved.getState(),
@@ -118,7 +111,6 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
     public List<IMantenimientoInstalacionDTO> findMantenimientosInstalacionByNumeroIdentificacion(String numeroIdentificacion) {
         return repository.findMantenimientosInstalacionByNumeroIdentificacion(numeroIdentificacion);
     }
-
 
     @Transactional(rollbackFor = Exception.class)
     public MantenimientoInstalacionResponseDTO actualizarMantenimientoInstalacion(
@@ -253,7 +245,6 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
         }
     }
 
-
     @Override
     protected void afterSave(MantenimientoInstalacion detalle) {
         if (detalle.getReserva() != null && detalle.getReserva().getId() != null) {
@@ -267,7 +258,6 @@ public class MantenimientoInstalacionService extends BaseService<MantenimientoIn
                                     reserva.getFechaReserva(),
                                     reserva.getHoraInicio(),
                                     reserva.getHoraFin());
-
                             notificacionService.enviarCorreoReserva(destinatario, asunto, cuerpo);
                         }
                     });

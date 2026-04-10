@@ -18,7 +18,6 @@ public class ActualizarMantenimientoEquipoRequestDTO {
     private LocalDate fechaReserva;
     private LocalTime horaInicio;
     private LocalTime horaFin;
-
     private String descripcion;
     private LocalDate fechaProximaMantenimiento;
     private String resultadoMantenimiento;

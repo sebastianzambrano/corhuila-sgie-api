@@ -1,6 +1,5 @@
 package com.corhuila.sgie.common;
 
-
 public class ApiResponseDto<T> {
     private Boolean status;
     private T data;

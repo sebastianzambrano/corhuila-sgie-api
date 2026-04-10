@@ -74,7 +74,6 @@ public class XlsxReportWriter implements ReportWriter {
                     }
                 }
             }
-
             workbook.write(out);
         } catch (Exception ex) {
             throw new IllegalStateException("Error escribiendo reporte XLSX", ex);
@@ -151,7 +150,6 @@ public class XlsxReportWriter implements ReportWriter {
         style.setFont(font);
         return style;
     }
-
 
     private void writeCell(Workbook workbook,
                            Row row,
@@ -273,7 +271,6 @@ public class XlsxReportWriter implements ReportWriter {
             return style;
         });
     }
-
 
     private CellStyle dateStyle(Workbook workbook, Map<String, CellStyle> cache, String format, boolean wrap) {
         String key = "date_" + format + "_" + wrap;

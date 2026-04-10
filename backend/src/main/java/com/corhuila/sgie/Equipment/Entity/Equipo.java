@@ -58,7 +58,6 @@ public class Equipo extends Auditoria {
         return instalacion != null ? instalacion.getNombre() : null;
     }
 
-    // equals/hashCode SOLO por id
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -71,5 +70,4 @@ public class Equipo extends Auditoria {
     public int hashCode() {
         return Objects.hash(getId());
     }
-
 }

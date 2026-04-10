@@ -53,5 +53,4 @@ public class DetalleReservaEquipoController extends BaseController<DetalleReserv
         List<IReservaEquipoDTO> reservasEquipos = service.findReservasEquipoByNumeroIdentificacion(numeroIdentificacion);
         return ResponseEntity.ok(reservasEquipos);
     }
-
 }
